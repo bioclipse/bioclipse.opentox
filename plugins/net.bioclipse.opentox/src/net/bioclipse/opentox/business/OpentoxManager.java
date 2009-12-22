@@ -31,6 +31,12 @@ public class OpentoxManager implements IBioclipseManager {
         "       <http://purl.org/dc/elements/1.1/identifier> ?id ." +
         "}";
 
+    private final static String QUERY_COMPOUNDS =
+        "SELECT ?compound ?id WHERE {" +
+        "  ?set a <http://www.opentox.org/api/1.1#Compound>;" +
+        "       <http://purl.org/dc/elements/1.1/identifier> ?id ." +
+        "}";
+    
     /**
      * Gives a short one word name of the manager used as variable name when
      * scripting.
@@ -76,4 +82,47 @@ public class OpentoxManager implements IBioclipseManager {
         monitor.done();
         return dataSets;
     }
+
+    public List<Integer> listCompounds(String service, Integer dataSet,
+            IProgressMonitor monitor) throws BioclipseException {
+        List<Integer> compounds = new ArrayList<Integer>();
+
+        if (monitor == null) monitor = new NullProgressMonitor();
+
+        monitor.beginTask("Looking up compound identifiers...", 3);
+        IRDFStore store = rdf.createStore();
+        try {
+            // download the list of compounds as RDF
+            rdf.importURL(
+                store,
+                service + "dataset/" + dataSet + "/compound",
+                monitor
+            );
+            monitor.worked(1);
+
+            // query the downloaded RDF
+            List<List<String>> results = rdf.sparql(store, QUERY_COMPOUNDS);
+            monitor.worked(1);
+
+            // return the data set identifiers
+            for (List<String> set : results) {
+                String setURI = set.get(0);
+                compounds.add(
+                    Integer.valueOf(setURI.substring(setURI.lastIndexOf('/')+1))
+                );
+            }
+            monitor.worked(1);
+        } catch (BioclipseException exception) {
+            throw exception;
+        } catch (Exception exception) {
+            throw new BioclipseException(
+                "Error while accessing RDF API of service",
+                exception
+            );
+        }
+
+        monitor.done();
+        return compounds;
+    }
+    
 }

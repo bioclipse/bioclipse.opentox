@@ -30,4 +30,12 @@ public interface IOpentoxManager extends IBioclipseManager {
     )
     public List<Integer> listDataSets(String service);
     
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
+            "Lists the compounds available from the given data set.",
+        params="String service, Integer dataSet"
+    )
+    public List<Integer> listCompounds(String service, Integer dataSet);
+    
 }
