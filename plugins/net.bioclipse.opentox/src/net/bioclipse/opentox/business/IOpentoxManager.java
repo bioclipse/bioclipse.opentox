@@ -28,6 +28,6 @@ public interface IOpentoxManager extends IBioclipseManager {
             "Lists the data sets available from the given service.",
         params="String service"
     )
-    public List<String> listDataSets(String service);
+    public List<Integer> listDataSets(String service);
     
 }

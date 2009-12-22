@@ -39,9 +39,9 @@ public class OpentoxManager implements IBioclipseManager {
         return "opentox";
     }
     
-    public List<String> listDataSets(String service, IProgressMonitor monitor)
+    public List<Integer> listDataSets(String service, IProgressMonitor monitor)
         throws BioclipseException {
-        List<String> dataSets = new ArrayList<String>();
+        List<Integer> dataSets = new ArrayList<Integer>();
 
         if (monitor == null) monitor = new NullProgressMonitor();
 
@@ -58,7 +58,10 @@ public class OpentoxManager implements IBioclipseManager {
 
             // return the data set identifiers
             for (List<String> set : results) {
-                dataSets.add(set.get(0));
+                String setURI = set.get(0);
+                dataSets.add(
+                    Integer.valueOf(setURI.substring(setURI.lastIndexOf('/')+1))
+                );
             }
             monitor.worked(1);
         } catch (BioclipseException exception) {
