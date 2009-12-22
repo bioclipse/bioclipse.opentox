@@ -38,4 +38,24 @@ public interface IOpentoxManager extends IBioclipseManager {
     )
     public List<Integer> listCompounds(String service, Integer dataSet);
     
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
+            "Downloads a compound and returns it as a MDL molfile formated " +
+            "String.",
+        params="String service, Integer dataSet, Integer compound"
+    )
+    public String downloadCompoundAsMDLMolfile(String service, Integer dataSet,
+        Integer compound);
+
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
+            "Downloads a data set and saves it as a MDL SD file formated " +
+            "file with the given filename.",
+        params="String service, Integer dataSet, String filename"
+    )
+    public String downloadDataSetAsMDLSDfile(String service, Integer dataSet,
+        String filename);
+
 }

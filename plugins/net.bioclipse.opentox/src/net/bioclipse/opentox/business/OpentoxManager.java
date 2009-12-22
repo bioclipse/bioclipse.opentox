@@ -13,17 +13,20 @@ package net.bioclipse.opentox.business;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
-
+import net.bioclipse.business.BioclipsePlatformManager;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.managers.business.IBioclipseManager;
 import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.business.RDFManager;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+
 public class OpentoxManager implements IBioclipseManager {
 
     private RDFManager rdf = new RDFManager(); 
+    private BioclipsePlatformManager bioclipse = new BioclipsePlatformManager();
 
     private final static String QUERY_DATASETS =
         "SELECT ?set ?id WHERE {" +
@@ -124,5 +127,39 @@ public class OpentoxManager implements IBioclipseManager {
         monitor.done();
         return compounds;
     }
-    
+
+    public String downloadCompoundAsMDLMolfile(String service, Integer dataSet,
+            Integer compound, IProgressMonitor monitor)
+        throws BioclipseException {
+
+        if (monitor == null) monitor = new NullProgressMonitor();
+
+        monitor.beginTask("Downloading compound...", 1);
+
+        String url = service + "dataset/" + dataSet + "/compound/" + compound;
+        String result = bioclipse.download(
+            url, "chemical/x-mdl-molfile", monitor
+        );
+        monitor.done();
+
+        return result;
+    }
+
+    public IFile downloadDataSetAsMDLSDfile(String service, Integer dataSet,
+            IFile file, IProgressMonitor monitor)
+        throws BioclipseException {
+
+        if (monitor == null) monitor = new NullProgressMonitor();
+
+        monitor.beginTask("Downloading data set...", 1);
+
+        String url = service + "dataset/" + dataSet;
+        IFile result = bioclipse.downloadAsFile(
+            url, "chemical/x-mdl-sdfile", file, monitor
+        );
+        monitor.done();
+
+        return result;
+    }
+
 }
