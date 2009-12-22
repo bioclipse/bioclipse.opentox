@@ -10,12 +10,24 @@
  ******************************************************************************/
 package net.bioclipse.opentox.business;
 
+import java.util.List;
+
 import net.bioclipse.core.PublishedClass;
+import net.bioclipse.core.PublishedMethod;
+import net.bioclipse.core.Recorded;
 import net.bioclipse.managers.business.IBioclipseManager;
 
 @PublishedClass(
-    value="TODO: Describe the manager here."
+    value="Manager that maps the OpenTox API 1.1 to manager methods."
 )
 public interface IOpentoxManager extends IBioclipseManager {
 
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
+            "Lists the data sets available from the given service.",
+        params="String service"
+    )
+    public List<String> listDataSets(String service);
+    
 }
