@@ -18,6 +18,7 @@ import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.managers.business.IBioclipseManager;
 import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.business.RDFManager;
+import net.bioclipse.rdf.model.IStringMatrix;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -55,19 +56,18 @@ public class OpentoxManager implements IBioclipseManager {
         if (monitor == null) monitor = new NullProgressMonitor();
 
         monitor.beginTask("Requesting available data sets...", 3);
-        IRDFStore store = rdf.createStore();
+        IRDFStore store = rdf.createInMemoryStore();
         try {
             // download the list of data sets as RDF
             rdf.importURL(store, service + "dataset", monitor);
             monitor.worked(1);
 
             // query the downloaded RDF
-            List<List<String>> results = rdf.sparql(store, QUERY_DATASETS);
+            IStringMatrix results = rdf.sparql(store, QUERY_DATASETS);
             monitor.worked(1);
 
             // return the data set identifiers
-            for (List<String> set : results) {
-                String setURI = set.get(0);
+            for (String setURI : results.getColumn("set")) {
                 dataSets.add(
                     Integer.valueOf(setURI.substring(setURI.lastIndexOf('/')+1))
                 );
@@ -93,7 +93,7 @@ public class OpentoxManager implements IBioclipseManager {
         if (monitor == null) monitor = new NullProgressMonitor();
 
         monitor.beginTask("Looking up compound identifiers...", 3);
-        IRDFStore store = rdf.createStore();
+        IRDFStore store = rdf.createInMemoryStore();
         try {
             // download the list of compounds as RDF
             rdf.importURL(
@@ -104,14 +104,13 @@ public class OpentoxManager implements IBioclipseManager {
             monitor.worked(1);
 
             // query the downloaded RDF
-            List<List<String>> results = rdf.sparql(store, QUERY_COMPOUNDS);
+            IStringMatrix results = rdf.sparql(store, QUERY_COMPOUNDS);
             monitor.worked(1);
 
             // return the data set identifiers
-            for (List<String> set : results) {
-                String setURI = set.get(0);
+            for (String compound : results.getColumn("compound")) {
                 compounds.add(
-                    Integer.valueOf(setURI.substring(setURI.lastIndexOf('/')+1))
+                    Integer.valueOf(compound.substring(compound.lastIndexOf('/')+1))
                 );
             }
             monitor.worked(1);
