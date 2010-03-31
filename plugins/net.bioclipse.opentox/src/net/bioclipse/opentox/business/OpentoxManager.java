@@ -29,6 +29,16 @@ public class OpentoxManager implements IBioclipseManager {
     private RDFManager rdf = new RDFManager(); 
     private BioclipsePlatformManager bioclipse = new BioclipsePlatformManager();
 
+    private final static String QUERY_ALGORITHMS =
+        "SELECT ?algo WHERE {" +
+        "  ?algo a <http://www.opentox.org/api/1.1#Algorithm>." +
+        "}";
+
+    private final static String QUERY_DESCRIPTORS =
+        "SELECT ?desc WHERE {" +
+        "  ?desc a <http://www.opentox.org/algorithmTypes.owl#DescriptorCalculation> ." +
+        "}";
+
     private final static String QUERY_DATASETS =
         "SELECT ?set ?id WHERE {" +
         "  ?set a <http://www.opentox.org/api/1.1#Dataset>;" +
@@ -72,6 +82,74 @@ public class OpentoxManager implements IBioclipseManager {
                     Integer.valueOf(setURI.substring(setURI.lastIndexOf('/')+1))
                 );
             }
+            monitor.worked(1);
+        } catch (BioclipseException exception) {
+            throw exception;
+        } catch (Exception exception) {
+            throw new BioclipseException(
+                "Error while accessing RDF API of service",
+                exception
+            );
+        }
+
+        monitor.done();
+        return dataSets;
+    }
+
+    public List<String> listAlgorithms(String service, IProgressMonitor monitor)
+    throws BioclipseException {
+    	List<String> dataSets = new ArrayList<String>();
+
+        if (monitor == null) monitor = new NullProgressMonitor();
+
+        monitor.beginTask("Requesting available algorithms...", 3);
+        IRDFStore store = rdf.createInMemoryStore();
+        try {
+            // download the list of data sets as RDF
+            rdf.importURL(store, service + "algorithm", monitor);
+            monitor.worked(1);
+
+            // query the downloaded RDF
+            IStringMatrix results = rdf.sparql(store, QUERY_ALGORITHMS);
+            System.out.println(results);
+            monitor.worked(1);
+
+            // return the data set identifiers
+            dataSets = results.getColumn("algo");
+            monitor.worked(1);
+        } catch (BioclipseException exception) {
+            throw exception;
+        } catch (Exception exception) {
+            throw new BioclipseException(
+                "Error while accessing RDF API of service",
+                exception
+            );
+        }
+
+        monitor.done();
+        return dataSets;
+    }
+
+    public List<String> listDescriptors(String service, IProgressMonitor monitor)
+    throws BioclipseException {
+    	List<String> dataSets = new ArrayList<String>();
+
+        if (monitor == null) monitor = new NullProgressMonitor();
+
+        monitor.beginTask("Requesting available descriptors...", 3);
+        IRDFStore store = rdf.createInMemoryStore();
+        try {
+            // download the list of data sets as RDF
+            rdf.importURL(store, service + "algorithm", monitor);
+            System.out.println(rdf.dump(store));
+            monitor.worked(1);
+
+            // query the downloaded RDF
+            IStringMatrix results = rdf.sparql(store, QUERY_DESCRIPTORS);
+            monitor.worked(1);
+
+            // return the data set identifiers
+            dataSets = results.getColumn("desc");
             monitor.worked(1);
         } catch (BioclipseException exception) {
             throw exception;

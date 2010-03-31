@@ -14,7 +14,8 @@ Require-Bundle: org.eclipse.ui,
  org.springframework.osgi.aopalliance.osgi,
  net.bioclipse.rdf,
  net.bioclipse.business;bundle-version="2.2.0",
- org.eclipse.core.resources;bundle-version="3.5.1"
+ org.eclipse.core.resources;bundle-version="3.5.1",
+ org.apache.commons.httpclient;bundle-version="3.1.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.apache.log4j
 Bundle-ActivationPolicy: lazy

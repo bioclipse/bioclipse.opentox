@@ -25,6 +25,22 @@ public interface IOpentoxManager extends IBioclipseManager {
     @Recorded
     @PublishedMethod(
         methodSummary=
+            "Lists the algorithms available from the given service.",
+        params="String service"
+    )
+    public List<String> listAlgorithms(String service);
+    
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
+            "Lists the descriptors available from the given service.",
+        params="String service"
+    )
+    public List<String> listDescriptors(String service);
+    
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
             "Lists the data sets available from the given service.",
         params="String service"
     )
