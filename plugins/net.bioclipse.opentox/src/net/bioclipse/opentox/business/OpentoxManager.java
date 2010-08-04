@@ -15,6 +15,7 @@ import java.util.List;
 
 import net.bioclipse.business.BioclipsePlatformManager;
 import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.jobs.IReturner;
 import net.bioclipse.managers.business.IBioclipseManager;
 import net.bioclipse.opentox.api.Dataset;
@@ -250,6 +251,36 @@ public class OpentoxManager implements IBioclipseManager {
 			String dataset = Dataset.createNewDataset(service);
 			monitor.done();
 			returner.completeReturn( dataset ); 
+		} catch (Exception exc) {
+			throw new BioclipseException(
+				"Exception while creating dataset: " + exc.getMessage()
+			);
+		}
+    }
+
+    public void addMolecule(String datasetURI, IMolecule mol, IProgressMonitor monitor)
+    throws BioclipseException {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	
+    	monitor.beginTask("Adding a molecule to an OpenTox API data set ...", 1);
+    	try {
+			Dataset.addMolecule(datasetURI, mol);
+			monitor.done();
+		} catch (Exception exc) {
+			throw new BioclipseException(
+				"Exception while creating dataset: " + exc.getMessage()
+			);
+		}
+    }
+
+    public void addMolecule(String datasetURI, List<IMolecule> molecules, IProgressMonitor monitor)
+    throws BioclipseException {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	
+    	monitor.beginTask("Adding a molecule to an OpenTox API data set ...", 1);
+    	try {
+			Dataset.addMolecules(datasetURI, molecules);
+			monitor.done();
 		} catch (Exception exc) {
 			throw new BioclipseException(
 				"Exception while creating dataset: " + exc.getMessage()

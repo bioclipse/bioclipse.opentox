@@ -60,6 +60,7 @@ public class Task {
 			throw new IllegalStateException("Service error: " + status);
 		}
 		
+		method.releaseConnection();
 		return state;
 	}
 

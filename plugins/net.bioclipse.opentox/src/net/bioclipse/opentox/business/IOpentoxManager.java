@@ -15,6 +15,7 @@ import java.util.List;
 import net.bioclipse.core.PublishedClass;
 import net.bioclipse.core.PublishedMethod;
 import net.bioclipse.core.Recorded;
+import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.jobs.BioclipseUIJob;
 import net.bioclipse.managers.business.IBioclipseManager;
 
@@ -54,6 +55,20 @@ public interface IOpentoxManager extends IBioclipseManager {
     )
     public String createDataset(String service);
     public void createDataset(String service, BioclipseUIJob<String> uiJob);
+    
+    @Recorded
+    @PublishedMethod(
+        methodSummary="Adds a molecule to an existing dataset.",
+        params="String datasetURI, IMolecule mol"
+    )
+    public void addMolecule(String datasetURI, IMolecule mol);
+    
+    @Recorded
+    @PublishedMethod(
+        methodSummary="Adds a list of molecules to an existing dataset.",
+        params="String datasetURI, List<IMolecule> molecules"
+    )
+    public void addMolecules(String datasetURI, List<IMolecule> molecules);
     
     @Recorded
     @PublishedMethod(

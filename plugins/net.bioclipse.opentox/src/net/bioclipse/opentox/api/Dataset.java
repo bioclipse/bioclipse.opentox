@@ -26,16 +26,22 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.bioclipse.cdk.business.CDKManager;
+import net.bioclipse.core.domain.IMolecule;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.PutMethod;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.io.SDFWriter;
 
 public class Dataset {
 
+	static CDKManager cdk = new CDKManager();
+	
 	public static List<String> getListOfAvailableDatasets(String service)
 	throws IOException {
 		HttpClient client = new HttpClient();
@@ -56,19 +62,74 @@ public class Dataset {
 		return datasets;
 	}
 
-	public static void deleteDataset(String dataset)
+	public static void deleteDataset(String datasetURI)
 	throws Exception {
 		HttpClient client = new HttpClient();
-		HttpMethod method = new DeleteMethod(dataset);
+		HttpMethod method = new DeleteMethod(datasetURI);
 		client.executeMethod(method);
 		int status = method.getStatusCode();
 		System.out.println(status);
+		method.releaseConnection();
 		if (status == 404)
 			throw new IllegalArgumentException(
 				"Dataset does not exist."
 			);
 		if (status == 503)
 			throw new IllegalStateException("Service error: " + status);
+	}
+
+	public static void addMolecule(String datasetURI, IMolecule mol)
+	throws Exception {
+		StringWriter strWriter = new StringWriter();
+		SDFWriter writer = new SDFWriter(strWriter);
+		writer.write(cdk.asCDKMolecule(mol).getAtomContainer());
+		writer.close();
+		addMolecules(datasetURI, strWriter.toString());
+	}
+
+	public static void addMolecules(String datasetURI, List<IMolecule> mols)
+	throws Exception {
+		StringWriter strWriter = new StringWriter();
+		SDFWriter writer = new SDFWriter(strWriter);
+		for (IMolecule mol : mols) {
+			writer.write(cdk.asCDKMolecule(mol).getAtomContainer());
+		}
+		writer.close();
+		addMolecules(datasetURI, strWriter.toString());
+	}
+
+	public static void addMolecules(String datasetURI, String sdFile)
+	throws Exception {
+		HttpClient client = new HttpClient();
+		PutMethod method = new PutMethod(datasetURI);
+		method.setRequestHeader("Accept", "text/uri-list");
+		method.setRequestHeader("Content-type", "chemical/x-mdl-sdfile");
+		method.setRequestBody(sdFile);
+		client.executeMethod(method);
+		int status = method.getStatusCode();
+		System.out.println(status);
+		String dataset = "";
+		if (status == 200) {
+			// OK, that was quick!
+			dataset = method.getResponseBodyAsString();
+		} else if (status == 202) {
+			// OK, we got a task... let's wait until it is done
+			String task = method.getResponseBodyAsString();
+			Thread.sleep(1000); // let's be friendly, and wait 1 sec
+			TaskState state = Task.getState(task);
+			while (!state.isFinished()) {
+				System.out.println("Waiting to finish...");
+				Thread.sleep(3000); // let's be friendly, and wait 3 sec
+				state = Task.getState(task);
+				if (state.isRedirected()) {
+					task = state.getResults();
+					System.out.println("Got redirected to: " + task);
+				}
+			}
+			// OK, it should be finished now
+			dataset = state.getResults();
+		}
+		System.out.println("Data set: " + dataset);
 		method.releaseConnection();
 	}
 
@@ -113,11 +174,17 @@ public class Dataset {
 	}
 
 	public static void main(String[] args) throws Exception {
-		String service = "http://194.141.0.136:8080/";
-		List<String> sets = getListOfAvailableDatasets(service);
+//		String service = "http://194.141.0.136:8080/";
+		String service = "http://apps.ideaconsult.net:8080/ambit2/";
+//		List<String> sets = getListOfAvailableDatasets(service);
 //		for (String set : sets) System.out.println(set);
 		String dataset = createNewDataset(service);
-		deleteDataset(dataset);
+		List<IMolecule> mols = new ArrayList<IMolecule>();
+		mols.add(cdk.fromSMILES("COC"));
+		mols.add(cdk.fromSMILES("CNC"));
+		mols.add(cdk.fromSMILES("CC"));
+		addMolecules(dataset, mols);
+//		deleteDataset(dataset);
 	}
 
 }
