@@ -15,6 +15,7 @@ import java.util.List;
 import net.bioclipse.core.PublishedClass;
 import net.bioclipse.core.PublishedMethod;
 import net.bioclipse.core.Recorded;
+import net.bioclipse.jobs.BioclipseUIJob;
 import net.bioclipse.managers.business.IBioclipseManager;
 
 @PublishedClass(
@@ -46,6 +47,21 @@ public interface IOpentoxManager extends IBioclipseManager {
     )
     public List<Integer> listDataSets(String service);
     
+    @Recorded
+    @PublishedMethod(
+        methodSummary="Creates a new dataset.",
+        params="String service"
+    )
+    public String createDataset(String service);
+    public void createDataset(String service, BioclipseUIJob<String> uiJob);
+    
+    @Recorded
+    @PublishedMethod(
+        methodSummary="Deletes a dataset.",
+        params="String datasetURI"
+    )
+    public void deleteDataset(String datasetURI);
+
     @Recorded
     @PublishedMethod(
         methodSummary=

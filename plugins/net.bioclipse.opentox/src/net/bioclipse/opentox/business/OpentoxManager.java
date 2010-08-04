@@ -15,7 +15,9 @@ import java.util.List;
 
 import net.bioclipse.business.BioclipsePlatformManager;
 import net.bioclipse.core.business.BioclipseException;
+import net.bioclipse.jobs.IReturner;
 import net.bioclipse.managers.business.IBioclipseManager;
+import net.bioclipse.opentox.api.Dataset;
 import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.business.RDFManager;
 import net.bioclipse.rdf.model.IStringMatrix;
@@ -237,6 +239,33 @@ public class OpentoxManager implements IBioclipseManager {
         monitor.done();
 
         return result;
+    }
+
+    public void createDataset(String service, IReturner<String> returner, IProgressMonitor monitor)
+    throws BioclipseException {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	
+    	monitor.beginTask("Creating an OpenTox API data set ...", 1);
+    	try {
+			String dataset = Dataset.createNewDataset(service);
+			monitor.done();
+			returner.completeReturn( dataset ); 
+		} catch (Exception exc) {
+			throw new BioclipseException(
+				"Exception while creating dataset: " + exc.getMessage()
+			);
+		}
+    }
+
+    public void deleteDataset(String datasetURI)
+    throws BioclipseException {
+    	try {
+    		Dataset.deleteDataset(datasetURI);
+		} catch (Exception exc) {
+			throw new BioclipseException(
+				"Exception while creating dataset: " + exc.getMessage()
+			);
+		}
     }
 
 }
