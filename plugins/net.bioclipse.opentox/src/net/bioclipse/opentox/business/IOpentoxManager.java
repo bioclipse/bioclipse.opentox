@@ -18,6 +18,7 @@ import net.bioclipse.core.Recorded;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.jobs.BioclipseUIJob;
 import net.bioclipse.managers.business.IBioclipseManager;
+import net.bioclipse.rdf.model.IStringMatrix;
 
 @PublishedClass(
     value="Manager that maps the OpenTox API 1.1 to manager methods."
@@ -35,10 +36,11 @@ public interface IOpentoxManager extends IBioclipseManager {
     @Recorded
     @PublishedMethod(
         methodSummary=
-            "Lists the descriptors available from the given service.",
-        params="String service"
+            "Lists the descriptors available from the given service SPARQL " +
+            "end point.",
+        params="String serviceSPARQL"
     )
-    public List<String> listDescriptors(String service);
+    public IStringMatrix listDescriptors(String serviceSPARQL);
     
     @Recorded
     @PublishedMethod(

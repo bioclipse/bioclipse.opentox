@@ -22,6 +22,7 @@ import net.bioclipse.opentox.api.Dataset;
 import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.business.RDFManager;
 import net.bioclipse.rdf.model.IStringMatrix;
+import net.bioclipse.rdf.model.StringMatrix;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -37,9 +38,11 @@ public class OpentoxManager implements IBioclipseManager {
         "  ?algo a <http://www.opentox.org/api/1.1#Algorithm>." +
         "}";
 
-    private final static String QUERY_DESCRIPTORS =
-        "SELECT ?desc WHERE {" +
-        "  ?desc a <http://www.opentox.org/algorithmTypes.owl#DescriptorCalculation> ." +
+    private final static String SPARQL_DESCRIPTORS =
+        "SELECT ?algo ?desc WHERE {" +
+   	    "  ?algo a <http://www.opentox.org/api/1.1#Algorithm> ;" +
+	    "     <http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#instanceOf> ?desc ." +
+        "  ?desc a <http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#MolecularDescriptor> ." +
         "}";
 
     private final static String QUERY_DATASETS =
@@ -133,29 +136,17 @@ public class OpentoxManager implements IBioclipseManager {
         return dataSets;
     }
 
-    public List<String> listDescriptors(String service, IProgressMonitor monitor)
+    public IStringMatrix listDescriptors(String serviceSPARQL, IProgressMonitor monitor)
     throws BioclipseException {
-    	List<String> dataSets = new ArrayList<String>();
+    	IStringMatrix matrix = new StringMatrix();
 
         if (monitor == null) monitor = new NullProgressMonitor();
 
-        monitor.beginTask("Requesting available descriptors...", 3);
-        IRDFStore store = rdf.createInMemoryStore();
+        monitor.beginTask("Requesting available descriptors...", 1);
         try {
             // download the list of data sets as RDF
-            rdf.importURL(store, service + "algorithm", monitor);
-            System.out.println(rdf.dump(store));
+            matrix = rdf.sparqlRemote(serviceSPARQL, SPARQL_DESCRIPTORS, monitor);
             monitor.worked(1);
-
-            // query the downloaded RDF
-            IStringMatrix results = rdf.sparql(store, QUERY_DESCRIPTORS);
-            monitor.worked(1);
-
-            // return the data set identifiers
-            dataSets = results.getColumn("desc");
-            monitor.worked(1);
-        } catch (BioclipseException exception) {
-            throw exception;
         } catch (Exception exception) {
             throw new BioclipseException(
                 "Error while accessing RDF API of service",
@@ -164,7 +155,7 @@ public class OpentoxManager implements IBioclipseManager {
         }
 
         monitor.done();
-        return dataSets;
+        return matrix;
     }
 
     public List<Integer> listCompounds(String service, Integer dataSet,
