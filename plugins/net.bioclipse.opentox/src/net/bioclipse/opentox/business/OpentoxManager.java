@@ -19,6 +19,7 @@ import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.jobs.IReturner;
 import net.bioclipse.managers.business.IBioclipseManager;
 import net.bioclipse.opentox.api.Dataset;
+import net.bioclipse.opentox.api.MolecularDescriptorAlgorithm;
 import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.business.RDFManager;
 import net.bioclipse.rdf.model.IStringMatrix;
@@ -290,4 +291,41 @@ public class OpentoxManager implements IBioclipseManager {
 		}
     }
 
+    public List<String> calculateDescriptor(
+    		String service, String descriptor,
+    		List<IMolecule> molecules, IProgressMonitor monitor)
+    throws Exception {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	monitor.beginTask("Calculate descriptor for dataset", molecules.size());
+
+    	List<String> calcResults = new ArrayList<String>();
+    	for (IMolecule molecule : molecules) {
+    		System.out.println("Creating data set");
+    		String dataset = Dataset.createNewDataset(service);
+    		addMolecule(dataset, molecule, monitor);
+    		System.out.println("Calculating descriptor");
+    		MolecularDescriptorAlgorithm.calculate(service, descriptor, dataset);
+    		List<String> results = new ArrayList<String>();
+    		System.out.println("Listing features");
+    		StringMatrix features = Dataset.listPredictedFeatures(dataset);
+    		System.out.println("Pred: " + features);
+    		calcResults.addAll(removeDataType(features.getColumn("numval")));
+    		System.out.println("Deleting data set");
+//    		Dataset.deleteDataset(dataset);
+    		monitor.worked(1);
+    	}
+    	
+    	return calcResults;
+    }
+
+	private List<String> removeDataType(List<String> column) {
+		List<String> cleanedData = new ArrayList<String>(column.size());
+		for (String value : column) {
+			if (value.contains("^^")) {
+				value = value.substring(0, value.indexOf("^^"));
+			}
+			cleanedData.add(value);
+		}
+		return cleanedData;
+	}
 }

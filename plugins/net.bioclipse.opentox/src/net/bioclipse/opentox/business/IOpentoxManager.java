@@ -28,6 +28,30 @@ public interface IOpentoxManager extends IBioclipseManager {
     @Recorded
     @PublishedMethod(
         methodSummary=
+            "Lists the predictive models available from the given service.",
+        params="String service"
+    )
+    public List<String> listModels(String service);
+
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
+            "XXXXX",
+        params="String service, String descriptor, List<IMolecule> molecules"
+    )
+    public List<String> calculateDescriptor(String service, String descriptor, List<IMolecule> molecules);
+
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
+            "XXXX",
+        params="String service, List<IMolecule> molecules"
+    )
+    public List<String> predictWithModel(String service, List<IMolecule> molecules);
+
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
             "Lists the algorithms available from the given service.",
         params="String service"
     )

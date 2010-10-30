@@ -57,7 +57,10 @@ public class Task {
 			state.setFinished(false);
 			break;
 		default:
-			throw new IllegalStateException("Service error: " + status);
+			throw new IllegalStateException(
+				"Service error: " + status + ":\n  " +
+				method.getStatusText()
+			);
 		}
 		
 		method.releaseConnection();
