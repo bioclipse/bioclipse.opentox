@@ -195,17 +195,42 @@ public class Dataset {
 		method.releaseConnection();
 	}
 
+	public static String createNewDataset(String service, List<IMolecule> molecules)
+	throws Exception {
+		StringWriter strWriter = new StringWriter();
+		SDFWriter writer = new SDFWriter(strWriter);
+		for (IMolecule mol : molecules) {
+			writer.write(cdk.asCDKMolecule(mol).getAtomContainer());
+		}
+		writer.close();
+		return createNewDataset(service, strWriter.toString());
+	}
+
+	public static String createNewDataset(String service, IMolecule mol)
+	throws Exception {
+		StringWriter strWriter = new StringWriter();
+		SDFWriter writer = new SDFWriter(strWriter);
+		writer.write(cdk.asCDKMolecule(mol).getAtomContainer());
+		writer.close();
+		return createNewDataset(service, strWriter.toString());
+	}
+
 	public static String createNewDataset(String service)
+	throws Exception {
+		StringWriter strWriter = new StringWriter();
+		SDFWriter writer = new SDFWriter(strWriter);
+		writer.write(new AtomContainer());
+		writer.close();
+		return createNewDataset(service, strWriter.toString());
+	}
+
+	public static String createNewDataset(String service, String sdFile)
 	throws Exception {
 		HttpClient client = new HttpClient();
 		PostMethod method = new PostMethod(service + "dataset");
 		method.setRequestHeader("Accept", "text/uri-list");
 		method.setRequestHeader("Content-type", "chemical/x-mdl-sdfile");
-		StringWriter strWriter = new StringWriter();
-		SDFWriter writer = new SDFWriter(strWriter);
-		writer.write(new AtomContainer());
-		writer.close();
-		method.setRequestBody(strWriter.toString());
+		method.setRequestBody(sdFile);
 		client.executeMethod(method);
 		int status = method.getStatusCode();
 		System.out.println(status);

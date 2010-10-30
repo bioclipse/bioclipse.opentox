@@ -31,7 +31,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 
 public class OpentoxManager implements IBioclipseManager {
 
-    private RDFManager rdf = new RDFManager(); 
+    private RDFManager rdf = new RDFManager();
     private BioclipsePlatformManager bioclipse = new BioclipsePlatformManager();
 
     private final static String QUERY_ALGORITHMS =
@@ -250,6 +250,38 @@ public class OpentoxManager implements IBioclipseManager {
 		}
     }
 
+    public void createDataset(String service, List<IMolecule> molecules, IReturner<String> returner, IProgressMonitor monitor)
+    throws BioclipseException {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	
+    	monitor.beginTask("Creating an OpenTox API data set ...", 1);
+    	try {
+			String dataset = Dataset.createNewDataset(service, molecules);
+			monitor.done();
+			returner.completeReturn( dataset ); 
+		} catch (Exception exc) {
+			throw new BioclipseException(
+				"Exception while creating dataset: " + exc.getMessage()
+			);
+		}
+    }
+
+    public void createDataset(String service, IMolecule molecule, IReturner<String> returner, IProgressMonitor monitor)
+    throws BioclipseException {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	
+    	monitor.beginTask("Creating an OpenTox API data set ...", 1);
+    	try {
+			String dataset = Dataset.createNewDataset(service, molecule);
+			monitor.done();
+			returner.completeReturn( dataset ); 
+		} catch (Exception exc) {
+			throw new BioclipseException(
+				"Exception while creating dataset: " + exc.getMessage()
+			);
+		}
+    }
+
     public void addMolecule(String datasetURI, IMolecule mol, IProgressMonitor monitor)
     throws BioclipseException {
     	if (monitor == null) monitor = new NullProgressMonitor();
@@ -301,8 +333,7 @@ public class OpentoxManager implements IBioclipseManager {
     	List<String> calcResults = new ArrayList<String>();
     	for (IMolecule molecule : molecules) {
     		System.out.println("Creating data set");
-    		String dataset = Dataset.createNewDataset(service);
-    		addMolecule(dataset, molecule, monitor);
+    		String dataset = Dataset.createNewDataset(service, molecule);
     		System.out.println("Calculating descriptor");
     		MolecularDescriptorAlgorithm.calculate(service, descriptor, dataset);
     		List<String> results = new ArrayList<String>();
@@ -311,9 +342,33 @@ public class OpentoxManager implements IBioclipseManager {
     		System.out.println("Pred: " + features);
     		calcResults.addAll(removeDataType(features.getColumn("numval")));
     		System.out.println("Deleting data set");
-//    		Dataset.deleteDataset(dataset);
+    		Dataset.deleteDataset(dataset);
     		monitor.worked(1);
     	}
+    	
+    	return calcResults;
+    }
+
+    public List<String> calculateDescriptor(
+    		String service, String descriptor,
+    		IMolecule molecule, IProgressMonitor monitor)
+    throws Exception {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	monitor.beginTask("Calculate descriptor for molecule", 1);
+
+    	List<String> calcResults = new ArrayList<String>();
+    	System.out.println("Creating data set");
+    	String dataset = Dataset.createNewDataset(service, molecule);
+    	System.out.println("Calculating descriptor");
+    	MolecularDescriptorAlgorithm.calculate(service, descriptor, dataset);
+    	List<String> results = new ArrayList<String>();
+    	System.out.println("Listing features");
+    	StringMatrix features = Dataset.listPredictedFeatures(dataset);
+    	System.out.println("Pred: " + features);
+    	calcResults.addAll(removeDataType(features.getColumn("numval")));
+    	System.out.println("Deleting data set");
+    	Dataset.deleteDataset(dataset);
+    	monitor.worked(1);
     	
     	return calcResults;
     }

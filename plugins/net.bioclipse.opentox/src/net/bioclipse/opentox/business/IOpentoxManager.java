@@ -36,10 +36,18 @@ public interface IOpentoxManager extends IBioclipseManager {
     @Recorded
     @PublishedMethod(
         methodSummary=
-            "XXXXX",
+            "Calculates a descriptor value for a set of molecules",
         params="String service, String descriptor, List<IMolecule> molecules"
     )
     public List<String> calculateDescriptor(String service, String descriptor, List<IMolecule> molecules);
+
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
+            "Calculates a descriptor value for a single molecule",
+        params="String service, String descriptor, IMolecule molecule"
+    )
+    public List<String> calculateDescriptor(String service, String descriptor, IMolecule molecule);
 
     @Recorded
     @PublishedMethod(
@@ -81,6 +89,22 @@ public interface IOpentoxManager extends IBioclipseManager {
     )
     public String createDataset(String service);
     public void createDataset(String service, BioclipseUIJob<String> uiJob);
+    
+    @Recorded
+    @PublishedMethod(
+        methodSummary="Creates a new dataset.",
+        params="String service, List<IMolecule> molecules"
+    )
+    public String createDataset(String service, List<IMolecule> molecules);
+    public void createDataset(String service, List<IMolecule> molecules, BioclipseUIJob<String> uiJob);
+    
+    @Recorded
+    @PublishedMethod(
+        methodSummary="Creates a new dataset.",
+        params="String service, IMolecule molecule"
+    )
+    public String createDataset(String service, IMolecule molecule);
+    public void createDataset(String service, IMolecule molecule, BioclipseUIJob<String> uiJob);
     
     @Recorded
     @PublishedMethod(
