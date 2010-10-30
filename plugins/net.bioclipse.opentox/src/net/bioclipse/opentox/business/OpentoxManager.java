@@ -118,7 +118,6 @@ public class OpentoxManager implements IBioclipseManager {
 
             // query the downloaded RDF
             IStringMatrix results = rdf.sparql(store, QUERY_ALGORITHMS);
-            System.out.println(results);
             monitor.worked(1);
 
             // return the data set identifiers
@@ -332,16 +331,11 @@ public class OpentoxManager implements IBioclipseManager {
 
     	List<String> calcResults = new ArrayList<String>();
     	for (IMolecule molecule : molecules) {
-    		System.out.println("Creating data set");
     		String dataset = Dataset.createNewDataset(service, molecule);
-    		System.out.println("Calculating descriptor");
     		MolecularDescriptorAlgorithm.calculate(service, descriptor, dataset);
     		List<String> results = new ArrayList<String>();
-    		System.out.println("Listing features");
     		StringMatrix features = Dataset.listPredictedFeatures(dataset);
-    		System.out.println("Pred: " + features);
     		calcResults.addAll(removeDataType(features.getColumn("numval")));
-    		System.out.println("Deleting data set");
     		Dataset.deleteDataset(dataset);
     		monitor.worked(1);
     	}

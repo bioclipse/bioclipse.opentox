@@ -62,7 +62,6 @@ public class Dataset {
 		HttpMethod method = new GetMethod(service + "dataset");
 		method.setRequestHeader("Accept", "text/uri-list");
 		client.executeMethod(method);
-		System.out.println(method.getResponseBodyAsString());
 		method.releaseConnection();
 		List<String> datasets = new ArrayList<String>();
 		BufferedReader reader = new BufferedReader(
@@ -90,7 +89,6 @@ public class Dataset {
 		HttpMethod method = new GetMethod(datasetURI + "compounds");
 		method.setRequestHeader("Accept", "text/uri-list");
 		client.executeMethod(method);
-		System.out.println(method.getResponseBodyAsString());
 		method.releaseConnection();
 		List<String> compounds = new ArrayList<String>();
 		BufferedReader reader = new BufferedReader(
@@ -109,17 +107,14 @@ public class Dataset {
 		datasetURI = normalizeURI(datasetURI);
 		HttpClient client = new HttpClient();
 		String fullURI = datasetURI + "?feature_uris[]=http://apps.ideaconsult.net:8080/ambit2/model/9/predicted";
-		System.out.println("full uri:" + fullURI);
 		fullURI = URIUtil.encodeQuery(fullURI);
-		System.out.println("full uri:" + fullURI);
 		HttpMethod method = new GetMethod(fullURI);
 		method.setRequestHeader("Accept", "application/rdf+xml");
 		client.executeMethod(method);
-		System.out.println(method.getResponseBodyAsString());
+		method.getResponseBodyAsString(); // without this things will fail??
 		method.releaseConnection();
 		IRDFStore store = rdf.createInMemoryStore();
 		rdf.importFromStream(store, method.getResponseBodyAsStream(), "RDF/XML", null);
-		System.out.println(rdf.asRDFN3(store));
 		return rdf.sparql(store, QUERY_PREDICTED_FEATURES);
 	}
 
@@ -129,7 +124,6 @@ public class Dataset {
 		HttpMethod method = new DeleteMethod(datasetURI);
 		client.executeMethod(method);
 		int status = method.getStatusCode();
-		System.out.println(status);
 		method.releaseConnection();
 		if (status == 404)
 			throw new IllegalArgumentException(
@@ -169,7 +163,6 @@ public class Dataset {
 		method.setRequestBody(sdFile);
 		client.executeMethod(method);
 		int status = method.getStatusCode();
-		System.out.println(status);
 		String dataset = "";
 		if (status == 200) {
 			// OK, that was quick!
@@ -180,18 +173,15 @@ public class Dataset {
 			Thread.sleep(1000); // let's be friendly, and wait 1 sec
 			TaskState state = Task.getState(task);
 			while (!state.isFinished()) {
-				System.out.println("Waiting to finish...");
 				Thread.sleep(3000); // let's be friendly, and wait 3 sec
 				state = Task.getState(task);
 				if (state.isRedirected()) {
 					task = state.getResults();
-					System.out.println("Got redirected to: " + task);
 				}
 			}
 			// OK, it should be finished now
 			dataset = state.getResults();
 		}
-		System.out.println("Data set: " + dataset);
 		method.releaseConnection();
 	}
 
@@ -233,7 +223,6 @@ public class Dataset {
 		method.setRequestBody(sdFile);
 		client.executeMethod(method);
 		int status = method.getStatusCode();
-		System.out.println(status);
 		String dataset = "";
 		String responseString = method.getResponseBodyAsString();
 		if (status == 200 || status == 202) {
@@ -243,12 +232,10 @@ public class Dataset {
 				Thread.sleep(1000); // let's be friendly, and wait 1 sec
 				TaskState state = Task.getState(task);
 				while (!state.isFinished()) {
-					System.out.println("Waiting to finish...");
 					Thread.sleep(3000); // let's be friendly, and wait 3 sec
 					state = Task.getState(task);
 					if (state.isRedirected()) {
 						task = state.getResults();
-						System.out.println("Got redirected to: " + task);
 					}
 				}
 				// OK, it should be finished now
@@ -258,7 +245,6 @@ public class Dataset {
 				dataset = method.getResponseBodyAsString();
 			}
 		}
-		System.out.println("Data set: " + dataset);
 		method.releaseConnection();
 		return dataset;
 	}

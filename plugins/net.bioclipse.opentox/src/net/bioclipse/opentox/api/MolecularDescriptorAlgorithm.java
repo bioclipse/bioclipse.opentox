@@ -30,17 +30,13 @@ public abstract class MolecularDescriptorAlgorithm extends Algorithm {
 	public static String calculate(String service, String descriptor, String dataSetURI)
 	throws HttpException, IOException, InterruptedException {
 		HttpClient client = new HttpClient();
-		System.out.println("Algorithm: " + descriptor);
 		dataSetURI = Dataset.normalizeURI(dataSetURI);
-		System.out.println("ds uri: '" + dataSetURI + "'");
 		PostMethod method = new PostMethod(descriptor);
 		method.setRequestHeader("Accept", "text/uri-list");
 		method.setParameter("dataset_uri", dataSetURI);
 		method.setParameter("dataset_service", service + "dataset");
-		System.out.println("Method: " + method.getURI());
 		client.executeMethod(method);
 		int status = method.getStatusCode();
-		System.out.println(status);
 		String dataset = "";
 		// FIXME: I should really start using the RDF response...
 		String responseString = method.getResponseBodyAsString();
@@ -51,12 +47,10 @@ public abstract class MolecularDescriptorAlgorithm extends Algorithm {
 				Thread.sleep(1000); // let's be friendly, and wait 1 sec
 				TaskState state = Task.getState(task);
 				while (!state.isFinished()) {
-					System.out.println("Waiting to finish...");
 					Thread.sleep(3000); // let's be friendly, and wait 3 sec
 					state = Task.getState(task);
 					if (state.isRedirected()) {
 						task = state.getResults();
-						System.out.println("Got redirected to: " + task);
 					}
 				}
 				// OK, it should be finished now
@@ -66,9 +60,8 @@ public abstract class MolecularDescriptorAlgorithm extends Algorithm {
 				dataset = responseString;
 			}
 		} else {
-			System.out.println("Return state: " + status);
+			throw new IllegalStateException("Service error: " + status);
 		}
-		System.out.println("Data set: " + dataset);
 		method.releaseConnection();
 		return dataset;
 	}
