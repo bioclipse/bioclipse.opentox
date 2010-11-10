@@ -326,6 +326,9 @@ public class OpentoxManager implements IBioclipseManager {
     		String service, String descriptor,
     		List<IMolecule> molecules, IProgressMonitor monitor)
     throws Exception {
+    	if (service == null) throw new BioclipseException("Service is null");
+    	if (descriptor== null) throw new BioclipseException("Descriptor is null");
+
     	if (monitor == null) monitor = new NullProgressMonitor();
     	monitor.beginTask("Calculate descriptor for dataset", molecules.size());
 
