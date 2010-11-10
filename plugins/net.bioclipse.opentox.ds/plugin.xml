@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="net.bioclipse.decisionsupport">
+         <endpoint
+               id="net.bioclipse.ds.opentox"
+               icon="icons/drug_cap.png"
+   			   description="OpenTox predictive toxicity models"
+               name="OpenTox">
+	     </endpoint>
+   
+   <testdiscovery 
+   		 id="net.bioclipse.opentox.ds.testdiscovery"
+         class="net.bioclipse.opentox.ds.OpenToxTestDiscovery">
+   </testdiscovery>
+   
+
+    </extension>
+
+</plugin>
