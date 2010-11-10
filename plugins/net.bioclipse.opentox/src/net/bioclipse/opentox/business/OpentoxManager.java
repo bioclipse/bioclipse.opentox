@@ -25,11 +25,14 @@ import net.bioclipse.rdf.business.RDFManager;
 import net.bioclipse.rdf.model.IStringMatrix;
 import net.bioclipse.rdf.model.StringMatrix;
 
+import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
 public class OpentoxManager implements IBioclipseManager {
+
+	private static final Logger logger = Logger.getLogger(OpentoxManager.class);
 
     private RDFManager rdf = new RDFManager();
     private BioclipsePlatformManager bioclipse = new BioclipsePlatformManager();
@@ -354,16 +357,16 @@ public class OpentoxManager implements IBioclipseManager {
     	monitor.beginTask("Calculate descriptor for molecule", 1);
 
     	List<String> calcResults = new ArrayList<String>();
-    	System.out.println("Creating data set");
+    	logger.debug("Creating data set");
     	String dataset = Dataset.createNewDataset(service, molecule);
-    	System.out.println("Calculating descriptor");
+    	logger.debug("Calculating descriptor");
     	MolecularDescriptorAlgorithm.calculate(service, descriptor, dataset);
     	List<String> results = new ArrayList<String>();
-    	System.out.println("Listing features");
+    	logger.debug("Listing features");
     	StringMatrix features = Dataset.listPredictedFeatures(dataset);
-    	System.out.println("Pred: " + features);
+    	logger.debug("Pred: " + features);
     	calcResults.addAll(removeDataType(features.getColumn("numval")));
-    	System.out.println("Deleting data set");
+    	logger.debug("Deleting data set");
     	Dataset.deleteDataset(dataset);
     	monitor.worked(1);
     	
