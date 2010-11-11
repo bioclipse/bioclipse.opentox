@@ -63,6 +63,7 @@ public abstract class MolecularDescriptorAlgorithm extends Algorithm {
 			throw new IllegalStateException("Service error: " + status);
 		}
 		method.releaseConnection();
+		dataset = dataset.replaceAll("\n", "");
 		return dataset;
 	}
 
