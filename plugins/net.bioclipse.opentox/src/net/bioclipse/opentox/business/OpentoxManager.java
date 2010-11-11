@@ -139,16 +139,45 @@ public class OpentoxManager implements IBioclipseManager {
         return dataSets;
     }
 
+    /**
+     * Keep only rows whose column field contains the given substring.
+     * 
+     * @return
+     */
+    private IStringMatrix regex(IStringMatrix matrix, String column, String substring) {
+        StringMatrix table = new StringMatrix();
+        int rowCount = matrix.getRowCount();
+    	int colCount = matrix.getColumnCount();
+    	int hitCount = 0;
+		for (int col=1; col<=colCount; col++) {
+			table.setColumnName(col, matrix.getColumnName(col));
+		}
+		// do the filtering
+		for (int row=1; row<=rowCount; row++) {
+			String algo = matrix.get(row, column);
+    		if (algo.contains(substring)) {
+    			// CDK descriptor, copy row
+    			hitCount++;
+    			for (int col=1; col<=colCount; col++) {
+    				table.set(hitCount, col, matrix.get(row, col));
+    			}
+    		}
+    	}
+        return table;
+    }
+    
     public IStringMatrix listDescriptors(String serviceSPARQL, IProgressMonitor monitor)
     throws BioclipseException {
-    	IStringMatrix matrix = new StringMatrix();
-
         if (monitor == null) monitor = new NullProgressMonitor();
+        IStringMatrix results = new StringMatrix();
 
         monitor.beginTask("Requesting available descriptors...", 1);
         try {
             // download the list of data sets as RDF
-            matrix = rdf.sparqlRemote(serviceSPARQL, SPARQL_DESCRIPTORS, monitor);
+        	results = regex(
+        		rdf.sparqlRemote(serviceSPARQL, SPARQL_DESCRIPTORS, monitor),
+        		"algo", "org.openscience.cdk"
+        	);
             monitor.worked(1);
         } catch (Exception exception) {
             throw new BioclipseException(
@@ -158,7 +187,7 @@ public class OpentoxManager implements IBioclipseManager {
         }
 
         monitor.done();
-        return matrix;
+        return results;
     }
 
     public List<Integer> listCompounds(String service, Integer dataSet,
