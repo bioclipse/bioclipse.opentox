@@ -45,6 +45,7 @@ public class OpentoxManager implements IBioclipseManager {
     private final static String SPARQL_DESCRIPTORS =
         "SELECT ?algo ?desc WHERE {" +
    	    "  ?algo a <http://www.opentox.org/api/1.1#Algorithm> ;" +
+   	    "        a <http://www.opentox.org/algorithmTypes.owl#DescriptorCalculation> ;" +
 	    "     <http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#instanceOf> ?desc ." +
         "  ?desc a <http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#MolecularDescriptor> ." +
         "}";
