@@ -104,9 +104,12 @@ public class Dataset {
 
 	public static StringMatrix listPredictedFeatures(String datasetURI)
 	throws Exception {
-		datasetURI = normalizeURI(datasetURI);
+		datasetURI = datasetURI.replaceAll("\n", "");
+		String baseURI = datasetURI.substring(0, datasetURI.indexOf("feature_uris[]="));
+		String featureURIs = datasetURI.substring(datasetURI.indexOf("feature_uris[]=")+15);
+		featureURIs = URIUtil.decode(featureURIs);
 		HttpClient client = new HttpClient();
-		String fullURI = datasetURI + "?feature_uris[]=http://apps.ideaconsult.net:8080/ambit2/model/9/predicted";
+		String fullURI = baseURI + "feature_uris[]=" + featureURIs;
 		fullURI = URIUtil.encodeQuery(fullURI);
 		HttpMethod method = new GetMethod(fullURI);
 		method.setRequestHeader("Accept", "application/rdf+xml");
@@ -246,6 +249,7 @@ public class Dataset {
 			}
 		}
 		method.releaseConnection();
+		dataset = dataset.replaceAll("\n", "");
 		return dataset;
 	}
 

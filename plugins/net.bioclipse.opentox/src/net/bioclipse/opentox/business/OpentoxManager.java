@@ -338,9 +338,8 @@ public class OpentoxManager implements IBioclipseManager {
     	List<String> calcResults = new ArrayList<String>();
     	for (IMolecule molecule : molecules) {
     		String dataset = Dataset.createNewDataset(service, molecule);
-    		MolecularDescriptorAlgorithm.calculate(service, descriptor, dataset);
-    		List<String> results = new ArrayList<String>();
-    		StringMatrix features = Dataset.listPredictedFeatures(dataset);
+    		String results = MolecularDescriptorAlgorithm.calculate(service, descriptor, dataset);
+    		StringMatrix features = Dataset.listPredictedFeatures(results);
     		calcResults.addAll(removeDataType(features.getColumn("numval")));
     		Dataset.deleteDataset(dataset);
     		monitor.worked(1);
@@ -360,10 +359,9 @@ public class OpentoxManager implements IBioclipseManager {
     	logger.debug("Creating data set");
     	String dataset = Dataset.createNewDataset(service, molecule);
     	logger.debug("Calculating descriptor");
-    	MolecularDescriptorAlgorithm.calculate(service, descriptor, dataset);
-    	List<String> results = new ArrayList<String>();
+    	String results = MolecularDescriptorAlgorithm.calculate(service, descriptor, dataset);
     	logger.debug("Listing features");
-    	StringMatrix features = Dataset.listPredictedFeatures(dataset);
+    	StringMatrix features = Dataset.listPredictedFeatures(results);
     	logger.debug("Pred: " + features);
     	calcResults.addAll(removeDataType(features.getColumn("numval")));
     	logger.debug("Deleting data set");
