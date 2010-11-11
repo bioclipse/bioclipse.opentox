@@ -24,8 +24,11 @@ import java.io.IOException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.log4j.Logger;
 
 public class Task {
+
+	private static final Logger logger = Logger.getLogger(Task.class);
 
 	public static TaskState getState(String task)
 	throws IOException {
@@ -35,18 +38,19 @@ public class Task {
 		client.executeMethod(method);
 		method.releaseConnection();
 		int status = method.getStatusCode();
-		System.out.println(status);
+		logger.debug("Task status: " + status);
 		
 		TaskState state = new TaskState();
-		System.out.println(task);
-		System.out.println(" -> " + status);
+		logger.debug("Task: " + task);
+		logger.debug(" -> " + status);
 		switch (status) {
 		case 404:
 			state.setExists(false);
 			break;
 		case 200:
+			String result = method.getResponseBodyAsString();
 			state.setFinished(true);
-			state.setResults(method.getResponseBodyAsString());
+			state.setResults(result);
 			break;
 		case 201:
 			state.setFinished(true);
