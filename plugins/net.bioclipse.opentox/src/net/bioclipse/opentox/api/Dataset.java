@@ -65,7 +65,7 @@ public class Dataset {
 		HttpMethod method = new GetMethod(service + "dataset");
 		method.setRequestHeader("Accept", "text/uri-list");
 		client.executeMethod(method);
-		method.releaseConnection();
+
 		List<String> datasets = new ArrayList<String>();
 		BufferedReader reader = new BufferedReader(
 			new StringReader(method.getResponseBodyAsString())
