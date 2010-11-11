@@ -93,9 +93,7 @@ public class OpenToxDescriptorCalculator implements IDescriptorCalculator {
 
         		//Invoke calculation
         		logger.debug("Trying service: " + service + " OTdescriptor: " + descOTid);
-        		List<IMolecule> mols=new ArrayList<IMolecule>();
-        		mols.add(mol);
-        		List<String> OTres = opentox.calculateDescriptor(service, descOTid, mols);
+        		List<String> OTres = opentox.calculateDescriptor(service, descOTid, mol);
 
         		//Handle results
     			IDescriptorResult res = parseOTResults(OTres, desc);
@@ -124,7 +122,12 @@ public class OpenToxDescriptorCalculator implements IDescriptorCalculator {
 					+ " returned NULL");
 		}else{
 			//TODO: all is well, put results in QSAR model
-			
+			Float[] floats = new Float[OTres.size()];
+			int counter = 0;
+			for (String val : OTres) {
+				floats[counter] = Float.parseFloat(val);
+			}
+			res.setValues(floats);
 		}
 
 		return res;
