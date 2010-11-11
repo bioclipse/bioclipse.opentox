@@ -234,6 +234,7 @@ public class Dataset {
 		logger.debug("Response: " + responseString);
 		if (status == 200 || status == 202) {
 			if (responseString.contains("/task/")) {
+				logger.debug("Task: " + responseString);
 				// OK, we got a task... let's wait until it is done
 				String task = method.getResponseBodyAsString();
 				Thread.sleep(1000); // let's be friendly, and wait 1 sec
@@ -250,6 +251,7 @@ public class Dataset {
 			} else {
 				// OK, that was quick!
 				dataset = method.getResponseBodyAsString();
+				logger.debug("No Task, Data set: " + dataset);
 			}
 		}
 		method.releaseConnection();
