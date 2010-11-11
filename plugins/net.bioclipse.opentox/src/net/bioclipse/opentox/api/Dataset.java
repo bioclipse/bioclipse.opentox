@@ -39,11 +39,14 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.util.URIUtil;
+import org.apache.log4j.Logger;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.io.SDFWriter;
 
 public class Dataset {
 
+	private static final Logger logger = Logger.getLogger(Dataset.class);
+	
     private final static String QUERY_PREDICTED_FEATURES =
         "SELECT ?desc ?numval WHERE {" +
         "  ?entry a <http://www.opentox.org/api/1.1#DataEntry> ;" +
@@ -228,6 +231,7 @@ public class Dataset {
 		int status = method.getStatusCode();
 		String dataset = "";
 		String responseString = method.getResponseBodyAsString();
+		logger.debug("Response: " + responseString);
 		if (status == 200 || status == 202) {
 			if (responseString.contains("/task/")) {
 				// OK, we got a task... let's wait until it is done
@@ -249,6 +253,7 @@ public class Dataset {
 			}
 		}
 		method.releaseConnection();
+		logger.debug("Data set: " + dataset);
 		dataset = dataset.replaceAll("\n", "");
 		return dataset;
 	}
