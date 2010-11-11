@@ -19,6 +19,7 @@ import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.jobs.IReturner;
 import net.bioclipse.managers.business.IBioclipseManager;
 import net.bioclipse.opentox.api.Dataset;
+import net.bioclipse.opentox.api.ModelAlgorithm;
 import net.bioclipse.opentox.api.MolecularDescriptorAlgorithm;
 import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.business.RDFManager;
@@ -40,6 +41,11 @@ public class OpentoxManager implements IBioclipseManager {
     private final static String QUERY_ALGORITHMS =
         "SELECT ?algo WHERE {" +
         "  ?algo a <http://www.opentox.org/api/1.1#Algorithm>." +
+        "}";
+
+    private final static String QUERY_MODELS =
+        "SELECT ?model WHERE {" +
+        "  ?model a <http://www.opentox.org/api/1.1#Model>." +
         "}";
 
     private final static String SPARQL_DESCRIPTORS =
@@ -189,6 +195,27 @@ public class OpentoxManager implements IBioclipseManager {
 
         monitor.done();
         return results;
+    }
+
+    public List<String> listModels(String serviceSPARQL, IProgressMonitor monitor)
+    throws BioclipseException {
+        if (monitor == null) monitor = new NullProgressMonitor();
+        IStringMatrix results = new StringMatrix();
+
+        monitor.beginTask("Requesting available descriptors...", 1);
+        try {
+            // download the list of data sets as RDF
+        	results = rdf.sparqlRemote(serviceSPARQL, QUERY_MODELS, monitor);
+            monitor.worked(1);
+        } catch (Exception exception) {
+            throw new BioclipseException(
+                "Error while accessing RDF API of service",
+                exception
+            );
+        }
+
+        monitor.done();
+        return results.getColumn("model");
     }
 
     public List<Integer> listCompounds(String service, Integer dataSet,
@@ -395,6 +422,46 @@ public class OpentoxManager implements IBioclipseManager {
     	logger.debug("Pred: " + features);
     	calcResults.addAll(removeDataType(features.getColumn("numval")));
     	logger.debug("Deleting data set");
+    	Dataset.deleteDataset(dataset);
+    	monitor.worked(1);
+    	
+    	return calcResults;
+    }
+
+    public List<String> predictWithModel(String service, String model, List<IMolecule> molecules, IProgressMonitor monitor)
+    throws Exception {
+    	if (service == null) throw new BioclipseException("Service is null");
+    	if (model == null) throw new BioclipseException("Model is null");
+
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	monitor.beginTask("Calculate model for dataset", molecules.size());
+
+    	List<String> calcResults = new ArrayList<String>();
+    	for (IMolecule molecule : molecules) {
+    		String dataset = Dataset.createNewDataset(service, molecule);
+    		String results = ModelAlgorithm.calculate(service, model, dataset);
+    		StringMatrix features = Dataset.listPredictedFeatures(results);
+    		calcResults.addAll(removeDataType(features.getColumn("numval")));
+    		Dataset.deleteDataset(dataset);
+    		monitor.worked(1);
+    	}
+    	
+    	return calcResults;
+    }
+
+    public List<String> predictWithModel(String service, String model, IMolecule molecule, IProgressMonitor monitor)
+    throws Exception {
+    	if (service == null) throw new BioclipseException("Service is null");
+    	if (model == null) throw new BioclipseException("Model is null");
+
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	monitor.beginTask("Calculate model for molecule", 1);
+
+    	List<String> calcResults = new ArrayList<String>();
+    	String dataset = Dataset.createNewDataset(service, molecule);
+    	String results = ModelAlgorithm.calculate(service, model, dataset);
+    	StringMatrix features = Dataset.listPredictedFeatures(results);
+    	calcResults.addAll(removeDataType(features.getColumn("numval")));
     	Dataset.deleteDataset(dataset);
     	monitor.worked(1);
     	

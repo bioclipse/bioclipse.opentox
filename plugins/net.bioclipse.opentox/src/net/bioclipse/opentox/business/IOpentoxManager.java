@@ -53,9 +53,9 @@ public interface IOpentoxManager extends IBioclipseManager {
     @PublishedMethod(
         methodSummary=
             "XXXX",
-        params="String service, List<IMolecule> molecules"
+        params="String service, String model, List<IMolecule> molecules"
     )
-    public List<String> predictWithModel(String service, List<IMolecule> molecules);
+    public List<String> predictWithModel(String service, String model, List<IMolecule> molecules);
 
     @Recorded
     @PublishedMethod(
