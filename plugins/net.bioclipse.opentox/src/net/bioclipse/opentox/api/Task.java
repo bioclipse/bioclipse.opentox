@@ -49,6 +49,8 @@ public class Task {
 			break;
 		case 200:
 			String result = method.getResponseBodyAsString();
+			if (result == null || result.length() == 0)
+				throw new IOException("Missing dataset URI for finished (200) Task.");
 			state.setFinished(true);
 			state.setResults(result);
 			break;
