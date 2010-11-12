@@ -2,6 +2,7 @@ package net.bioclipse.opentox.ds;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -58,11 +59,37 @@ public class OpenToxModel extends AbstractDSTest {
         ArrayList<net.bioclipse.ds.model.result.SimpleResult> results 
         = new ArrayList<net.bioclipse.ds.model.result.SimpleResult>();
 
-		List<String> res = opentox.predictWithModel(service, model, cdkmol);
-		for (String r : res){
-	        results.add(new net.bioclipse.ds.model.result.SimpleResult(r, 
-	        		ITestResult.INFORMATIVE));
+        
+		//Invoke calculation
+		logger.debug("Invoking model: " + model + " for service: " + service);
+		Map<String, String> OTres = null;
+		//retry 5 times, looks like a server issue
+		for (int i=0; i<6; i++){
+			if (i>0)
+				logger.debug("  - Model: " + model + " retry number " + i);
+			
+    		try{
+    			OTres = opentox.predictWithModelWithLabel(service, model, cdkmol);
+
+    		}catch(Exception e){
+				logger.error("  == Opentox model calculation failed for: " + model);
+    		}
+    		
+    		//End if we have results
+    		if (OTres!=null) break;
+			
 		}
+		
+		if (OTres==null || OTres.size()<=0){
+			return returnError("No results", "No results");
+		}
+
+		for (String label : OTres.keySet()){
+			String name=label.substring(label.lastIndexOf("/")+1);
+			results.add(new net.bioclipse.ds.model.result.SimpleResult(
+					name+ " = " + OTres.get(label), ITestResult.INFORMATIVE));
+		}
+        
 
 		return results;
 	}
