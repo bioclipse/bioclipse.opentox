@@ -85,6 +85,7 @@ public class OpenToxModel extends AbstractDSTest {
 		}
 
 		for (String label : OTres.keySet()){
+			//FIXME here the labels of results are constructed
 			String name=label.substring(label.lastIndexOf("/")+1);
 			results.add(new net.bioclipse.ds.model.result.SimpleResult(
 					name+ " = " + OTres.get(label), ITestResult.INFORMATIVE));
