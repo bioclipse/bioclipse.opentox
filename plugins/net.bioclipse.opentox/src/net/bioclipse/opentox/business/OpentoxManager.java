@@ -11,14 +11,19 @@
 package net.bioclipse.opentox.business;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.bioclipse.business.BioclipsePlatformManager;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.jobs.IReturner;
 import net.bioclipse.managers.business.IBioclipseManager;
+import net.bioclipse.opentox.api.Algorithm;
 import net.bioclipse.opentox.api.Dataset;
+import net.bioclipse.opentox.api.Feature;
+import net.bioclipse.opentox.api.Model;
 import net.bioclipse.opentox.api.ModelAlgorithm;
 import net.bioclipse.opentox.api.MolecularDescriptorAlgorithm;
 import net.bioclipse.rdf.business.IRDFStore;
@@ -75,7 +80,76 @@ public class OpentoxManager implements IBioclipseManager {
     public String getManagerName() {
         return "opentox";
     }
-    
+
+    public Map<String,String> getFeatureInfo(String service, String feature, IProgressMonitor monitor) {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	
+    	monitor.beginTask("Downloading feature information", 1);
+    	Map<String,String> properties = Feature.getProperties(service, feature);
+    	monitor.done();
+    	
+    	return properties;
+    }
+
+    public Map<String,String> getModelInfo(String service, String feature, IProgressMonitor monitor) {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	
+    	monitor.beginTask("Downloading feature information", 1);
+    	Map<String,String> properties = Model.getProperties(service, feature);
+    	monitor.done();
+    	
+    	return properties;
+    }
+
+    public Map<String,String> getAlgorithmInfo(String service, String feature, IProgressMonitor monitor) {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	
+    	monitor.beginTask("Downloading feature information", 1);
+    	Map<String,String> properties = Algorithm.getProperties(service, feature);
+    	monitor.done();
+    	
+    	return properties;
+    }
+
+    public Map<String,Map<String,String>> getFeatureInfo(String service, List<String> features, IProgressMonitor monitor) {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	
+    	monitor.beginTask("Downloading feature information", features.size());
+    	Map<String,Map<String,String>> results = new HashMap<String, Map<String,String>>();
+    	for (String feature : features) {
+    		results.put(feature, Feature.getProperties(service, feature));
+    		monitor.worked(1);
+    	}
+    	monitor.done();    	
+    	return results;
+    }
+
+    public Map<String,Map<String,String>> getAlgorithmInfo(String service, List<String> features, IProgressMonitor monitor) {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	
+    	monitor.beginTask("Downloading algorithm information", features.size());
+    	Map<String,Map<String,String>> results = new HashMap<String, Map<String,String>>();
+    	for (String feature : features) {
+    		results.put(feature, Algorithm.getProperties(service, feature));
+    		monitor.worked(1);
+    	}
+    	monitor.done();    	
+    	return results;
+    }
+
+    public Map<String,Map<String,String>> getModelInfo(String service, List<String> features, IProgressMonitor monitor) {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	
+    	monitor.beginTask("Downloading model information", features.size());
+    	Map<String,Map<String,String>> results = new HashMap<String, Map<String,String>>();
+    	for (String feature : features) {
+    		results.put(feature, Model.getProperties(service, feature));
+    		monitor.worked(1);
+    	}
+    	monitor.done();    	
+    	return results;
+    }
+
     public List<Integer> listDataSets(String service, IProgressMonitor monitor)
         throws BioclipseException {
         List<Integer> dataSets = new ArrayList<Integer>();

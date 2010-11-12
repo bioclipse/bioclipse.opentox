@@ -25,7 +25,7 @@ import java.util.Map;
 import net.bioclipse.rdf.business.RDFManager;
 import net.bioclipse.rdf.model.IStringMatrix;
 
-public abstract class Algorithm {
+public abstract class Model {
 
 	private static RDFManager rdf = new RDFManager();
 
