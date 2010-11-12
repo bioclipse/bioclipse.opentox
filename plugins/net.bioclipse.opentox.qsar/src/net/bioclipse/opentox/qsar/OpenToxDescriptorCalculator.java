@@ -1,5 +1,6 @@
 package net.bioclipse.opentox.qsar;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
@@ -84,6 +86,9 @@ public class OpenToxDescriptorCalculator implements IDescriptorCalculator {
 
 			for (DescriptorType desc : moldesc.get( mol )){
 				//Calculate desc for mol
+				
+                if (monitor.isCanceled())
+                    throw new OperationCanceledException();
 
         		DescriptorImpl dimpl = qsar.getDescriptorImpl( 
         				desc.getOntologyid(), providerID );
@@ -91,9 +96,28 @@ public class OpenToxDescriptorCalculator implements IDescriptorCalculator {
         		//descriptor class
         		String descOTid=dimpl.getId();
 
+        		monitor.subTask("Calculating OT descriptor: " + dimpl.getName());
+        		monitor.worked(1);
+
         		//Invoke calculation
         		logger.debug("Trying service: " + service + " OTdescriptor: " + descOTid);
-        		List<String> OTres = opentox.calculateDescriptor(service, descOTid, mol);
+        		List<String> OTres = null;
+    			//retry 5 times, looks like a server issue
+    			for (int i=0; i<6; i++){
+    				if (i>0)
+    					logger.debug("  - Opentox descr calculation retry number " + i);
+        			
+            		try{
+            			OTres = opentox.calculateDescriptor(service, descOTid, mol);
+            		}catch(Exception e){
+    					logger.error("  == Opentox calculation failed");
+            		}
+            		
+            		//End if we have results
+            		if (OTres!=null) break;
+    				
+    			}
+
 
         		//Handle results
     			IDescriptorResult res = parseOTResults(OTres, desc);
@@ -105,6 +129,7 @@ public class OpenToxDescriptorCalculator implements IDescriptorCalculator {
 			
 		} //get next mol
 		
+		monitor.done();
 
 		return allResults;
 	}
@@ -123,11 +148,18 @@ public class OpenToxDescriptorCalculator implements IDescriptorCalculator {
 		}else{
 			//TODO: all is well, put results in QSAR model
 			Float[] floats = new Float[OTres.size()];
-			int counter = 0;
-			for (String val : OTres) {
-				floats[counter] = Float.parseFloat(val);
+			String[] labels= new String[OTres.size()];
+			String baseLabel=desc.getOntologyid().substring(desc.getOntologyid().lastIndexOf("#")+1);
+			for (int i=0; i<OTres.size();i++) {
+				floats[i] = Float.parseFloat(OTres.get(i));
+				if (OTres.size()>1)
+					labels[i] = baseLabel + "-" + (i+1);
+				else
+					labels[i] = baseLabel;
 			}
 			res.setValues(floats);
+			res.setLabels(labels);
+			res.setDescriptor(desc);
 		}
 
 		return res;
