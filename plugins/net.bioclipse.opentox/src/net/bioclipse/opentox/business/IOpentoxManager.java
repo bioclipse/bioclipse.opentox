@@ -13,6 +13,8 @@ package net.bioclipse.opentox.business;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import net.bioclipse.core.PublishedClass;
 import net.bioclipse.core.PublishedMethod;
 import net.bioclipse.core.Recorded;
@@ -65,6 +67,23 @@ public interface IOpentoxManager extends IBioclipseManager {
         params="String service, String model, IMolecule molecule"
     )
     public List<String> predictWithModel(String service, String model, IMolecule molecule);
+    
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
+            "Predicts modeled properties for the given molecule.",
+        params="String service, String model, IMolecule molecule"
+    )
+    public Map<String,String> predictWithModelWithLabel(String service, String model, List<IMolecule> molecules);
+
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
+            "Predicts modeled properties for the given molecule.",
+        params="String service, String model, IMolecule molecule"
+    )
+    public Map<String,String> predictWithModelWithLabel(String service, String model, IMolecule molecule);
+
 
     @Recorded
     @PublishedMethod(

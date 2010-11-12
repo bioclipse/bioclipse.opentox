@@ -522,6 +522,32 @@ public class OpentoxManager implements IBioclipseManager {
     	
     	return calcResults;
     }
+    
+    public Map<String,String> predictWithModelWithLabel(String service, String model, List<IMolecule> molecules, IProgressMonitor monitor)
+    throws Exception {
+    	if (service == null) throw new BioclipseException("Service is null");
+    	if (model == null) throw new BioclipseException("Model is null");
+
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	monitor.beginTask("Calculate model for dataset", molecules.size());
+
+    	Map<String,String> calcResults = new HashMap<String, String>();
+    	for (IMolecule molecule : molecules) {
+    		String dataset = Dataset.createNewDataset(service, molecule);
+    		String results = ModelAlgorithm.calculate(service, model, dataset);
+    		StringMatrix features = Dataset.listPredictedFeatures(results);
+    		List<String> fcol = removeDataType(features.getColumn("numval"));
+    		List<String> lcol = features.getColumn("desc");
+    		for (int i=0; i<fcol.size(); i++){
+    			calcResults.put(lcol.get(i), fcol.get(i));
+    		}
+    		
+    		Dataset.deleteDataset(dataset);
+    		monitor.worked(1);
+    	}
+    	
+    	return calcResults;
+    }
 
     public List<String> predictWithModel(String service, String model, IMolecule molecule, IProgressMonitor monitor)
     throws Exception {
@@ -536,6 +562,30 @@ public class OpentoxManager implements IBioclipseManager {
     	String results = ModelAlgorithm.calculate(service, model, dataset);
     	StringMatrix features = Dataset.listPredictedFeatures(results);
     	calcResults.addAll(removeDataType(features.getColumn("numval")));
+    	Dataset.deleteDataset(dataset);
+    	monitor.worked(1);
+    	
+    	return calcResults;
+    }
+    
+    public Map<String,String> predictWithModelWithLabel(String service, String model, IMolecule molecule, IProgressMonitor monitor)
+    throws Exception {
+    	if (service == null) throw new BioclipseException("Service is null");
+    	if (model == null) throw new BioclipseException("Model is null");
+
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	monitor.beginTask("Calculate model for molecule", 1);
+
+    	Map<String,String> calcResults = new HashMap<String, String>();    	
+    	String dataset = Dataset.createNewDataset(service, molecule);
+    	String results = ModelAlgorithm.calculate(service, model, dataset);
+    	StringMatrix features = Dataset.listPredictedFeatures(results);
+    	List<String> fcol = removeDataType(features.getColumn("numval"));
+    	List<String> lcol = features.getColumn("desc");
+    	for (int i=0; i<lcol.size(); i++){
+    		calcResults.put(lcol.get(i), fcol.get(i));
+    	}
+
     	Dataset.deleteDataset(dataset);
     	monitor.worked(1);
     	
