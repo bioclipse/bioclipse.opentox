@@ -10,6 +10,9 @@
  ******************************************************************************/
 package net.bioclipse.opentox;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.bioclipse.opentox.business.IOpentoxManager;
 import net.bioclipse.opentox.business.IJavaOpentoxManager;
 import net.bioclipse.opentox.business.IJavaScriptOpentoxManager;
@@ -23,11 +26,16 @@ import org.osgi.util.tracker.ServiceTracker;
  * The Activator class controls the plug-in life cycle
  */
 public class Activator extends AbstractUIPlugin {
+	
+	public static final String PLUGIN_ID="net.bioclipse.opentox";
 
     private static final Logger logger = Logger.getLogger(Activator.class);
 
     // The shared instance
     private static Activator plugin;
+
+    //A list of OpenTox services in order
+    private static List<OpenToxService> openToxServices;
 
     // Trackers for getting the managers
     private ServiceTracker javaFinderTracker;
@@ -51,9 +59,20 @@ public class Activator extends AbstractUIPlugin {
                                   null );
 
         jsFinderTracker.open();
+        
+        //Read in OT services from EP and preferences
+        openToxServices=new ArrayList<OpenToxService>();
+        openToxServices.addAll(ServiceReader.readServicesFromExtensionPoints());
+        openToxServices.addAll(ServiceReader.readServicesFromPreferences());
+
+        logger.debug("After init, we have " + openToxServices.size() + 
+        		" opentox services registered");
+        
     }
 
-    public void stop(BundleContext context) throws Exception {
+
+	
+	public void stop(BundleContext context) throws Exception {
         plugin = null;
         super.stop(context);
     }
@@ -102,4 +121,26 @@ public class Activator extends AbstractUIPlugin {
         }
         return manager;
     }
+
+
+    public static List<OpenToxService> getOpenToxServices() {
+		return openToxServices;
+	}
+
+	public static void setOpenToxServices(List<OpenToxService> openToxServices2) {
+		openToxServices = openToxServices2;
+	}
+
+	/**
+	 * the current OT service is the one first in the list
+	 * @return
+	 */
+	public static OpenToxService getCurrentDSService() {
+		if (openToxServices==null || openToxServices.size()<=0)
+			return null;
+		else
+			return openToxServices.get(0);
+	}
+    
+    
 }
