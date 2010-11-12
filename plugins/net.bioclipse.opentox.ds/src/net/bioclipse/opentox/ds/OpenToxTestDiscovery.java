@@ -52,7 +52,7 @@ public class OpenToxTestDiscovery implements ITestDiscovery {
 		for (OpenToxService service : OTservices){
 
 			//Discover models for this service
-			if (service.getServiceSPARQL()!=null){
+			if (service.getServiceSPARQL()!=null && service.getServiceSPARQL().length()>3){
 				List<String> models = opentox.listModels(service.getServiceSPARQL());
 				if (models!=null){
 					logger.debug("Discovered " + models.size() + 

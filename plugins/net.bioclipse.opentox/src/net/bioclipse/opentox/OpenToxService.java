@@ -38,5 +38,18 @@ public class OpenToxService {
 		return "OpenToxService [name=" + name + ", service=" + service
 				+ ", serviceSPARQL=" + serviceSPARQL + "]";
 	}
+	
+	/**
+	 * A simple equals on name level
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof OpenToxService) {
+			OpenToxService in = (OpenToxService) obj;
+			if (this.name.equals(in.name))
+				return true;
+		}
+		return false;
+	}
 
 }

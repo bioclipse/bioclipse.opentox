@@ -344,7 +344,7 @@ IWorkbenchPreferencePage {
      * @param appList2
      * @return
      */
-    private String convertToPreferenceString(List<String[]> appList2) {
+    public static String convertToPreferenceString(List<String[]> appList2) {
         Iterator<String[]> it=appList2.iterator();
         String ret="";
 

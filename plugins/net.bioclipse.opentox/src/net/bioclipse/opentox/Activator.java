@@ -16,8 +16,10 @@ import java.util.List;
 import net.bioclipse.opentox.business.IOpentoxManager;
 import net.bioclipse.opentox.business.IJavaOpentoxManager;
 import net.bioclipse.opentox.business.IJavaScriptOpentoxManager;
+import net.bioclipse.opentox.prefs.ServicesPreferencePage;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -60,13 +62,50 @@ public class Activator extends AbstractUIPlugin {
 
         jsFinderTracker.open();
         
+        /*
+         * INITIALIZE OPENTOX SERVICES
+         */
+        
         //Read in OT services from EP and preferences
         openToxServices=new ArrayList<OpenToxService>();
-        openToxServices.addAll(ServiceReader.readServicesFromExtensionPoints());
-        openToxServices.addAll(ServiceReader.readServicesFromPreferences());
+        
+        logger.debug("Initializing OpenTox services");
+        
+        //First we read from preferences
+        List<OpenToxService> prefss = ServiceReader.readServicesFromPreferences();
+        openToxServices.addAll(prefss);
+        logger.debug("Read " + prefss.size() + " services from prefs");
 
-        logger.debug("After init, we have " + openToxServices.size() + 
-        		" opentox services registered");
+        //Second, add services from EP if not in prefs (new extensions)
+        List<OpenToxService> epservices = ServiceReader.readServicesFromExtensionPoints();
+        for (OpenToxService eps : epservices){
+        	if (!openToxServices.contains(eps)){
+        		//TODO: Add it
+                openToxServices.add(eps);
+                logger.debug("Added new service from EP: " + eps);
+        	}
+        }
+        
+        //Save the, possibly changed, list of services to prefs
+        //This way we have the list openToxServices synced with the prefs
+        List<String[]> toPrefs=new ArrayList<String[]>();
+        for (OpenToxService eps : epservices){
+        	String[] entry = new String[3];
+        	entry[0]=eps.getName();
+        	entry[1]=eps.getService();
+        	entry[2]=eps.getServiceSPARQL();
+        	
+        	toPrefs.add(entry);
+        }
+        String toPrefsString = ServicesPreferencePage.convertToPreferenceString(toPrefs);
+
+        //Save the serialized services to preferences
+        IPreferenceStore prefsStore=Activator.getDefault().getPreferenceStore();
+        prefsStore.setValue(OpenToxConstants.SERVICES, toPrefsString);
+        
+        logger.debug("Saved the serialized services prefs string: " + toPrefsString);
+
+        logger.debug("OpenTox initialization ended");
         
     }
 
@@ -136,6 +175,7 @@ public class Activator extends AbstractUIPlugin {
 	 * @return
 	 */
 	public static OpenToxService getCurrentDSService() {
+		
 		if (openToxServices==null || openToxServices.size()<=0)
 			return null;
 		else
