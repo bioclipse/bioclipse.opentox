@@ -3,6 +3,8 @@ package net.bioclipse.opentox.ds;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.Activator;
 import net.bioclipse.ds.business.DSBusinessModel;
@@ -11,6 +13,8 @@ import net.bioclipse.ds.model.Endpoint;
 import net.bioclipse.ds.model.IConsensusCalculator;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestDiscovery;
+import net.bioclipse.opentox.OpenToxService;
+import net.bioclipse.opentox.business.IOpentoxManager;
 
 /**
  * Discover OpenTox Models (tests) dynamically.
@@ -20,6 +24,8 @@ import net.bioclipse.ds.model.ITestDiscovery;
  */
 public class OpenToxTestDiscovery implements ITestDiscovery {
 
+	private static final Logger logger = Logger.getLogger(OpenToxTestDiscovery.class);
+	
 	public OpenToxTestDiscovery() {
 	}
 
@@ -32,16 +38,57 @@ public class OpenToxTestDiscovery implements ITestDiscovery {
 
 		List<IDSTest> discoveredTests=new ArrayList<IDSTest>();
 		
-		//We need DSManager to look up existing endpoints
-		IDSManager ds = Activator.getDefault().getJavaManager();
+		//We need OpenToxManager to dicover models
+		IOpentoxManager opentox = net.bioclipse.opentox.Activator
+										  .getDefault().getJavaOpentoxManager();
 
+		//Get the registered services
+		List<OpenToxService> OTservices 
+						 = net.bioclipse.opentox.Activator.getOpenToxServices();
+		
+		if (OTservices==null) throw new BioclipseException("No OpenTox " +
+				"services available. Cannot discover services.");
+		
+		for (OpenToxService service : OTservices){
+
+			//Discover models for this service
+			if (service.getServiceSPARQL()!=null){
+				List<String> models = opentox.listModels(service.getServiceSPARQL());
+				if (models!=null){
+					logger.debug("Discovered " + models.size() + 
+							" models for service: " + service);
+					
+					for (String model : models){
+						//Add this model as a test if basic criteria are met
+						IDSTest test = createOpenToxTest(model);
+						discoveredTests.add(test);
+						
+						logger.debug("Added OpenTox model as DSTest: " + test );
+
+					}
+					
+				}else{
+					logger.debug("No models discovered for service: " + service);
+				}
+			}
+			
+		}
+
+		return discoveredTests;
+	}
+
+	private IDSTest createOpenToxTest(String model) throws BioclipseException {
+
+		
 		//First, hardcoded one to demonstrate functionality
-		IDSTest test= new OpenToxModel();
-
-		test.setName("OT test");
-		test.setId("ot.test");
-		test.setIcon("icons/drug_cap.png");
-		test.setDescription("Test OT test description");
+		IDSTest test= new OpenToxModel(model);
+		
+		String name=model.substring(model.lastIndexOf("/")+1);
+		test.setName(name);
+		
+		test.setId("ot.test."+model);
+		test.setIcon("icons/biohazard.png");
+		test.setDescription("N/A");
 
 		test.setOverride(false);
 		test.setInformative(false);
@@ -52,6 +99,9 @@ public class OpenToxTestDiscovery implements ITestDiscovery {
 		//now we add them using an EP extension
 		//Could add discovery later too..
 		String endpoint="net.bioclipse.ds.opentox";
+
+		//We need DSManager to look up existing endpoints
+		IDSManager ds = Activator.getDefault().getJavaManager();
 
 		//Look up endpoint by id and add to test
 		for (Endpoint ep : ds.getFullEndpoints()){
@@ -70,13 +120,9 @@ public class OpenToxTestDiscovery implements ITestDiscovery {
 		//              test.setPropertycalculator( ppropcalc);
 		//              test.setHelppage( phelppage);
 		//              test.addParameter(name,path);
-
-
-		//Hardcoded one test for now...
-		discoveredTests.add(test);
-
-
-		return discoveredTests;
+		
+		return test;
+		
 	}
 
 }

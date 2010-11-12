@@ -1,5 +1,7 @@
 package net.bioclipse.opentox.ds;
 
+import java.util.List;
+
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -13,7 +15,11 @@ public class Activator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static Activator plugin;
+
+	//A list of the currently active models, stored as a preference
+	private List<OpenToxModel> openToxModels;
 	
+
 	/**
 	 * The constructor
 	 */

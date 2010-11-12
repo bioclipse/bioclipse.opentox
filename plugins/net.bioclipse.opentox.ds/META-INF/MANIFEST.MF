@@ -7,12 +7,14 @@ Bundle-Activator: net.bioclipse.opentox.ds.Activator
 Bundle-Vendor: The Bioclipse Team
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- net.bioclipse.ds;bundle-version="2.4.0",
- net.bioclipse.ds.common;bundle-version="2.4.0",
- net.bioclipse.ds.ui;bundle-version="2.4.0",
- net.bioclipse.core;bundle-version="2.4.0",
- net.bioclipse.cdk.business;bundle-version="2.4.0",
- org.openscience.cdk.interfaces;bundle-version="1.3.5",
- org.eclipse.help;bundle-version="3.4.1"
+ net.bioclipse.ds,
+ net.bioclipse.ds.common,
+ net.bioclipse.ds.ui,
+ net.bioclipse.core,
+ net.bioclipse.cdk.business,
+ org.openscience.cdk.interfaces,
+ org.eclipse.help,
+ net.bioclipse.opentox
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
+Import-Package: org.apache.log4j
