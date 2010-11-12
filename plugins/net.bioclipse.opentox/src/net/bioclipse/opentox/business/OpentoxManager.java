@@ -94,7 +94,7 @@ public class OpentoxManager implements IBioclipseManager {
     public Map<String,String> getModelInfo(String service, String feature, IProgressMonitor monitor) {
     	if (monitor == null) monitor = new NullProgressMonitor();
     	
-    	monitor.beginTask("Downloading feature information", 1);
+    	monitor.beginTask("Downloading model information", 1);
     	Map<String,String> properties = Model.getProperties(service, feature);
     	monitor.done();
     	
@@ -104,7 +104,7 @@ public class OpentoxManager implements IBioclipseManager {
     public Map<String,String> getAlgorithmInfo(String service, String feature, IProgressMonitor monitor) {
     	if (monitor == null) monitor = new NullProgressMonitor();
     	
-    	monitor.beginTask("Downloading feature information", 1);
+    	monitor.beginTask("Downloading algorithm information", 1);
     	Map<String,String> properties = Algorithm.getProperties(service, feature);
     	monitor.done();
     	
