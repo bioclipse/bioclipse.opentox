@@ -36,7 +36,6 @@ public class Task {
 		HttpMethod method = new GetMethod(task);
 		method.setRequestHeader("Accept", "text/uri-list");
 		client.executeMethod(method);
-		method.releaseConnection();
 		int status = method.getStatusCode();
 		logger.debug("Task status: " + status);
 		

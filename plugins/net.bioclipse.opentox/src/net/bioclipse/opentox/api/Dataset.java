@@ -92,7 +92,6 @@ public class Dataset {
 		HttpMethod method = new GetMethod(datasetURI + "compounds");
 		method.setRequestHeader("Accept", "text/uri-list");
 		client.executeMethod(method);
-		method.releaseConnection();
 		List<String> compounds = new ArrayList<String>();
 		BufferedReader reader = new BufferedReader(
 			new StringReader(method.getResponseBodyAsString())
@@ -102,6 +101,7 @@ public class Dataset {
 			line = line.trim();
 			if (line.length() > 0) compounds.add(line);
 		}
+		method.releaseConnection();
 		return compounds;
 	}
 
@@ -118,9 +118,9 @@ public class Dataset {
 		method.setRequestHeader("Accept", "application/rdf+xml");
 		client.executeMethod(method);
 		method.getResponseBodyAsString(); // without this things will fail??
-		method.releaseConnection();
 		IRDFStore store = rdf.createInMemoryStore();
 		rdf.importFromStream(store, method.getResponseBodyAsStream(), "RDF/XML", null);
+		method.releaseConnection();
 		return rdf.sparql(store, QUERY_PREDICTED_FEATURES);
 	}
 
