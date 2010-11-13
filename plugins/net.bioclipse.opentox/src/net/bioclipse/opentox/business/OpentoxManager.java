@@ -187,37 +187,25 @@ public class OpentoxManager implements IBioclipseManager {
         return dataSets;
     }
 
-    public List<String> listAlgorithms(String service, IProgressMonitor monitor)
+    public List<String> listAlgorithms(String ontologyServer, IProgressMonitor monitor)
     throws BioclipseException {
-    	List<String> dataSets = new ArrayList<String>();
-
         if (monitor == null) monitor = new NullProgressMonitor();
+        IStringMatrix results = new StringMatrix();
 
-        monitor.beginTask("Requesting available algorithms...", 3);
-        IRDFStore store = rdf.createInMemoryStore();
+        monitor.beginTask("Requesting available algorithms...", 1);
         try {
             // download the list of data sets as RDF
-            rdf.importURL(store, service + "algorithm", monitor);
+        	results = rdf.sparqlRemote(ontologyServer, QUERY_ALGORITHMS, monitor);
             monitor.worked(1);
-
-            // query the downloaded RDF
-            IStringMatrix results = rdf.sparql(store, QUERY_ALGORITHMS);
-            monitor.worked(1);
-
-            // return the data set identifiers
-            dataSets = results.getColumn("algo");
-            monitor.worked(1);
-        } catch (BioclipseException exception) {
-            throw exception;
         } catch (Exception exception) {
             throw new BioclipseException(
-                "Error while accessing RDF API of service",
+                "Error while accessing the OpenTox ontology server at: " + ontologyServer,
                 exception
             );
         }
 
         monitor.done();
-        return dataSets;
+        return results.getColumn("algo");
     }
 
     /**
@@ -262,7 +250,7 @@ public class OpentoxManager implements IBioclipseManager {
             monitor.worked(1);
         } catch (Exception exception) {
             throw new BioclipseException(
-                "Error while accessing RDF API of service",
+            	"Error while accessing the OpenTox ontology server at: " + serviceSPARQL,
                 exception
             );
         }
@@ -283,7 +271,7 @@ public class OpentoxManager implements IBioclipseManager {
             monitor.worked(1);
         } catch (Exception exception) {
             throw new BioclipseException(
-                "Error while accessing RDF API of service",
+                "Error while accessing the OpenTox ontology server at: " + serviceSPARQL,
                 exception
             );
         }
