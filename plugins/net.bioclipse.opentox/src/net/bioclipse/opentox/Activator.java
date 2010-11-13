@@ -32,6 +32,9 @@ public class Activator extends AbstractUIPlugin {
 	public static final String PLUGIN_ID="net.bioclipse.opentox";
 
     private static final Logger logger = Logger.getLogger(Activator.class);
+    
+    /** HTTP time out in milliseconds. */
+    public static final Integer TIME_OUT = 5000; 
 
     // The shared instance
     private static Activator plugin;

@@ -28,6 +28,7 @@ import java.util.List;
 
 import net.bioclipse.cdk.business.CDKManager;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.opentox.Activator;
 import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.business.RDFManager;
 import net.bioclipse.rdf.model.StringMatrix;
@@ -64,6 +65,7 @@ public class Dataset {
 	throws IOException {
 		HttpClient client = new HttpClient();
 		HttpMethod method = new GetMethod(service + "dataset");
+		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
 		method.setRequestHeader("Accept", "text/uri-list");
 		client.executeMethod(method);
 
@@ -91,6 +93,7 @@ public class Dataset {
 		HttpClient client = new HttpClient();
 		datasetURI = normalizeURI(datasetURI);
 		HttpMethod method = new GetMethod(datasetURI + "compounds");
+		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
 		method.setRequestHeader("Accept", "text/uri-list");
 		client.executeMethod(method);
 		List<String> compounds = new ArrayList<String>();
@@ -116,6 +119,7 @@ public class Dataset {
 		String fullURI = baseURI + "feature_uris[]=" + featureURIs;
 		fullURI = URIUtil.encodeQuery(fullURI);
 		HttpMethod method = new GetMethod(fullURI);
+		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
 		method.setRequestHeader("Accept", "application/rdf+xml");
 		client.executeMethod(method);
 		String result = method.getResponseBodyAsString(); // without this things will fail??
@@ -130,6 +134,7 @@ public class Dataset {
 	throws Exception {
 		HttpClient client = new HttpClient();
 		HttpMethod method = new DeleteMethod(datasetURI);
+		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
 		client.executeMethod(method);
 		int status = method.getStatusCode();
 		method.releaseConnection();
@@ -166,6 +171,7 @@ public class Dataset {
 		HttpClient client = new HttpClient();
 		datasetURI = normalizeURI(datasetURI);
 		PutMethod method = new PutMethod(datasetURI);
+		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
 		method.setRequestHeader("Accept", "text/uri-list");
 		method.setRequestHeader("Content-type", "chemical/x-mdl-sdfile");
 		method.setRequestBody(sdFile);
@@ -226,6 +232,7 @@ public class Dataset {
 	throws Exception {
 		HttpClient client = new HttpClient();
 		PostMethod method = new PostMethod(service + "dataset");
+		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
 		method.setRequestHeader("Accept", "text/uri-list");
 		method.setRequestHeader("Content-type", "chemical/x-mdl-sdfile");
 		method.setRequestBody(sdFile);

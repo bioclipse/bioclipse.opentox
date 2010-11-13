@@ -21,6 +21,8 @@ package net.bioclipse.opentox.api;
 
 import java.io.IOException;
 
+import net.bioclipse.opentox.Activator;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -34,6 +36,7 @@ public class Task {
 	throws IOException {
 		HttpClient client = new HttpClient();
 		HttpMethod method = new GetMethod(task);
+		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
 		method.setRequestHeader("Accept", "text/uri-list");
 		client.executeMethod(method);
 		int status = method.getStatusCode();
