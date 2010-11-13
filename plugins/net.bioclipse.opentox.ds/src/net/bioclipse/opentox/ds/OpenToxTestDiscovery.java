@@ -2,8 +2,7 @@ package net.bioclipse.opentox.ds;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.Logger;
+import java.util.Map;
 
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.ds.Activator;
@@ -15,6 +14,8 @@ import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestDiscovery;
 import net.bioclipse.opentox.OpenToxService;
 import net.bioclipse.opentox.business.IOpentoxManager;
+
+import org.apache.log4j.Logger;
 
 /**
  * Discover OpenTox Models (tests) dynamically.
@@ -60,7 +61,9 @@ public class OpenToxTestDiscovery implements ITestDiscovery {
 					
 					for (String model : models){
 						//Add this model as a test if basic criteria are met
-						IDSTest test = createOpenToxTest(model);
+						Map<String,String> props = opentox.getModelInfo(service.getServiceSPARQL(), model);
+						String title = props.get("http://purl.org/dc/elements/1.1/title");
+						IDSTest test = createOpenToxTest(model, title);
 						discoveredTests.add(test);
 						
 						logger.debug("Added OpenTox model as DSTest: " + test );
@@ -77,14 +80,17 @@ public class OpenToxTestDiscovery implements ITestDiscovery {
 		return discoveredTests;
 	}
 
-	private IDSTest createOpenToxTest(String model) throws BioclipseException {
+	private IDSTest createOpenToxTest(String model, String title) throws BioclipseException {
 
 		
 		//First, hardcoded one to demonstrate functionality
 		IDSTest test= new OpenToxModel(model);
 		
-		String name=model.substring(model.lastIndexOf("/")+1);
-		test.setName(name);
+		if (title != null && title.length() > 0) {
+			test.setName(title);
+		} else {
+			test.setName(model.substring(model.lastIndexOf("/")+1));
+		}
 		
 		test.setId("ot.test."+model);
 		test.setIcon("icons/biohazard.png");
