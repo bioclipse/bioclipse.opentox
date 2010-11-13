@@ -161,7 +161,7 @@ public interface IOpentoxManager extends IBioclipseManager {
             "Lists the data sets available from the given service.",
         params="String service"
     )
-    public List<Integer> listDataSets(String service);
+    public List<String> listDataSets(String service);
     
     @Recorded
     @PublishedMethod(
@@ -221,9 +221,9 @@ public interface IOpentoxManager extends IBioclipseManager {
         methodSummary=
             "Downloads a compound and returns it as a MDL molfile formated " +
             "String.",
-        params="String service, Integer dataSet, Integer compound"
+        params="String service, String dataSet, Integer compound"
     )
-    public String downloadCompoundAsMDLMolfile(String service, Integer dataSet,
+    public String downloadCompoundAsMDLMolfile(String service, String dataSet,
         Integer compound);
 
     @Recorded
@@ -233,7 +233,7 @@ public interface IOpentoxManager extends IBioclipseManager {
             "file with the given filename.",
         params="String service, Integer dataSet, String filename"
     )
-    public String downloadDataSetAsMDLSDfile(String service, Integer dataSet,
+    public String downloadDataSetAsMDLSDfile(String service, String dataSet,
         String filename);
 
 }

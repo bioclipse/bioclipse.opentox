@@ -11,6 +11,7 @@
 package net.bioclipse.opentox.business;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,15 +63,13 @@ public class OpentoxManager implements IBioclipseManager {
         "}";
 
     private final static String QUERY_DATASETS =
-        "SELECT ?set ?id WHERE {" +
-        "  ?set a <http://www.opentox.org/api/1.1#Dataset>;" +
-        "       <http://purl.org/dc/elements/1.1/identifier> ?id ." +
+        "SELECT ?set WHERE {" +
+        "  ?set a <http://www.opentox.org/api/1.1#Dataset> ." +
         "}";
 
     private final static String QUERY_COMPOUNDS =
         "SELECT ?compound ?id WHERE {" +
-        "  ?set a <http://www.opentox.org/api/1.1#Compound>;" +
-        "       <http://purl.org/dc/elements/1.1/identifier> ?id ." +
+        "  ?set a <http://www.opentox.org/api/1.1#Compound> ." +
         "}";
     
     /**
@@ -150,35 +149,33 @@ public class OpentoxManager implements IBioclipseManager {
     	return results;
     }
 
-    public List<Integer> listDataSets(String service, IProgressMonitor monitor)
+    public List<String> listDataSets(String service, IProgressMonitor monitor)
         throws BioclipseException {
-        List<Integer> dataSets = new ArrayList<Integer>();
-
         if (monitor == null) monitor = new NullProgressMonitor();
-
         monitor.beginTask("Requesting available data sets...", 3);
+
         IRDFStore store = rdf.createInMemoryStore();
+        List<String> dataSets = Collections.emptyList();
         try {
             // download the list of data sets as RDF
             rdf.importURL(store, service + "dataset", monitor);
+            String dump = rdf.asRDFN3(store);
+            System.out.println("RDF: " + dump);
             monitor.worked(1);
 
             // query the downloaded RDF
             IStringMatrix results = rdf.sparql(store, QUERY_DATASETS);
             monitor.worked(1);
 
-            // return the data set identifiers
-            for (String setURI : results.getColumn("set")) {
-                dataSets.add(
-                    Integer.valueOf(setURI.substring(setURI.lastIndexOf('/')+1))
-                );
+            if (results.getRowCount() > 0) {
+            	dataSets = results.getColumn("set");
             }
             monitor.worked(1);
         } catch (BioclipseException exception) {
             throw exception;
         } catch (Exception exception) {
             throw new BioclipseException(
-                "Error while accessing RDF API of service",
+                "Error while accessing RDF API of service: " + exception.getMessage(),
                 exception
             );
         }
@@ -321,7 +318,7 @@ public class OpentoxManager implements IBioclipseManager {
         return compounds;
     }
 
-    public String downloadCompoundAsMDLMolfile(String service, Integer dataSet,
+    public String downloadCompoundAsMDLMolfile(String service, String dataSet,
             Integer compound, IProgressMonitor monitor)
         throws BioclipseException {
 
@@ -329,7 +326,7 @@ public class OpentoxManager implements IBioclipseManager {
 
         monitor.beginTask("Downloading compound...", 1);
 
-        String url = service + "dataset/" + dataSet + "/compound/" + compound;
+        String url = dataSet + "/compound/" + compound;
         String result = bioclipse.download(
             url, "chemical/x-mdl-molfile", monitor
         );
@@ -338,7 +335,7 @@ public class OpentoxManager implements IBioclipseManager {
         return result;
     }
 
-    public IFile downloadDataSetAsMDLSDfile(String service, Integer dataSet,
+    public IFile downloadDataSetAsMDLSDfile(String service, String dataSet,
             IFile file, IProgressMonitor monitor)
         throws BioclipseException {
 
@@ -346,9 +343,8 @@ public class OpentoxManager implements IBioclipseManager {
 
         monitor.beginTask("Downloading data set...", 1);
 
-        String url = service + "dataset/" + dataSet;
         IFile result = bioclipse.downloadAsFile(
-            url, "chemical/x-mdl-sdfile", file, monitor
+            dataSet, "chemical/x-mdl-sdfile", file, monitor
         );
         monitor.done();
 
