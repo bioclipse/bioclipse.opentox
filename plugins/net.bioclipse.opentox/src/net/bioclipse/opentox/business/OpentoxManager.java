@@ -81,69 +81,69 @@ public class OpentoxManager implements IBioclipseManager {
         return "opentox";
     }
 
-    public Map<String,String> getFeatureInfo(String service, String feature, IProgressMonitor monitor) {
+    public Map<String,String> getFeatureInfo(String ontologyServer, String feature, IProgressMonitor monitor) {
     	if (monitor == null) monitor = new NullProgressMonitor();
     	
     	monitor.beginTask("Downloading feature information", 1);
-    	Map<String,String> properties = Feature.getProperties(service, feature);
+    	Map<String,String> properties = Feature.getProperties(ontologyServer, feature);
     	monitor.done();
     	
     	return properties;
     }
 
-    public Map<String,String> getModelInfo(String service, String feature, IProgressMonitor monitor) {
+    public Map<String,String> getModelInfo(String ontologyServer, String model, IProgressMonitor monitor) {
     	if (monitor == null) monitor = new NullProgressMonitor();
     	
     	monitor.beginTask("Downloading model information", 1);
-    	Map<String,String> properties = Model.getProperties(service, feature);
+    	Map<String,String> properties = Model.getProperties(ontologyServer, model);
     	monitor.done();
     	
     	return properties;
     }
 
-    public Map<String,String> getAlgorithmInfo(String service, String feature, IProgressMonitor monitor) {
+    public Map<String,String> getAlgorithmInfo(String ontologyServer, String algorithm, IProgressMonitor monitor) {
     	if (monitor == null) monitor = new NullProgressMonitor();
     	
     	monitor.beginTask("Downloading algorithm information", 1);
-    	Map<String,String> properties = Algorithm.getProperties(service, feature);
+    	Map<String,String> properties = Algorithm.getProperties(ontologyServer, algorithm);
     	monitor.done();
     	
     	return properties;
     }
 
-    public Map<String,Map<String,String>> getFeatureInfo(String service, List<String> features, IProgressMonitor monitor) {
+    public Map<String,Map<String,String>> getFeatureInfo(String ontologyServer, List<String> features, IProgressMonitor monitor) {
     	if (monitor == null) monitor = new NullProgressMonitor();
     	
     	monitor.beginTask("Downloading feature information", features.size());
     	Map<String,Map<String,String>> results = new HashMap<String, Map<String,String>>();
     	for (String feature : features) {
-    		results.put(feature, Feature.getProperties(service, feature));
+    		results.put(feature, Feature.getProperties(ontologyServer, feature));
     		monitor.worked(1);
     	}
     	monitor.done();    	
     	return results;
     }
 
-    public Map<String,Map<String,String>> getAlgorithmInfo(String service, List<String> features, IProgressMonitor monitor) {
+    public Map<String,Map<String,String>> getAlgorithmInfo(String ontologyServer, List<String> algorithms, IProgressMonitor monitor) {
     	if (monitor == null) monitor = new NullProgressMonitor();
     	
-    	monitor.beginTask("Downloading algorithm information", features.size());
+    	monitor.beginTask("Downloading algorithm information", algorithms.size());
     	Map<String,Map<String,String>> results = new HashMap<String, Map<String,String>>();
-    	for (String feature : features) {
-    		results.put(feature, Algorithm.getProperties(service, feature));
+    	for (String algorithm : algorithms) {
+    		results.put(algorithm, Algorithm.getProperties(ontologyServer, algorithm));
     		monitor.worked(1);
     	}
     	monitor.done();    	
     	return results;
     }
 
-    public Map<String,Map<String,String>> getModelInfo(String service, List<String> features, IProgressMonitor monitor) {
+    public Map<String,Map<String,String>> getModelInfo(String ontologyServer, List<String> features, IProgressMonitor monitor) {
     	if (monitor == null) monitor = new NullProgressMonitor();
     	
     	monitor.beginTask("Downloading model information", features.size());
     	Map<String,Map<String,String>> results = new HashMap<String, Map<String,String>>();
     	for (String feature : features) {
-    		results.put(feature, Model.getProperties(service, feature));
+    		results.put(feature, Model.getProperties(ontologyServer, feature));
     		monitor.worked(1);
     	}
     	monitor.done();    	
@@ -235,7 +235,7 @@ public class OpentoxManager implements IBioclipseManager {
         return table;
     }
     
-    public IStringMatrix listDescriptors(String serviceSPARQL, IProgressMonitor monitor)
+    public IStringMatrix listDescriptors(String ontologyServer, IProgressMonitor monitor)
     throws BioclipseException {
         if (monitor == null) monitor = new NullProgressMonitor();
         IStringMatrix results = new StringMatrix();
@@ -244,13 +244,13 @@ public class OpentoxManager implements IBioclipseManager {
         try {
             // download the list of data sets as RDF
         	results = regex(
-        		rdf.sparqlRemote(serviceSPARQL, SPARQL_DESCRIPTORS, monitor),
+        		rdf.sparqlRemote(ontologyServer, SPARQL_DESCRIPTORS, monitor),
         		"algo", "org.openscience.cdk"
         	);
             monitor.worked(1);
         } catch (Exception exception) {
             throw new BioclipseException(
-            	"Error while accessing the OpenTox ontology server at: " + serviceSPARQL,
+            	"Error while accessing the OpenTox ontology server at: " + ontologyServer,
                 exception
             );
         }
@@ -259,7 +259,7 @@ public class OpentoxManager implements IBioclipseManager {
         return results;
     }
 
-    public List<String> listModels(String serviceSPARQL, IProgressMonitor monitor)
+    public List<String> listModels(String ontologyServer, IProgressMonitor monitor)
     throws BioclipseException {
         if (monitor == null) monitor = new NullProgressMonitor();
         IStringMatrix results = new StringMatrix();
@@ -267,11 +267,11 @@ public class OpentoxManager implements IBioclipseManager {
         monitor.beginTask("Requesting available descriptors...", 1);
         try {
             // download the list of data sets as RDF
-        	results = rdf.sparqlRemote(serviceSPARQL, QUERY_MODELS, monitor);
+        	results = rdf.sparqlRemote(ontologyServer, QUERY_MODELS, monitor);
             monitor.worked(1);
         } catch (Exception exception) {
             throw new BioclipseException(
-                "Error while accessing the OpenTox ontology server at: " + serviceSPARQL,
+                "Error while accessing the OpenTox ontology server at: " + ontologyServer,
                 exception
             );
         }

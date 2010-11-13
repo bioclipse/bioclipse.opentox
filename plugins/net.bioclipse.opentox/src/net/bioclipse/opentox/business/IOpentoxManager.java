@@ -13,8 +13,6 @@ package net.bioclipse.opentox.business;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-
 import net.bioclipse.core.PublishedClass;
 import net.bioclipse.core.PublishedMethod;
 import net.bioclipse.core.Recorded;
@@ -88,67 +86,74 @@ public interface IOpentoxManager extends IBioclipseManager {
     @Recorded
     @PublishedMethod(
         methodSummary=
-            "Lists the available information on the feature from the ontology server.",
-        params="String service, String feature"
+            "Lists the available information on the feature from the given OpenTox ontology server's SPARQL " +
+            "end point.",
+        params="String ontologyServer, String feature"
     )
-    public Map<String,String> getFeatureInfo(String service, String feature);
+    public Map<String,String> getFeatureInfo(String ontologyServer, String feature);
     
     @Recorded
     @PublishedMethod(
         methodSummary=
-            "Lists the available information on the feature from the ontology server.",
-        params="String service, List<String> features"
+            "Lists the available information on the feature from the given OpenTox ontology server's SPARQL " +
+            "end point.",
+        params="String ontologyServer, List<String> features"
     )
-    public Map<String,Map<String,String>> getFeatureInfo(String service, List<String> features);
+    public Map<String,Map<String,String>> getFeatureInfo(String ontologyServer, List<String> features);
     
     @Recorded
     @PublishedMethod(
         methodSummary=
-            "Lists the available information on the model from the ontology server.",
-        params="String service, String model"
+            "Lists the available information on the model from the given OpenTox ontology server's SPARQL " +
+            "end point.",
+        params="String ontologyServer, String model"
     )
-    public Map<String,String> getModelInfo(String service, String model);
+    public Map<String,String> getModelInfo(String ontologyServer, String model);
     
     @Recorded
     @PublishedMethod(
         methodSummary=
-            "Lists the available information on the models from the ontology server.",
-        params="String service, List<String> models"
+            "Lists the available information on the models from the given OpenTox ontology server's SPARQL " +
+            "end point.",
+        params="String ontologyServer, List<String> models"
     )
-    public Map<String,Map<String,String>> getModelInfo(String service, List<String> models);
+    public Map<String,Map<String,String>> getModelInfo(String ontologyServer, List<String> models);
     
     @Recorded
     @PublishedMethod(
         methodSummary=
-            "Lists the available information on the algorithm from the ontology server.",
-        params="String service, String algorithm"
+            "Lists the available information on the algorithm from the given OpenTox ontology server's SPARQL " +
+            "end point.",
+        params="String ontologyServer, String algorithm"
     )
-    public Map<String,String> getAlgorithmInfo(String service, String algorithm);
+    public Map<String,String> getAlgorithmInfo(String ontologyServer, String algorithm);
     
     @Recorded
     @PublishedMethod(
         methodSummary=
-            "Lists the available information on the algorithm from the ontology server.",
-        params="String service, List<String> algorithms"
+            "Lists the available information on the algorithm from the given OpenTox ontology server's SPARQL " +
+            "end point.",
+        params="String ontologyServer, List<String> algorithms"
     )
-    public Map<String,Map<String,String>> getAlgorithmInfo(String service, List<String> algorithms);
+    public Map<String,Map<String,String>> getAlgorithmInfo(String ontologyServer, List<String> algorithms);
     
     @Recorded
     @PublishedMethod(
         methodSummary=
-            "Lists the algorithms available from the given service.",
-        params="String service"
+            "Lists the algorithms available from the given OpenTox ontology server's SPARQL " +
+            "end point.",
+        params="String ontologyServer"
     )
-    public List<String> listAlgorithms(String service);
+    public List<String> listAlgorithms(String ontologyServer);
 
     @Recorded
     @PublishedMethod(
         methodSummary=
-            "Lists the descriptors available from the given service SPARQL " +
+            "Lists the descriptors available from the given OpenTox ontology server's SPARQL " +
             "end point.",
-        params="String serviceSPARQL"
+        params="String ontologyServer"
     )
-    public IStringMatrix listDescriptors(String serviceSPARQL);
+    public IStringMatrix listDescriptors(String ontologyServer);
     
     @Recorded
     @PublishedMethod(

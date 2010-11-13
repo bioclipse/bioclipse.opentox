@@ -30,13 +30,13 @@ public class Feature {
 
 	private static RDFManager rdf = new RDFManager();
 
-	public static Map<String,String> getProperties(String service, String feature) {
+	public static Map<String,String> getProperties(String ontologyServer, String feature) {
 		String propertiesQuery =
 			"select ?pred ?value where {" +
 			"  <" + feature + "> ?pred ?value" +
 			"}";
 		Map<String,String> properties = new HashMap<String, String>();
-		IStringMatrix matrix = rdf.sparqlRemote(service, propertiesQuery , null);
+		IStringMatrix matrix = rdf.sparqlRemote(ontologyServer, propertiesQuery , null);
 		for (int i=0; i<matrix.getRowCount(); i++) {
 			String predicate = matrix.get(i, "pred");
 			String value = matrix.get(i, "value");
