@@ -63,8 +63,8 @@ public class OpenToxModel extends AbstractDSTest {
 		//Invoke calculation
 		logger.debug("Invoking model: " + model + " for service: " + service);
 		Map<String, String> OTres = null;
-		//retry 5 times, looks like a server issue
-		for (int i=0; i<6; i++){
+		//retry 3 times, looks like a server issue
+		for (int i=0; i<4; i++){
 			if (i>0)
 				logger.debug("  - Model: " + model + " retry number " + i);
 			
