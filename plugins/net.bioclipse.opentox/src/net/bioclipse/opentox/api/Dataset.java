@@ -48,12 +48,13 @@ public class Dataset {
 	private static final Logger logger = Logger.getLogger(Dataset.class);
 	
     private final static String QUERY_PREDICTED_FEATURES =
-        "SELECT ?desc ?numval WHERE {" +
+        "SELECT ?desc ?label ?numval WHERE {" +
         "  ?entry a <http://www.opentox.org/api/1.1#DataEntry> ;" +
         "     <http://www.opentox.org/api/1.1#values> ?value ." +
         "  ?value <http://www.opentox.org/api/1.1#feature> ?feature;" +
         "     <http://www.opentox.org/api/1.1#value> ?numval ." +
         "  ?feature <http://purl.org/dc/elements/1.1/creator> ?desc ." +
+        "  ?feature <http://purl.org/dc/elements/1.1/title> ?label ." +
         "}";
 
 	static CDKManager cdk = new CDKManager();
@@ -117,10 +118,11 @@ public class Dataset {
 		HttpMethod method = new GetMethod(fullURI);
 		method.setRequestHeader("Accept", "application/rdf+xml");
 		client.executeMethod(method);
-		method.getResponseBodyAsString(); // without this things will fail??
+		String result = method.getResponseBodyAsString(); // without this things will fail??
 		IRDFStore store = rdf.createInMemoryStore();
 		rdf.importFromStream(store, method.getResponseBodyAsStream(), "RDF/XML", null);
 		method.releaseConnection();
+		String dump = rdf.asRDFN3(store);
 		return rdf.sparql(store, QUERY_PREDICTED_FEATURES);
 	}
 
