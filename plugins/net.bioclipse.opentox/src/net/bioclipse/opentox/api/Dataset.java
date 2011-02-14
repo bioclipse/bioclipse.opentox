@@ -28,10 +28,10 @@ import java.util.List;
 
 import net.bioclipse.cdk.business.CDKManager;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.domain.StringMatrix;
 import net.bioclipse.opentox.Activator;
 import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.business.RDFManager;
-import net.bioclipse.rdf.model.StringMatrix;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;

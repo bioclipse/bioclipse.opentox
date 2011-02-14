@@ -22,8 +22,8 @@ package net.bioclipse.opentox.api;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.bioclipse.core.domain.IStringMatrix;
 import net.bioclipse.rdf.business.RDFManager;
-import net.bioclipse.rdf.model.IStringMatrix;
 
 public abstract class Model {
 

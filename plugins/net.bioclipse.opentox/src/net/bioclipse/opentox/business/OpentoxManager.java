@@ -19,6 +19,8 @@ import java.util.Map;
 import net.bioclipse.business.BioclipsePlatformManager;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.domain.IStringMatrix;
+import net.bioclipse.core.domain.StringMatrix;
 import net.bioclipse.jobs.IReturner;
 import net.bioclipse.managers.business.IBioclipseManager;
 import net.bioclipse.opentox.api.Algorithm;
@@ -29,8 +31,6 @@ import net.bioclipse.opentox.api.ModelAlgorithm;
 import net.bioclipse.opentox.api.MolecularDescriptorAlgorithm;
 import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.business.RDFManager;
-import net.bioclipse.rdf.model.IStringMatrix;
-import net.bioclipse.rdf.model.StringMatrix;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;

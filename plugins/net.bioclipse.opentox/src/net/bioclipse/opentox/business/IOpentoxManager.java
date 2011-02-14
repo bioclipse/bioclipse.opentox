@@ -17,9 +17,9 @@ import net.bioclipse.core.PublishedClass;
 import net.bioclipse.core.PublishedMethod;
 import net.bioclipse.core.Recorded;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.domain.IStringMatrix;
 import net.bioclipse.jobs.BioclipseUIJob;
 import net.bioclipse.managers.business.IBioclipseManager;
-import net.bioclipse.rdf.model.IStringMatrix;
 
 @PublishedClass(
     value="Manager that maps the OpenTox API 1.1 to manager methods."
@@ -37,7 +37,7 @@ public interface IOpentoxManager extends IBioclipseManager {
     @Recorded
     @PublishedMethod(
         methodSummary=
-            "Calculates a descriptor value for a set of molecules",
+            "Calculates a descriptor value for a set of molecules.",
         params="String service, String descriptor, List<IMolecule> molecules"
     )
     public List<String> calculateDescriptor(String service, String descriptor, List<IMolecule> molecules);
@@ -45,7 +45,7 @@ public interface IOpentoxManager extends IBioclipseManager {
     @Recorded
     @PublishedMethod(
         methodSummary=
-            "Calculates a descriptor value for a single molecule",
+            "Calculates a descriptor value for a single molecule.",
         params="String service, String descriptor, IMolecule molecule"
     )
     public List<String> calculateDescriptor(String service, String descriptor, IMolecule molecule);

@@ -5,13 +5,13 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.bioclipse.core.domain.IStringMatrix;
 import net.bioclipse.opentox.Activator;
 import net.bioclipse.opentox.business.IOpentoxManager;
 import net.bioclipse.qsar.descriptor.IDescriptorCalculator;
 import net.bioclipse.qsar.descriptor.model.DescriptorImpl;
 import net.bioclipse.qsar.descriptor.model.DescriptorProvider;
 import net.bioclipse.qsar.discovery.IDiscoveryService;
-import net.bioclipse.rdf.model.IStringMatrix;
 
 /**
  * A class to discover providers and their descriptor implementations
