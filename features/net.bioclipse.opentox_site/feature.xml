@@ -21,4 +21,9 @@
          id="net.bioclipse.opentox_feature"
          version="0.0.0"/>
 
+   <requires>
+      <import feature="net.bioclipse.core_feature" version="2.4.0.20100709"/>
+      <import feature="net.bioclipse.rdf_feature" version="2.4.1.20110201"/>
+   </requires>
+
 </feature>
