@@ -31,3 +31,5 @@ Import-Package: org.apache.log4j,
  ch.qos.logback.core.joran.spi,
  org.apache.commons.codec
 Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,
+ jars/opentox-opensso-0.0.2-jar-with-dependencies.jar
