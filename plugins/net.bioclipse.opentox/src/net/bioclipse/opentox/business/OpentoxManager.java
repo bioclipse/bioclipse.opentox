@@ -395,8 +395,14 @@ public class OpentoxManager implements IBioclipseManager {
 
         monitor.beginTask("Downloading data set...", 1);
 
+        Map<String,String> extraHeaders = null;
+        if (getToken() != null) {
+        	extraHeaders = new HashMap<String, String>();
+        	extraHeaders.put("subjectid", getToken());
+        }
+        
         IFile result = bioclipse.downloadAsFile(
-            dataSet, "chemical/x-mdl-sdfile", file, monitor
+            dataSet, "chemical/x-mdl-sdfile", file, extraHeaders, monitor
         );
         monitor.done();
 
