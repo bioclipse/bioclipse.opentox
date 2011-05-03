@@ -10,6 +10,7 @@
  ******************************************************************************/
 package net.bioclipse.opentox.business;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -464,6 +465,35 @@ public class OpentoxManager implements IBioclipseManager {
 		}
     }
 
+    public void setDatasetLicense(
+    		String datasetURI, String license,
+    		IProgressMonitor monitor)
+    throws Exception {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	monitor.beginTask("Setting the data set license", 2);
+
+    	new URI(license);
+    	monitor.worked(1);
+    	Dataset.setLicense(datasetURI, license);
+    	monitor.worked(1);
+    	
+    	monitor.done();
+    }
+    	
+    public void setDatasetTitle(
+    		String datasetURI, String title,
+    		IProgressMonitor monitor)
+    throws Exception {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	monitor.beginTask("Setting the data set title", 2);
+
+    	monitor.worked(1);
+    	Dataset.setTitle(datasetURI, title);
+    	monitor.worked(1);
+    	
+    	monitor.done();
+    }
+    	
     public List<String> calculateDescriptor(
     		String service, String descriptor,
     		List<IMolecule> molecules, IProgressMonitor monitor)

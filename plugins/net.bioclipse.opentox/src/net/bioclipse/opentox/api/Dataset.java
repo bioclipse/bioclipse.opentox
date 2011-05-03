@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.bioclipse.cdk.business.CDKManager;
+import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.core.domain.StringMatrix;
 import net.bioclipse.opentox.Activator;
@@ -164,6 +165,51 @@ public class Dataset {
 		}
 		writer.close();
 		addMolecules(datasetURI, strWriter.toString());
+	}
+
+	public static void setMetadata(String datasetURI, String predicate, String value)
+	throws Exception {
+		HttpClient client = new HttpClient();
+		PutMethod method = new PutMethod(normalizeURI(datasetURI) + "metadata");
+		method.getParams().setParameter("http.socket.timeout", new Integer(10000000));
+		method.setRequestHeader("Content-type", "text/n3");
+		String triples =
+			"<" + datasetURI +
+			"> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " +
+			"<http://www.opentox.org/api/1.1#Dataset> .\n" +
+			"<" + datasetURI +
+			"> <" + predicate + "> " + value +
+			" .";
+		System.out.println("Triples:\n" + triples);
+		method.setRequestBody(triples);
+		client.executeMethod(method);
+		int status = method.getStatusCode();
+		if (status == 200) {
+			// OK, that was quick!
+			String response = method.getResponseBodyAsString();
+			System.out.println("Set value response: " + response);
+		} else {
+			throw new BioclipseException("Status : " + status);
+		}
+		method.releaseConnection();
+	}
+
+	public static void setLicense(String datasetURI, String license)
+	throws Exception {
+		setMetadata(
+			datasetURI,
+			"http://purl.org/dc/terms/license",
+			"<" + license + ">"
+		);
+	}
+
+	public static void setTitle(String datasetURI, String title)
+	throws Exception {
+		setMetadata(
+			datasetURI,
+			"http://purl.org/dc/elements/1.1/title",
+			"\"" + title + "\""
+		);
 	}
 
 	public static void addMolecules(String datasetURI, String sdFile)

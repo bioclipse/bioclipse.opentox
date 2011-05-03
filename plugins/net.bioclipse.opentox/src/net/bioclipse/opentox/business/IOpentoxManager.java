@@ -198,6 +198,23 @@ public interface IOpentoxManager extends IBioclipseManager {
     
     @Recorded
     @PublishedMethod(
+        methodSummary="Sets the license of the data set. The license String " +
+        	"must be a URI.",
+        params="String datasetURI, String license"
+    )
+    public String setDatasetLicense(String datasetURI, String license);
+    public void setDatasetLicense(String datasetURI, String license, BioclipseUIJob<String> uiJob);
+    
+    @Recorded
+    @PublishedMethod(
+        methodSummary="Sets the title of the data set.",
+        params="String datasetURI, String title"
+    )
+    public String setDatasetTitle(String datasetURI, String title);
+    public void setDatasetTitle(String datasetURI, String title, BioclipseUIJob<String> uiJob);
+    
+    @Recorded
+    @PublishedMethod(
         methodSummary="Adds a molecule to an existing dataset.",
         params="String datasetURI, IMolecule mol"
     )
