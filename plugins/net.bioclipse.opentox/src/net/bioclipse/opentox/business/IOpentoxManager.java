@@ -207,6 +207,15 @@ public interface IOpentoxManager extends IBioclipseManager {
     
     @Recorded
     @PublishedMethod(
+        methodSummary="Sets the rights holder for the data set. The value " +
+        	"must be a URI.",
+        params="String datasetURI, String holder"
+    )
+    public String setDatasetRightsHolder(String datasetURI, String holder);
+    public void setDatasetRightsHolder(String datasetURI, String holder, BioclipseUIJob<String> uiJob);
+    
+    @Recorded
+    @PublishedMethod(
         methodSummary="Sets the title of the data set.",
         params="String datasetURI, String title"
     )

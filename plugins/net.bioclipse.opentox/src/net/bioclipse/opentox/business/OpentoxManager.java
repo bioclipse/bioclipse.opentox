@@ -480,6 +480,21 @@ public class OpentoxManager implements IBioclipseManager {
     	monitor.done();
     }
     	
+    public void setDatasetRightsHolder(
+    		String datasetURI, String holder,
+    		IProgressMonitor monitor)
+    throws Exception {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	monitor.beginTask("Setting the data set rights holder", 2);
+
+    	new URI(holder);
+    	monitor.worked(1);
+    	Dataset.setRightsHolder(datasetURI, holder);
+    	monitor.worked(1);
+    	
+    	monitor.done();
+    }
+    	
     public void setDatasetTitle(
     		String datasetURI, String title,
     		IProgressMonitor monitor)

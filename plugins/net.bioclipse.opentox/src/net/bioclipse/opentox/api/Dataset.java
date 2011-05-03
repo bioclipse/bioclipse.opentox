@@ -203,6 +203,15 @@ public class Dataset {
 		);
 	}
 
+	public static void setRightsHolder(String datasetURI, String holder)
+	throws Exception {
+		setMetadata(
+			datasetURI,
+			"http://purl.org/dc/terms/rightsHolder",
+			"<" + holder + ">"
+		);
+	}
+
 	public static void setTitle(String datasetURI, String title)
 	throws Exception {
 		setMetadata(
