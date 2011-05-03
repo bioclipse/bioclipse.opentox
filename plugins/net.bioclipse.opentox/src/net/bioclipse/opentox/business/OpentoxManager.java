@@ -24,6 +24,7 @@ import net.bioclipse.core.domain.IStringMatrix;
 import net.bioclipse.core.domain.StringMatrix;
 import net.bioclipse.jobs.IReturner;
 import net.bioclipse.managers.business.IBioclipseManager;
+import net.bioclipse.opentox.Activator;
 import net.bioclipse.opentox.api.Algorithm;
 import net.bioclipse.opentox.api.Dataset;
 import net.bioclipse.opentox.api.Feature;
@@ -79,6 +80,25 @@ public class OpentoxManager implements IBioclipseManager {
      */
     public String getManagerName() {
         return "opentox";
+    }
+
+    public String getToken() {
+    	return Activator.getToken();
+    }
+
+    public void logout() {
+    	Activator.logout();
+    }
+
+    public void login(String user, String pass) throws BioclipseException {
+    	try {
+			Activator.login(user, pass);
+		} catch (Exception e) {
+			throw new BioclipseException(
+				"Error while logging in on OpenTox: " + e.getMessage(),
+				e
+			);
+		}
     }
 
     public Map<String,String> getFeatureInfo(String ontologyServer, String feature, IProgressMonitor monitor) {

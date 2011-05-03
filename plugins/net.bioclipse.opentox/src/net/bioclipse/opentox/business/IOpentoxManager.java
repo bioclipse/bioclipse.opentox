@@ -29,6 +29,27 @@ public interface IOpentoxManager extends IBioclipseManager {
     @Recorded
     @PublishedMethod(
         methodSummary=
+            "Returns the security token for the service."
+    )
+    public String getToken();
+
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
+            "Logs in on OpenTox.",
+        params="String user, String password"
+    )
+    public void login(String user, String password);
+
+    @Recorded
+    @PublishedMethod(
+        methodSummary="Logs out on OpenTox."
+    )
+    public void logout();
+
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
             "Lists the predictive models available from the given service.",
         params="String service"
     )

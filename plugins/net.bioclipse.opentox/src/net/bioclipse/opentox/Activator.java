@@ -13,14 +13,16 @@ package net.bioclipse.opentox;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.bioclipse.opentox.business.IOpentoxManager;
 import net.bioclipse.opentox.business.IJavaOpentoxManager;
 import net.bioclipse.opentox.business.IJavaScriptOpentoxManager;
+import net.bioclipse.opentox.business.IOpentoxManager;
 import net.bioclipse.opentox.prefs.ServicesPreferencePage;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.opentox.aa.opensso.AAServicesConfig;
+import org.opentox.aa.opensso.OpenSSOToken;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -41,6 +43,9 @@ public class Activator extends AbstractUIPlugin {
 
     //A list of OpenTox services in order
     private static List<OpenToxService> openToxServices;
+
+    //A list of OpenTox services in order
+    private static OpenSSOToken token = null;
 
     // Trackers for getting the managers
     private ServiceTracker javaFinderTracker;
@@ -164,7 +169,25 @@ public class Activator extends AbstractUIPlugin {
         return manager;
     }
 
-
+    public static void login(String user, String pass)
+    throws Exception {
+    	if (Activator.token == null) {
+        	Activator.token = new OpenSSOToken(
+        		"http://opensso.in-silico.ch/opensso/identity"
+        	);
+    	}
+    	token.login(user, pass);
+    	
+    }
+    
+    public static void logout() {
+        Activator.logout();
+    }
+    
+    public static String getToken() {
+    	return Activator.token.getToken();
+    }
+    
     public static List<OpenToxService> getOpenToxServices() {
 		return openToxServices;
 	}
