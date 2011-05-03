@@ -86,8 +86,15 @@ public class OpentoxManager implements IBioclipseManager {
     	return Activator.getToken();
     }
 
-    public void logout() {
-    	Activator.logout();
+    public void logout() throws BioclipseException {
+    	try {
+			Activator.logout();
+		} catch (Exception e) {
+			throw new BioclipseException(
+				"Error while logging out of OpenTox: " + e.getMessage(),
+				e
+			);
+		}
     }
 
     public void login(String user, String pass) throws BioclipseException {

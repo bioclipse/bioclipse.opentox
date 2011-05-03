@@ -21,7 +21,6 @@ import net.bioclipse.opentox.prefs.ServicesPreferencePage;
 import org.apache.log4j.Logger;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.opentox.aa.opensso.AAServicesConfig;
 import org.opentox.aa.opensso.OpenSSOToken;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -180,11 +179,15 @@ public class Activator extends AbstractUIPlugin {
     	
     }
     
-    public static void logout() {
-        Activator.logout();
+    public static void logout()
+    throws Exception {
+        Activator.token.logout();
+        Activator.token = null;
     }
     
     public static String getToken() {
+    	if (Activator.token == null) return null;
+    	
     	return Activator.token.getToken();
     }
     
