@@ -8,7 +8,7 @@
     <extension
         point="org.eclipse.ui.commands">
         <command
-              defaultHandler="net.bioclipse.opentox.ui.handlers.CreateDataset"
+              defaultHandler="net.bioclipse.opentox.ui.handlers.CreateDatasetHandler"
               id="net.bioclipse.opentox.ui.handlers.CreateDataset"
               name="Create OpenTox Dataset">
         </command>
