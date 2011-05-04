@@ -59,9 +59,9 @@ public interface IOpentoxManager extends IBioclipseManager {
     @PublishedMethod(
         methodSummary=
             "Calculates a descriptor value for a set of molecules.",
-        params="String service, String descriptor, List<IMolecule> molecules"
+        params="String service, String descriptor, List<? extends IMolecule> molecules"
     )
-    public List<String> calculateDescriptor(String service, String descriptor, List<IMolecule> molecules);
+    public List<String> calculateDescriptor(String service, String descriptor, List<? extends IMolecule> molecules);
 
     @Recorded
     @PublishedMethod(
@@ -75,9 +75,9 @@ public interface IOpentoxManager extends IBioclipseManager {
     @PublishedMethod(
         methodSummary=
             "Predicts modeled properties for the given list of molecules.",
-        params="String service, String model, List<IMolecule> molecules"
+        params="String service, String model, List<? extends IMolecule> molecules"
     )
-    public List<String> predictWithModel(String service, String model, List<IMolecule> molecules);
+    public List<String> predictWithModel(String service, String model, List<? extends IMolecule> molecules);
 
     @Recorded
     @PublishedMethod(
@@ -93,7 +93,7 @@ public interface IOpentoxManager extends IBioclipseManager {
             "Predicts modeled properties for the given molecule.",
         params="String service, String model, IMolecule molecule"
     )
-    public Map<String,String> predictWithModelWithLabel(String service, String model, List<IMolecule> molecules);
+    public Map<String,String> predictWithModelWithLabel(String service, String model, List<? extends IMolecule> molecules);
 
     @Recorded
     @PublishedMethod(
@@ -204,10 +204,10 @@ public interface IOpentoxManager extends IBioclipseManager {
     @Recorded
     @PublishedMethod(
         methodSummary="Creates a new dataset.",
-        params="String service, List<IMolecule> molecules"
+        params="String service, List<? extends IMolecule> molecules"
     )
-    public String createDataset(String service, List<IMolecule> molecules);
-    public void createDataset(String service, List<IMolecule> molecules, BioclipseUIJob<String> uiJob);
+    public String createDataset(String service, List<? extends IMolecule> molecules);
+    public void createDataset(String service, List<? extends IMolecule> molecules, BioclipseUIJob<String> uiJob);
     
     @Recorded
     @PublishedMethod(
@@ -253,9 +253,9 @@ public interface IOpentoxManager extends IBioclipseManager {
     @Recorded
     @PublishedMethod(
         methodSummary="Adds a list of molecules to an existing dataset.",
-        params="String datasetURI, List<IMolecule> molecules"
+        params="String datasetURI, List<? extends IMolecule> molecules"
     )
-    public void addMolecules(String datasetURI, List<IMolecule> molecules);
+    public void addMolecules(String datasetURI, List<? extends IMolecule> molecules);
     
     @Recorded
     @PublishedMethod(
