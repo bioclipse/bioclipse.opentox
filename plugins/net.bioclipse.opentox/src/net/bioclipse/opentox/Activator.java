@@ -17,6 +17,7 @@ import net.bioclipse.opentox.business.IJavaOpentoxManager;
 import net.bioclipse.opentox.business.IJavaScriptOpentoxManager;
 import net.bioclipse.opentox.business.IOpentoxManager;
 import net.bioclipse.opentox.prefs.ServicesPreferencePage;
+import net.bioclipse.usermanager.business.IUserManager;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -49,8 +50,12 @@ public class Activator extends AbstractUIPlugin {
     // Trackers for getting the managers
     private ServiceTracker javaFinderTracker;
     private ServiceTracker jsFinderTracker;
-
+    
     public Activator() {
+    	IUserManager userManager = net.bioclipse.usermanager.Activator
+    		.getDefault().getUserManager();
+    	OpenToxLogInOutListener listener = new OpenToxLogInOutListener(userManager);
+    	userManager.addListener(listener);
     }
 
     public void start(BundleContext context) throws Exception {

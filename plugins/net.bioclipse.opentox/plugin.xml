@@ -39,5 +39,20 @@
                serviceURL="http://opentox.informatik.tu-muenchen.de:8080/OpenTox-dev/">
          </service>
    </extension>
+   <extension
+         point="net.bioclipse.usermanager.accountType">
+      <AccountType
+            id="net.bioclipse.opentox.OpenSSOAccount"
+            name="OpenTox OpenSSO Account">
+         <property
+               name="username"
+               required="true">
+         </property>
+         <property
+               name="password"
+               required="true">
+         </property>
+      </AccountType>
+   </extension>
 
 </plugin>
