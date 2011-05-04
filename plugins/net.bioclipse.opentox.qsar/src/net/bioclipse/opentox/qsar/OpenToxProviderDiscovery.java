@@ -127,8 +127,8 @@ public class OpenToxProviderDiscovery implements IDiscoveryService{
 			
 			//Add a service
 			OpenToxProvider s1 = new OpenToxProvider(
-					"ideaconsult.provider",
-					"Ideaconsult",
+					"opentox.provider",
+					"Opentox",
 					"http://apps.ideaconsult.net:8080/ambit2/",
 					"http://apps.ideaconsult.net:8080/ontology/");
 			

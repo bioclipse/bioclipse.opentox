@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.bioclipse.opentox.ds_feature"
-      label="Ds_feature"
+      label="OpenTox for DS"
       version="1.0.0.qualifier"
-      provider-name="The Bioclipse team">
+      provider-name="The Bioclipse team"
+      plugin="net.bioclipse.opentox.ds">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]

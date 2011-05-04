@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.bioclipse.opentox_feature"
-      label="Bioclipse OpenTox Feature"
+      label="Bioclipse OpenTox"
       version="2.5.0.qualifier"
       provider-name="Bioclipse Team"
       plugin="net.bioclipse.opentox">
