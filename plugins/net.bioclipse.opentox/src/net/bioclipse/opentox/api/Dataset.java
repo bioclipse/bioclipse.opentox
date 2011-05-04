@@ -24,7 +24,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.bioclipse.cdk.business.CDKManager;
 import net.bioclipse.core.business.BioclipseException;
@@ -36,10 +38,12 @@ import net.bioclipse.rdf.business.RDFManager;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.log4j.Logger;
 import org.openscience.cdk.AtomContainer;
@@ -65,9 +69,10 @@ public class Dataset {
 	public static List<String> getListOfAvailableDatasets(String service)
 	throws IOException {
 		HttpClient client = new HttpClient();
-		HttpMethod method = new GetMethod(service + "dataset");
-		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
-		method.setRequestHeader("Accept", "text/uri-list");
+		GetMethod method = new GetMethod(service + "dataset");
+		HttpMethodHelper.addMethodHeaders(method,
+			new HashMap<String,String>() {{ put("Accept", "text/uri-list"); }}
+		);
 		client.executeMethod(method);
 
 		List<String> datasets = new ArrayList<String>();
@@ -93,9 +98,10 @@ public class Dataset {
 	throws IOException {
 		HttpClient client = new HttpClient();
 		datasetURI = normalizeURI(datasetURI);
-		HttpMethod method = new GetMethod(datasetURI + "compounds");
-		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
-		method.setRequestHeader("Accept", "text/uri-list");
+		GetMethod method = new GetMethod(datasetURI + "compounds");
+		HttpMethodHelper.addMethodHeaders(method,
+			new HashMap<String,String>() {{ put("Accept", "text/uri-list"); }}
+		);
 		client.executeMethod(method);
 		List<String> compounds = new ArrayList<String>();
 		BufferedReader reader = new BufferedReader(
@@ -119,9 +125,10 @@ public class Dataset {
 		HttpClient client = new HttpClient();
 		String fullURI = baseURI + "feature_uris[]=" + featureURIs;
 		fullURI = URIUtil.encodeQuery(fullURI);
-		HttpMethod method = new GetMethod(fullURI);
-		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
-		method.setRequestHeader("Accept", "application/rdf+xml");
+		GetMethod method = new GetMethod(fullURI);
+		HttpMethodHelper.addMethodHeaders(method,
+			new HashMap<String,String>() {{ put("Accept", "application/rdf+xml"); }}
+		);
 		client.executeMethod(method);
 		String result = method.getResponseBodyAsString(); // without this things will fail??
 		IRDFStore store = rdf.createInMemoryStore();
@@ -134,8 +141,8 @@ public class Dataset {
 	public static void deleteDataset(String datasetURI)
 	throws Exception {
 		HttpClient client = new HttpClient();
-		HttpMethod method = new DeleteMethod(datasetURI);
-		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
+		DeleteMethod method = new DeleteMethod(datasetURI);
+		HttpMethodHelper.addMethodHeaders(method, null);
 		client.executeMethod(method);
 		int status = method.getStatusCode();
 		method.releaseConnection();
@@ -171,8 +178,9 @@ public class Dataset {
 	throws Exception {
 		HttpClient client = new HttpClient();
 		PutMethod method = new PutMethod(normalizeURI(datasetURI) + "metadata");
-		method.getParams().setParameter("http.socket.timeout", new Integer(10000000));
-		method.setRequestHeader("Content-type", "text/n3");
+		HttpMethodHelper.addMethodHeaders(method,
+			new HashMap<String,String>() {{ put("Content-type", "text/n3"); }}
+		);
 		String triples =
 			"<" + datasetURI +
 			"> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " +
@@ -226,9 +234,12 @@ public class Dataset {
 		HttpClient client = new HttpClient();
 		datasetURI = normalizeURI(datasetURI);
 		PutMethod method = new PutMethod(datasetURI);
-		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
-		method.setRequestHeader("Accept", "text/uri-list");
-		method.setRequestHeader("Content-type", "chemical/x-mdl-sdfile");
+		HttpMethodHelper.addMethodHeaders(method,
+			new HashMap<String,String>() {{
+				put("Accept", "text/uri-list");
+				put("Content-type", "chemical/x-mdl-sdfile");
+			}}
+		);
 		method.setRequestBody(sdFile);
 		client.executeMethod(method);
 		int status = method.getStatusCode();
@@ -287,9 +298,13 @@ public class Dataset {
 	throws Exception {
 		HttpClient client = new HttpClient();
 		PostMethod method = new PostMethod(service + "dataset");
-		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
-		method.setRequestHeader("Accept", "text/uri-list");
-		method.setRequestHeader("Content-type", "chemical/x-mdl-sdfile");
+		HttpMethodHelper.addMethodHeaders(method,
+			new HashMap<String,String>() {{
+				put("Accept", "text/uri-list");
+				put("Content-type", "chemical/x-mdl-sdfile");
+			}}
+		);
+		System.out.println("Method: " + method.toString());
 		method.setRequestBody(sdFile);
 		client.executeMethod(method);
 		int status = method.getStatusCode();

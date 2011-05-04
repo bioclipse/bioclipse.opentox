@@ -20,11 +20,11 @@
 package net.bioclipse.opentox.api;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import net.bioclipse.opentox.Activator;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 
@@ -35,7 +35,10 @@ public class Task {
 	public static TaskState getState(String task)
 	throws IOException {
 		HttpClient client = new HttpClient();
-		HttpMethod method = new GetMethod(task);
+		GetMethod method = new GetMethod(task);
+		HttpMethodHelper.addMethodHeaders(method,
+			new HashMap<String,String>() {{ put("Accept", "text/uri-list"); }}
+		);
 		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
 		method.setRequestHeader("Accept", "text/uri-list");
 		client.executeMethod(method);

@@ -20,8 +20,7 @@
 package net.bioclipse.opentox.api;
 
 import java.io.IOException;
-
-import net.bioclipse.opentox.Activator;
+import java.util.HashMap;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -34,8 +33,9 @@ public abstract class MolecularDescriptorAlgorithm extends Algorithm {
 		HttpClient client = new HttpClient();
 		dataSetURI = Dataset.normalizeURI(dataSetURI);
 		PostMethod method = new PostMethod(descriptor);
-		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
-		method.setRequestHeader("Accept", "text/uri-list");
+		HttpMethodHelper.addMethodHeaders(method,
+			new HashMap<String,String>() {{ put("Accept", "text/uri-list"); }}
+		);
 		method.setParameter("dataset_uri", dataSetURI);
 		method.setParameter("dataset_service", service + "dataset");
 		client.executeMethod(method);
