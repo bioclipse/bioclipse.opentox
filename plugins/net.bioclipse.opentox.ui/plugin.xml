@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.menus">
+   </extension>
+
+    <extension
+        point="org.eclipse.ui.commands">
+        <command
+              defaultHandler="net.bioclipse.opentox.ui.handlers.CreateDataset"
+              id="net.bioclipse.opentox.ui.handlers.CreateDataset"
+              name="Create OpenTox Dataset">
+        </command>
+  	</extension>
+
+<extension
+  		point="org.eclipse.ui.menus">
+   <menuContribution
+			locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+     <menu
+           id="net.bioclipse.opentox.popup"
+           label="OpenTox">
+
+		    <command
+		    	commandId="net.bioclipse.opentox.ui.handlers.CreateDataset"
+		    	label="Create OpenTox Dataset"
+		        icon="icons/many_molecules.png">
+		      	<visibleWhen>
+			   		<iterate operator="and" ifEmpty="false">
+		      			<adapt type="org.eclipse.core.resources.IResource">
+			      			<or>
+				                <test property="org.eclipse.core.resources.contentTypeId"
+				           	    	value="net.bioclipse.contenttypes.sdf"/>
+                                <test property="org.eclipse.core.resources.contentTypeId"
+                                    value="net.bioclipse.contenttypes.sdf0d"/>
+                                <test property="org.eclipse.core.resources.contentTypeId"
+                                    value="net.bioclipse.contenttypes.sdf2d"/>
+                                <test property="org.eclipse.core.resources.contentTypeId"
+                                    value="net.bioclipse.contenttypes.sdf3d"/>
+				            </or>
+			      		</adapt>
+			   		</iterate>
+		        </visibleWhen>
+	       </command>
+	  
+	  <visibleWhen
+              checkEnabled="true">
+           <reference
+                 definitionId="net.bioclipse.cdk.ui.sdfeditor.menu.fileOrEditor">
+           </reference>
+        </visibleWhen>
+
+     </menu>
+   </menuContribution>
+  </extension>
+
+
+</plugin>
