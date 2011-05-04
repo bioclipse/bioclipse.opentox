@@ -287,7 +287,7 @@ public interface IOpentoxManager extends IBioclipseManager {
         methodSummary=
             "Downloads a data set and saves it as a MDL SD file formated " +
             "file with the given filename.",
-        params="String service, Integer dataSet, String filename"
+        params="String service, String dataSet, String filename"
     )
     public String downloadDataSetAsMDLSDfile(String service, String dataSet,
         String filename);
