@@ -61,6 +61,7 @@ public class Dataset {
 	static CDKManager cdk = new CDKManager();
 	static RDFManager rdf = new RDFManager();
 	
+	@SuppressWarnings("serial")
 	public static List<String> getListOfAvailableDatasets(String service)
 	throws IOException {
 		HttpClient client = new HttpClient();
@@ -89,6 +90,7 @@ public class Dataset {
 		return datasetURI;
 	}
 	
+	@SuppressWarnings("serial")
 	public static List<String> getCompoundList(String datasetURI)
 	throws IOException {
 		HttpClient client = new HttpClient();
@@ -111,6 +113,7 @@ public class Dataset {
 		return compounds;
 	}
 
+	@SuppressWarnings("serial")
 	public static StringMatrix listPredictedFeatures(String datasetURI)
 	throws Exception {
 		datasetURI = datasetURI.replaceAll("\n", "");
@@ -224,6 +227,7 @@ public class Dataset {
 		);
 	}
 
+	@SuppressWarnings("serial")
 	public static void addMolecules(String datasetURI, String sdFile)
 	throws Exception {
 		HttpClient client = new HttpClient();
