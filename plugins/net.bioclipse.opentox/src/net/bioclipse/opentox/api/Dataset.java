@@ -26,24 +26,19 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.bioclipse.cdk.business.CDKManager;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.core.domain.StringMatrix;
-import net.bioclipse.opentox.Activator;
 import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.business.RDFManager;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.log4j.Logger;
 import org.openscience.cdk.AtomContainer;
@@ -273,7 +268,7 @@ public class Dataset {
 			writer.write(cdk.asCDKMolecule(mol).getAtomContainer());
 		}
 		writer.close();
-		return createNewDataset(service, strWriter.toString());
+		return createNewDataset(normalizeURI(service), strWriter.toString());
 	}
 
 	public static String createNewDataset(String service, IMolecule mol)
