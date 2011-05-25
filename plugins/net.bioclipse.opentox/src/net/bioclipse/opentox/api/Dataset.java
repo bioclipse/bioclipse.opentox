@@ -194,6 +194,20 @@ public class Dataset {
 			// OK, that was quick!
 			String response = method.getResponseBodyAsString();
 			System.out.println("Set value response: " + response);
+		} else if (status == 202) {
+			// OK, we got a task... let's wait until it is done
+			String task = method.getResponseBodyAsString();
+			Thread.sleep(1000); // let's be friendly, and wait 1 sec
+			TaskState state = Task.getState(task);
+			while (!state.isFinished()) {
+				Thread.sleep(3000); // let's be friendly, and wait 3 sec
+				state = Task.getState(task);
+				if (state.isRedirected()) {
+					task = state.getResults();
+				}
+			}
+			// OK, it should be finished now
+			String dataset = state.getResults();
 		} else {
 			throw new BioclipseException("Status : " + status);
 		}
