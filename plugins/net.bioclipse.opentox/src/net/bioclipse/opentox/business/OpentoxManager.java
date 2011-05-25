@@ -264,6 +264,31 @@ public class OpentoxManager implements IBioclipseManager {
         }
     }
     
+    public IStringMatrix searchModels(String ontologyServer, String query, IProgressMonitor monitor)
+    throws BioclipseException {
+        if (monitor == null) monitor = new NullProgressMonitor();
+        monitor.beginTask("Searching available data sets...", 1);
+
+        try {
+            String sparql =
+            	"SELECT ?set ?title WHERE {" +
+                "  ?set a <http://www.opentox.org/api/1.1#Model> ;" +
+                "    <http://purl.org/dc/elements/1.1/title> ?title ." +
+                "  FILTER regex(?title, \"" + query + "\")" +
+                "}";
+            IStringMatrix results = rdf.sparqlRemote(ontologyServer, sparql, monitor);
+            System.out.println("SPARQL:\n" + sparql);
+            monitor.worked(1);
+
+            return results;
+        } catch (Exception exception) {
+            throw new BioclipseException(
+                "Error while accessing the OpenTox ontology server at: " + ontologyServer,
+                exception
+            );
+        }
+    }
+    
     public List<String> listAlgorithms(String ontologyServer, IProgressMonitor monitor)
     throws BioclipseException {
         if (monitor == null) monitor = new NullProgressMonitor();
