@@ -22,7 +22,8 @@ import net.bioclipse.jobs.BioclipseUIJob;
 import net.bioclipse.managers.business.IBioclipseManager;
 
 @PublishedClass(
-    value="Manager that maps the OpenTox API 1.1 to manager methods."
+    value="Manager that maps the OpenTox API 1.1 to manager methods.",
+    doi={"10.1186/1758-2946-2-7"}
 )
 public interface IOpentoxManager extends IBioclipseManager {
 
