@@ -196,6 +196,15 @@ public interface IOpentoxManager extends IBioclipseManager {
     
     @Recorded
     @PublishedMethod(
+        methodSummary=
+            "Search the descriptors available from the given service that " +
+            "match the given title search string.",
+        params="String ontologyServer, Search query"
+    )
+    public IStringMatrix searchDescriptors(String ontologyServer, String query);
+    
+    @Recorded
+    @PublishedMethod(
         methodSummary="Creates a new dataset.",
         params="String service"
     )
