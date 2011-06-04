@@ -311,4 +311,19 @@ public interface IOpentoxManager extends IBioclipseManager {
     public String downloadDataSetAsMDLSDfile(String service, String dataSet,
         String filename);
 
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
+            "Searches the OpenTox network for the given molecule.",
+        params="String service, IMolecule molecule"
+    )
+    public List<String> search(String service, IMolecule molecule);
+
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
+            "Searches the OpenTox network for the given molecule.",
+        params="String service, String inchi"
+    )
+    public List<String> search(String service, String inchi);
 }

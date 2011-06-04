@@ -1,5 +1,4 @@
-/*******************************************************************************
- * Copyright (c) 2009  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (c) 2009-2011  Egon Willighagen <egonw@users.sf.net>
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,10 +6,14 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contact: http://www.bioclipse.net/
- ******************************************************************************/
+ */
 package net.bioclipse.opentox.business;
 
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,8 +21,10 @@ import java.util.List;
 import java.util.Map;
 
 import net.bioclipse.business.BioclipsePlatformManager;
+import net.bioclipse.cdk.business.CDKManager;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
+import net.bioclipse.core.domain.IMolecule.Property;
 import net.bioclipse.core.domain.IStringMatrix;
 import net.bioclipse.core.domain.StringMatrix;
 import net.bioclipse.jobs.IReturner;
@@ -28,12 +33,15 @@ import net.bioclipse.opentox.Activator;
 import net.bioclipse.opentox.api.Algorithm;
 import net.bioclipse.opentox.api.Dataset;
 import net.bioclipse.opentox.api.Feature;
+import net.bioclipse.opentox.api.HttpMethodHelper;
 import net.bioclipse.opentox.api.Model;
 import net.bioclipse.opentox.api.ModelAlgorithm;
 import net.bioclipse.opentox.api.MolecularDescriptorAlgorithm;
 import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.business.RDFManager;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -45,6 +53,7 @@ public class OpentoxManager implements IBioclipseManager {
 
     private RDFManager rdf = new RDFManager();
     private BioclipsePlatformManager bioclipse = new BioclipsePlatformManager();
+    private CDKManager cdk = new CDKManager();
 
     private final static String QUERY_ALGORITHMS =
         "SELECT ?algo WHERE {" +
@@ -740,5 +749,50 @@ public class OpentoxManager implements IBioclipseManager {
 			cleanedData.add(value);
 		}
 		return cleanedData;
+	}
+	
+    public List<String> search(String service, IMolecule molecule) throws BioclipseException {
+    	String inchi = cdk.asCDKMolecule(molecule).getInChI(
+    		Property.USE_CACHED_OR_CALCULATED);
+    	return search(service, inchi);
+    }
+
+	@SuppressWarnings("serial")
+	public List<String> search(String service, String inchi) throws BioclipseException {
+		try {
+			URL searchURL = new URL(
+				normalizeURI(service) + "query/compound/search/all?search=" +
+				URLEncoder.encode(inchi, "UTF-8")
+			);
+			HttpClient client = new HttpClient();
+			GetMethod method = new GetMethod(searchURL.toString());
+			HttpMethodHelper.addMethodHeaders(method,
+				new HashMap<String,String>() {{ put("Accept", "text/uri-list"); }}
+			);
+			client.executeMethod(method);
+
+			List<String> compounds = new ArrayList<String>();
+			BufferedReader reader = new BufferedReader(
+				new StringReader(method.getResponseBodyAsString())
+			);
+			String line;
+			while ((line = reader.readLine()) != null) {
+				line = line.trim();
+				if (line.length() > 0) compounds.add(line);
+			}
+			return compounds;
+		} catch (Exception exception) {
+			throw new BioclipseException(
+				"Error while creating request URI...",
+				exception
+			);
+		}
+	}
+
+	private static String normalizeURI(String datasetURI) {
+		datasetURI = datasetURI.replaceAll("\\n", "");
+		datasetURI = datasetURI.replaceAll("\\r", "");
+		if (!datasetURI.endsWith("/")) datasetURI += "/";
+		return datasetURI;
 	}
 }
