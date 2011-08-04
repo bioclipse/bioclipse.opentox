@@ -28,9 +28,10 @@ The Eclipse Public License accompanies this distribution, and is available at ht
    </url>
 
    <requires>
-      <import feature="net.bioclipse.opentox_feature"/>
-      <import feature="net.bioclipse.core.tests_feature"/>
-      <import feature="net.bioclipse.core_feature"/>
+      <import feature="net.bioclipse.opentox_feature" version="2.5.0.qualifier"/>
+      <import feature="net.bioclipse.core_feature" version="2.5.0.qualifier"/>
+      <import feature="net.bioclipse.chemoinformatics_feature" version="2.5.0.qualifier"/>
+      <import feature="net.bioclipse.rdf_feature" version="2.5.0.qualifier"/>
    </requires>
 
    <plugin
@@ -42,6 +43,20 @@ The Eclipse Public License accompanies this distribution, and is available at ht
 
    <plugin
          id="net.bioclipse.core.tests"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.bioclipse.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.hamcrest"
          download-size="0"
          install-size="0"
          version="0.0.0"
