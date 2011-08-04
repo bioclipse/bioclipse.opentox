@@ -22,8 +22,15 @@ extends AbstractManagerTest {
 
     protected static IOpentoxManager managerNamespace;
     
-    @Test public void testDoSomething() {
-        Assert.fail("This method should test something.");
+    @Test public void testAuthentication() {
+        opentox.logout();
+        Assert.assertNull(opentox.getToken());
+        opentox.login("guest", "guest"); // the official test account
+        String token = opentox.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertNotSame(0,token.length());
+        opentox.logout();
+        Assert.assertNull(opentox.getToken());
     }
 
     public Class<? extends IBioclipseManager> getManagerInterface() {
