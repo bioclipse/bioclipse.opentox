@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="net.bioclipse.cheminformatics.test_feature"
+      id="net.bioclipse.opentox.test_feature"
       label="Bioclipse OpenTox Test Feature"
       version="2.5.0.qualifier"
       provider-name="The Bioclipse Team"
@@ -50,13 +50,6 @@ The Eclipse Public License accompanies this distribution, and is available at ht
 
    <plugin
          id="net.bioclipse.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.hamcrest"
          download-size="0"
          install-size="0"
          version="0.0.0"
