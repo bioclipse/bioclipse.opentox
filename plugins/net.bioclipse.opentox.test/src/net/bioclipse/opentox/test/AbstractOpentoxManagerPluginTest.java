@@ -10,18 +10,10 @@
  ******************************************************************************/
 package net.bioclipse.opentox.test;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URL;
-import java.util.List;
-
-import net.bioclipse.core.ResourcePathTransformer;
 import net.bioclipse.core.tests.AbstractManagerTest;
+import net.bioclipse.managers.business.IBioclipseManager;
 import net.bioclipse.opentox.business.IOpentoxManager;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.FileLocator;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,4 +26,7 @@ extends AbstractManagerTest {
         Assert.fail("This method should test something.");
     }
 
+    public Class<? extends IBioclipseManager> getManagerInterface() {
+    	return IOpentoxManager.class;
+    }
 }
