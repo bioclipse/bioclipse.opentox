@@ -186,6 +186,9 @@ public class Activator extends AbstractUIPlugin {
     
     public static void logout()
     throws Exception {
+    	if (Activator.token == null) // already logged out
+    		return;
+
         Activator.token.logout();
         Activator.token = null;
     }
