@@ -18,13 +18,13 @@ public class JavaScriptOpentoxManagerPluginTest
     extends AbstractOpentoxManagerPluginTest {
 
     @BeforeClass public static void setup() {
-        managerNamespace = net.bioclipse.opentox.Activator.getDefault()
+        opentox = net.bioclipse.opentox.Activator.getDefault()
             .getJavaScriptOpentoxManager();
     }
 
 	@Override
 	public IBioclipseManager getManager() {
-		return managerNamespace;
+		return opentox;
 	}
 
 }

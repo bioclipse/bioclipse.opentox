@@ -20,7 +20,7 @@ import org.junit.Test;
 public abstract class AbstractOpentoxManagerPluginTest
 extends AbstractManagerTest {
 
-    protected static IOpentoxManager managerNamespace;
+    protected static IOpentoxManager opentox;
     
     @Test public void testAuthentication() {
         opentox.logout();
