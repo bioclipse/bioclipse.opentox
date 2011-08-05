@@ -10,8 +10,12 @@
  ******************************************************************************/
 package net.bioclipse.opentox.test;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import net.bioclipse.cdk.business.CDKManager;
+import net.bioclipse.cdk.domain.ICDKMolecule;
+import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IStringMatrix;
 import net.bioclipse.core.tests.AbstractManagerTest;
 import net.bioclipse.managers.business.IBioclipseManager;
@@ -22,6 +26,8 @@ import org.junit.Test;
 
 public abstract class AbstractOpentoxManagerPluginTest
 extends AbstractManagerTest {
+
+	private CDKManager cdk = new CDKManager();
 
 	// the official test account
 	private final static String TEST_ACCOUNT = "guest";
@@ -70,6 +76,38 @@ extends AbstractManagerTest {
     	Assert.assertNotSame(0, sets.size());
     }
 
+    @Test public void testCalculateDescriptor_List_Molecule()
+    throws BioclipseException, InvocationTargetException {
+    	IStringMatrix stringMat = opentox.listDescriptors(TEST_SERVER_ONT);
+
+    	String descriptor = stringMat.get(1, "desc");
+    	Assert.assertNotNull(descriptor);
+
+    	List<ICDKMolecule> molecules = cdk.createMoleculeList();
+    	molecules.add(cdk.fromSMILES("COC"));
+    	molecules.add(cdk.fromSMILES("CNC"));
+
+    	List<String> descriptorVals = opentox.calculateDescriptor(
+    		TEST_SERVER_OT, descriptor, molecules
+    	);
+    	Assert.assertNotNull(descriptorVals);
+    	Assert.assertSame(2, descriptorVals.size());
+    }
+    
+    @Test public void testCalculateDescriptor()
+    throws BioclipseException, InvocationTargetException {
+    	IStringMatrix stringMat = opentox.listDescriptors(TEST_SERVER_ONT);
+
+    	String descriptor = stringMat.get(1, "desc");
+    	Assert.assertNotNull(descriptor);
+
+    	List<String> descriptorVals = opentox.calculateDescriptor(
+    		TEST_SERVER_OT, descriptor, cdk.fromSMILES("ClCCl")
+    	);
+    	Assert.assertNotNull(descriptorVals);
+    	Assert.assertSame(1, descriptorVals.size());
+    }
+    
     public Class<? extends IBioclipseManager> getManagerInterface() {
     	return IOpentoxManager.class;
     }
