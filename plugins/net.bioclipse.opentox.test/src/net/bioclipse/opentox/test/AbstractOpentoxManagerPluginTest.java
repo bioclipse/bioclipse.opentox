@@ -10,6 +10,9 @@
  ******************************************************************************/
 package net.bioclipse.opentox.test;
 
+import java.util.List;
+
+import net.bioclipse.core.domain.IStringMatrix;
 import net.bioclipse.core.tests.AbstractManagerTest;
 import net.bioclipse.managers.business.IBioclipseManager;
 import net.bioclipse.opentox.business.IOpentoxManager;
@@ -38,6 +41,33 @@ extends AbstractManagerTest {
         Assert.assertNotSame(0,token.length());
         opentox.logout();
         Assert.assertNull(opentox.getToken());
+    }
+
+    @Test public void testSearchDescriptors() {
+    	IStringMatrix descriptors = opentox.searchDescriptors(
+    		TEST_SERVER_ONT, "LogP"
+    	);
+    	Assert.assertNotNull(descriptors);
+    	// expect at least one hit:
+    	Assert.assertNotSame(0, descriptors.getRowCount());
+    }
+
+    @Test public void testSearchModels() {
+    	IStringMatrix models = opentox.searchModels(
+    		TEST_SERVER_ONT, "ToxTree"
+    	);
+    	Assert.assertNotNull(models);
+    	// expect at least one hit:
+    	Assert.assertNotSame(0, models.getRowCount());
+    }
+
+    @Test public void testListDatasets() {
+    	List<String> sets = opentox.listDataSets(
+    		TEST_SERVER_OT
+    	);
+    	Assert.assertNotNull(sets);
+    	// expect at least one hit:
+    	Assert.assertNotSame(0, sets.size());
     }
 
     public Class<? extends IBioclipseManager> getManagerInterface() {
