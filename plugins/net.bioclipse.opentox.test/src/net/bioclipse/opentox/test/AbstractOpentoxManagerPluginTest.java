@@ -85,6 +85,24 @@ extends AbstractManagerTest {
     	Assert.assertNotSame(0, sets.size());
     }
 
+    @Test public void testListAlgorithms() {
+    	List<String> algos = opentox.listAlgorithms(
+    		TEST_SERVER_OT
+    	);
+    	Assert.assertNotNull(algos);
+    	// expect at least one hit:
+    	Assert.assertNotSame(0, algos.size());
+    }
+
+    @Test public void testListDescriptors() {
+    	IStringMatrix descriptors = opentox.listDescriptors(
+    		TEST_SERVER_OT
+    	);
+    	Assert.assertNotNull(descriptors);
+    	// expect at least one hit:
+    	Assert.assertNotSame(0, descriptors.getRowCount());
+    }
+
     @Test public void testCalculateDescriptor_List_Molecule()
     throws BioclipseException, InvocationTargetException {
     	IStringMatrix stringMat = opentox.listDescriptors(TEST_SERVER_ONT);
