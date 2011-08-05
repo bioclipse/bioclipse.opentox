@@ -67,6 +67,15 @@ extends AbstractManagerTest {
     	Assert.assertNotSame(0, models.getRowCount());
     }
 
+    @Test public void testSearchDataSets() {
+    	IStringMatrix models = opentox.searchDataSets(
+    		TEST_SERVER_ONT, "EPA"
+    	);
+    	Assert.assertNotNull(models);
+    	// expect at least one hit:
+    	Assert.assertNotSame(0, models.getRowCount());
+    }
+
     @Test public void testListDatasets() {
     	List<String> sets = opentox.listDataSets(
     		TEST_SERVER_OT
