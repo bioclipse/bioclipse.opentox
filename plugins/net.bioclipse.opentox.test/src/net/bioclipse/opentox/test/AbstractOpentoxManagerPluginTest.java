@@ -127,7 +127,7 @@ extends AbstractManagerTest {
     throws BioclipseException, InvocationTargetException {
     	IStringMatrix stringMat = opentox.listDescriptors(TEST_SERVER_ONT);
 
-    	String descriptor = stringMat.get(1, "desc");
+    	String descriptor = stringMat.get(1, "algo");
     	Assert.assertNotNull(descriptor);
 
     	List<ICDKMolecule> molecules = cdk.createMoleculeList();
@@ -145,7 +145,7 @@ extends AbstractManagerTest {
     throws BioclipseException, InvocationTargetException {
     	IStringMatrix stringMat = opentox.listDescriptors(TEST_SERVER_ONT);
 
-    	String descriptor = stringMat.get(1, "desc");
+    	String descriptor = stringMat.get(1, "algo");
     	Assert.assertNotNull(descriptor);
 
     	List<String> descriptorVals = opentox.calculateDescriptor(
