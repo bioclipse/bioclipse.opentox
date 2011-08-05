@@ -25,21 +25,28 @@ import java.util.HashMap;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.log4j.Logger;
 
 public abstract class MolecularDescriptorAlgorithm extends Algorithm {
+
+	private static final Logger logger = Logger.getLogger(MolecularDescriptorAlgorithm.class);
 
 	public static String calculate(String service, String descriptor, String dataSetURI)
 	throws HttpException, IOException, InterruptedException {
 		HttpClient client = new HttpClient();
 		dataSetURI = Dataset.normalizeURI(dataSetURI);
 		PostMethod method = new PostMethod(descriptor);
+		
 		HttpMethodHelper.addMethodHeaders(method,
 			new HashMap<String,String>() {{ put("Accept", "text/uri-list"); }}
 		);
 		method.setParameter("dataset_uri", dataSetURI);
 		method.setParameter("dataset_service", service + "dataset");
+		logger.debug("Calculating: " + descriptor);
+		logger.debug("  with data set: " + dataSetURI);
 		client.executeMethod(method);
 		int status = method.getStatusCode();
+		logger.debug("  -> return status: " + status);
 		String dataset = "";
 		// FIXME: I should really start using the RDF response...
 		String responseString = method.getResponseBodyAsString();
@@ -47,6 +54,7 @@ public abstract class MolecularDescriptorAlgorithm extends Algorithm {
 			if (responseString.contains("/task/")) {
 				// OK, we got a task... let's wait until it is done
 				String task = responseString;
+				logger.debug("OK, we got a task assigned: " + task);
 				Thread.sleep(1000); // let's be friendly, and wait 1 sec
 				TaskState state = Task.getState(task);
 				while (!state.isFinished()) {
@@ -54,6 +62,7 @@ public abstract class MolecularDescriptorAlgorithm extends Algorithm {
 					state = Task.getState(task);
 					if (state.isRedirected()) {
 						task = state.getResults();
+						logger.debug("  new task, new task!!: " + task);
 					}
 				}
 				// OK, it should be finished now
