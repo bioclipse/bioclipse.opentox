@@ -20,12 +20,19 @@ import org.junit.Test;
 public abstract class AbstractOpentoxManagerPluginTest
 extends AbstractManagerTest {
 
+	// the official test account
+	private final static String TEST_ACCOUNT = "guest";
+	private final static String TEST_ACCOUNT_PWD = "guest";
+
+	private final static String TEST_SERVER_OT = "http://apps.ideaconsult.net:8080/ambit2/";
+	private final static String TEST_SERVER_ONT = "http://apps.ideaconsult.net:8080/ontology/";
+		
     protected static IOpentoxManager opentox;
     
     @Test public void testAuthentication() {
         opentox.logout();
         Assert.assertNull(opentox.getToken());
-        opentox.login("guest", "guest"); // the official test account
+        opentox.login(TEST_ACCOUNT, TEST_ACCOUNT_PWD);
         String token = opentox.getToken();
         Assert.assertNotNull(token);
         Assert.assertNotSame(0,token.length());
