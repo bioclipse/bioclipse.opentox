@@ -37,10 +37,10 @@ public interface IOpentoxManager extends IBioclipseManager {
     @Recorded
     @PublishedMethod(
         methodSummary=
-            "Logs in on OpenTox.",
+            "Logs in on OpenTox. Returns true if the login worked.",
         params="String user, String password"
     )
-    public void login(String user, String password);
+    public boolean login(String user, String password);
 
     @Recorded
     @PublishedMethod(

@@ -173,15 +173,14 @@ public class Activator extends AbstractUIPlugin {
         return manager;
     }
 
-    public static void login(String user, String pass)
+    public static boolean login(String user, String pass)
     throws Exception {
     	if (Activator.token == null) {
         	Activator.token = new OpenSSOToken(
         		"http://opensso.in-silico.ch/opensso/identity"
         	);
     	}
-    	token.login(user, pass);
-    	
+    	return token.login(user, pass);
     }
     
     public static void logout()

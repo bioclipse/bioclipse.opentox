@@ -106,9 +106,9 @@ public class OpentoxManager implements IBioclipseManager {
 		}
     }
 
-    public void login(String user, String pass) throws BioclipseException {
+    public boolean login(String user, String pass) throws BioclipseException {
     	try {
-			Activator.login(user, pass);
+			return Activator.login(user, pass);
 		} catch (Exception e) {
 			throw new BioclipseException(
 				"Error while logging in on OpenTox: " + e.getMessage(),
