@@ -78,7 +78,7 @@ extends AbstractManagerTest {
 
     @Test public void testListDatasets() {
     	List<String> sets = opentox.listDataSets(
-    		TEST_SERVER_OT
+    		TEST_SERVER_ONT
     	);
     	Assert.assertNotNull(sets);
     	// expect at least one hit:
@@ -87,7 +87,7 @@ extends AbstractManagerTest {
 
     @Test public void testListAlgorithms() {
     	List<String> algos = opentox.listAlgorithms(
-    		TEST_SERVER_OT
+    		TEST_SERVER_ONT
     	);
     	Assert.assertNotNull(algos);
     	// expect at least one hit:
