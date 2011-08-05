@@ -94,6 +94,26 @@ extends AbstractManagerTest {
     	Assert.assertNotSame(0, algos.size());
     }
 
+    @Test public void testSearchInChI() {
+    	List<String> hits = opentox.search(
+    	    TEST_SERVER_OT,
+    		"InChI=1/CH4/h1H4"
+    	);
+    	Assert.assertNotNull(hits);
+    	// expect at least one hit:
+    	Assert.assertNotSame(0, hits.size());
+    }
+
+    @Test public void testSearchMolecule() throws BioclipseException {
+    	List<String> hits = opentox.search(
+    	    TEST_SERVER_OT,
+    		cdk.fromSMILES("COC")
+    	);
+    	Assert.assertNotNull(hits);
+    	// expect at least one hit:
+    	Assert.assertNotSame(0, hits.size());
+    }
+
     @Test public void testListDescriptors() {
     	IStringMatrix descriptors = opentox.listDescriptors(
     		TEST_SERVER_OT
