@@ -80,6 +80,8 @@ public class Dataset {
 			line = line.trim();
 			if (line.length() > 0) datasets.add(line);
 		}
+		reader.close();
+		method.releaseConnection();
 		return datasets;
 	}
 
@@ -109,6 +111,7 @@ public class Dataset {
 			line = line.trim();
 			if (line.length() > 0) compounds.add(line);
 		}
+		reader.close();
 		method.releaseConnection();
 		return compounds;
 	}

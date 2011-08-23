@@ -780,6 +780,8 @@ public class OpentoxManager implements IBioclipseManager {
 				line = line.trim();
 				if (line.length() > 0) compounds.add(line);
 			}
+			reader.close();
+			method.releaseConnection();
 			return compounds;
 		} catch (Exception exception) {
 			throw new BioclipseException(
