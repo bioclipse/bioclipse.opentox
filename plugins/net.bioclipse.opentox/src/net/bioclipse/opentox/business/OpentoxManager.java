@@ -477,7 +477,7 @@ public class OpentoxManager implements IBioclipseManager {
     	
     	monitor.beginTask("Creating an OpenTox API data set ...", 1);
     	try {
-			String dataset = Dataset.createNewDataset(service);
+			String dataset = Dataset.createNewDataset(service, monitor);
 			monitor.done();
 			returner.completeReturn( dataset ); 
 		} catch (Exception exc) {
@@ -493,7 +493,7 @@ public class OpentoxManager implements IBioclipseManager {
     	
     	monitor.beginTask("Creating an OpenTox API data set ...", 1);
     	try {
-			String dataset = Dataset.createNewDataset(service, molecules);
+			String dataset = Dataset.createNewDataset(service, molecules, monitor);
 			monitor.done();
 			returner.completeReturn( dataset ); 
 		} catch (Exception exc) {
@@ -509,7 +509,7 @@ public class OpentoxManager implements IBioclipseManager {
     	
     	monitor.beginTask("Creating an OpenTox API data set ...", 1);
     	try {
-			String dataset = Dataset.createNewDataset(service, molecule);
+			String dataset = Dataset.createNewDataset(service, molecule, monitor);
 			monitor.done();
 			returner.completeReturn( dataset ); 
 		} catch (Exception exc) {
@@ -616,8 +616,12 @@ public class OpentoxManager implements IBioclipseManager {
 
     	List<String> calcResults = new ArrayList<String>();
     	for (IMolecule molecule : molecules) {
-    		String dataset = Dataset.createNewDataset(service, molecule);
-    		String results = MolecularDescriptorAlgorithm.calculate(service, descriptor, dataset);
+    		String dataset = Dataset.createNewDataset(service, molecule, monitor);
+    		if (monitor.isCanceled()) continue;
+    		String results = MolecularDescriptorAlgorithm.calculate(
+ 				service, descriptor, dataset, monitor
+    		);
+    		if (monitor.isCanceled()) continue;
     		StringMatrix features = Dataset.listPredictedFeatures(results);
     		calcResults.addAll(removeDataType(features.getColumn("numval")));
     		Dataset.deleteDataset(dataset);
@@ -636,9 +640,13 @@ public class OpentoxManager implements IBioclipseManager {
 
     	List<String> calcResults = new ArrayList<String>();
     	logger.debug("Creating data set");
-    	String dataset = Dataset.createNewDataset(service, molecule);
+    	String dataset = Dataset.createNewDataset(service, molecule, monitor);
     	logger.debug("Calculating descriptor");
-    	String results = MolecularDescriptorAlgorithm.calculate(service, descriptor, dataset);
+    	if (monitor.isCanceled()) return Collections.emptyList();
+    	String results = MolecularDescriptorAlgorithm.calculate(
+    		service, descriptor, dataset, monitor
+    	);
+    	if (monitor.isCanceled()) return Collections.emptyList();
     	logger.debug("Listing features");
     	StringMatrix features = Dataset.listPredictedFeatures(results);
     	logger.debug("Pred: " + features);
@@ -660,8 +668,10 @@ public class OpentoxManager implements IBioclipseManager {
 
     	List<String> calcResults = new ArrayList<String>();
     	for (IMolecule molecule : molecules) {
-    		String dataset = Dataset.createNewDataset(service, molecule);
-    		String results = ModelAlgorithm.calculate(service, model, dataset);
+    		String dataset = Dataset.createNewDataset(service, molecule, monitor);
+        	if (monitor.isCanceled()) return calcResults;
+    		String results = ModelAlgorithm.calculate(service, model, dataset, monitor);    		
+        	if (monitor.isCanceled()) return calcResults;
     		StringMatrix features = Dataset.listPredictedFeatures(results);
     		calcResults.addAll(removeDataType(features.getColumn("numval")));
     		Dataset.deleteDataset(dataset);
@@ -671,7 +681,8 @@ public class OpentoxManager implements IBioclipseManager {
     	return calcResults;
     }
     
-    public Map<String,String> predictWithModelWithLabel(String service, String model, List<IMolecule> molecules, IProgressMonitor monitor)
+    public Map<String,String> predictWithModelWithLabel(String service, String model,
+    	List<IMolecule> molecules, IProgressMonitor monitor)
     throws Exception {
     	if (service == null) throw new BioclipseException("Service is null");
     	if (model == null) throw new BioclipseException("Model is null");
@@ -681,8 +692,10 @@ public class OpentoxManager implements IBioclipseManager {
 
     	Map<String,String> calcResults = new HashMap<String, String>();
     	for (IMolecule molecule : molecules) {
-    		String dataset = Dataset.createNewDataset(service, molecule);
-    		String results = ModelAlgorithm.calculate(service, model, dataset);
+    		String dataset = Dataset.createNewDataset(service, molecule, monitor);
+        	if (monitor.isCanceled()) return calcResults;
+    		String results = ModelAlgorithm.calculate(service, model, dataset, monitor);
+        	if (monitor.isCanceled()) return calcResults;
     		StringMatrix features = Dataset.listPredictedFeatures(results);
     		List<String> fcol = removeDataType(features.getColumn("numval"));
     		List<String> lcol = features.getColumn("desc");
@@ -697,7 +710,8 @@ public class OpentoxManager implements IBioclipseManager {
     	return calcResults;
     }
 
-    public List<String> predictWithModel(String service, String model, IMolecule molecule, IProgressMonitor monitor)
+    public List<String> predictWithModel(String service, String model,
+    	IMolecule molecule, IProgressMonitor monitor)
     throws Exception {
     	if (service == null) throw new BioclipseException("Service is null");
     	if (model == null) throw new BioclipseException("Model is null");
@@ -706,8 +720,10 @@ public class OpentoxManager implements IBioclipseManager {
     	monitor.beginTask("Calculate model for molecule", 1);
 
     	List<String> calcResults = new ArrayList<String>();
-    	String dataset = Dataset.createNewDataset(service, molecule);
-    	String results = ModelAlgorithm.calculate(service, model, dataset);
+    	String dataset = Dataset.createNewDataset(service, molecule, monitor);
+    	if (monitor.isCanceled()) return calcResults;
+    	String results = ModelAlgorithm.calculate(service, model, dataset, monitor);
+    	if (monitor.isCanceled()) return calcResults;
     	StringMatrix features = Dataset.listPredictedFeatures(results);
     	calcResults.addAll(removeDataType(features.getColumn("numval")));
     	Dataset.deleteDataset(dataset);
@@ -716,7 +732,8 @@ public class OpentoxManager implements IBioclipseManager {
     	return calcResults;
     }
     
-    public Map<String,String> predictWithModelWithLabel(String service, String model, IMolecule molecule, IProgressMonitor monitor)
+    public Map<String,String> predictWithModelWithLabel(String service, String model,
+    	IMolecule molecule, IProgressMonitor monitor)
     throws Exception {
     	if (service == null) throw new BioclipseException("Service is null");
     	if (model == null) throw new BioclipseException("Model is null");
@@ -725,8 +742,10 @@ public class OpentoxManager implements IBioclipseManager {
     	monitor.beginTask("Calculate model for molecule", 1);
 
     	Map<String,String> calcResults = new HashMap<String, String>();    	
-    	String dataset = Dataset.createNewDataset(service, molecule);
-    	String results = ModelAlgorithm.calculate(service, model, dataset);
+    	String dataset = Dataset.createNewDataset(service, molecule, monitor);
+    	if (monitor.isCanceled()) return calcResults;
+    	String results = ModelAlgorithm.calculate(service, model, dataset, monitor);
+    	if (monitor.isCanceled()) return calcResults;
     	StringMatrix features = Dataset.listPredictedFeatures(results);
     	List<String> fcol = removeDataType(features.getColumn("numval"));
     	List<String> lcol = features.getColumn("label");

@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-import org.eclipse.core.runtime.IProgressMonitor;
-
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.opentox.Activator;
 import net.bioclipse.opentox.OpenToxService;
-import net.bioclipse.opentox.business.IOpentoxManager;
+import net.bioclipse.opentox.business.OpentoxManager;
+
+import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
  * DSModel for predicting an OpenTox model
@@ -25,7 +25,7 @@ public class OpenToxModel extends AbstractDSTest {
 
     private static final Logger logger = Logger.getLogger(OpenToxModel.class);
 
-	IOpentoxManager opentox;
+	OpentoxManager opentox;
 	private String model;
 	
 	public OpenToxModel(String model) {
@@ -34,7 +34,7 @@ public class OpenToxModel extends AbstractDSTest {
 
 	@Override
 	public void initialize(IProgressMonitor monitor) throws DSException {
-		opentox=Activator.getDefault().getJavaOpentoxManager();
+		opentox = new OpentoxManager();
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class OpenToxModel extends AbstractDSTest {
 				logger.debug("  - Model: " + model + " retry number " + i);
 			
     		try{
-    			OTres = opentox.predictWithModelWithLabel(service, model, cdkmol);
+    			OTres = opentox.predictWithModelWithLabel(service, model, cdkmol, monitor);
 
     		}catch(Exception e){
 				logger.error("  == Opentox model calculation failed for: " + model);

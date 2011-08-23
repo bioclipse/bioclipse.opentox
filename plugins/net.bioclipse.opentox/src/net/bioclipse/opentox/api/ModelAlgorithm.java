@@ -26,13 +26,18 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 
 public abstract class ModelAlgorithm extends Algorithm {
 
 	private static final Logger logger = Logger.getLogger(ModelAlgorithm.class);
 
-	public static String calculate(String service, String model, String dataSetURI)
+	public static String calculate(String service, String model,
+		String dataSetURI, IProgressMonitor monitor)
 	throws HttpException, IOException, InterruptedException {
+		if (monitor == null) monitor = new NullProgressMonitor();
+
 		HttpClient client = new HttpClient();
 		dataSetURI = Dataset.normalizeURI(dataSetURI);
 		PostMethod method = new PostMethod(model);
@@ -55,10 +60,11 @@ public abstract class ModelAlgorithm extends Algorithm {
 				logger.debug("response: " + task);
 				Thread.sleep(andABit(500)); // let's be friendly, and wait 1 sec
 				TaskState state = Task.getState(task);
-				while (!state.isFinished()) {
+				while (!state.isFinished() && !monitor.isCanceled()) {
 					// let's be friendly, and wait 2 secs and a bit and increase
 					// that time after each wait
-					Thread.sleep(andABit(2000*tailing));
+					int waitingTime = andABit(2000*tailing);
+					logger.debug("Waiting " + waitingTime + "ms.");
 					state = Task.getState(task);
 					if (state.isRedirected()) {
 						task = state.getResults();

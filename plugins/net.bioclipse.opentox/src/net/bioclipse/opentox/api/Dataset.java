@@ -41,6 +41,8 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.io.SDFWriter;
 
@@ -281,7 +283,8 @@ public class Dataset {
 		method.releaseConnection();
 	}
 
-	public static String createNewDataset(String service, List<IMolecule> molecules)
+	public static String createNewDataset(String service,
+		List<IMolecule> molecules, IProgressMonitor monitor)
 	throws Exception {
 		StringWriter strWriter = new StringWriter();
 		SDFWriter writer = new SDFWriter(strWriter);
@@ -289,29 +292,33 @@ public class Dataset {
 			writer.write(cdk.asCDKMolecule(mol).getAtomContainer());
 		}
 		writer.close();
-		return createNewDataset(normalizeURI(service), strWriter.toString());
+		return createNewDataset(normalizeURI(service), strWriter.toString(), monitor);
 	}
 
-	public static String createNewDataset(String service, IMolecule mol)
+	public static String createNewDataset(String service, IMolecule mol,
+		IProgressMonitor monitor)
 	throws Exception {
 		StringWriter strWriter = new StringWriter();
 		SDFWriter writer = new SDFWriter(strWriter);
 		writer.write(cdk.asCDKMolecule(mol).getAtomContainer());
 		writer.close();
-		return createNewDataset(service, strWriter.toString());
+		return createNewDataset(service, strWriter.toString(), monitor);
 	}
 
-	public static String createNewDataset(String service)
+	public static String createNewDataset(String service, IProgressMonitor monitor)
 	throws Exception {
 		StringWriter strWriter = new StringWriter();
 		SDFWriter writer = new SDFWriter(strWriter);
 		writer.write(new AtomContainer());
 		writer.close();
-		return createNewDataset(service, strWriter.toString());
+		return createNewDataset(service, strWriter.toString(), monitor);
 	}
 
-	public static String createNewDataset(String service, String sdFile)
+	public static String createNewDataset(
+		String service, String sdFile, IProgressMonitor monitor)
 	throws Exception {
+		if (monitor == null) monitor = new NullProgressMonitor();
+
 		HttpClient client = new HttpClient();
 		PostMethod method = new PostMethod(service + "dataset");
 		HttpMethodHelper.addMethodHeaders(method,
@@ -327,6 +334,7 @@ public class Dataset {
 		String dataset = "";
 		String responseString = method.getResponseBodyAsString();
 		logger.debug("Response: " + responseString);
+		int tailing = 1;
 		if (status == 200 || status == 202) {
 			if (responseString.contains("/task/")) {
 				logger.debug("Task: " + responseString);
@@ -334,12 +342,19 @@ public class Dataset {
 				String task = method.getResponseBodyAsString();
 				Thread.sleep(1000); // let's be friendly, and wait 1 sec
 				TaskState state = Task.getState(task);
-				while (!state.isFinished()) {
-					Thread.sleep(3000); // let's be friendly, and wait 3 sec
+				while (!state.isFinished() && !monitor.isCanceled()) {
+					// let's be friendly, and wait 2 secs and a bit and increase
+					// that time after each wait
+					int waitingTime = andABit(2000*tailing);
+					logger.debug("Waiting " + waitingTime + "ms.");
+					Thread.sleep(waitingTime);
 					state = Task.getState(task);
 					if (state.isRedirected()) {
 						task = state.getResults();
+						logger.debug("  new task, new task!!: " + task);
 					}
+					// but wait at most 20 secs and a bit
+					if (tailing < 10) tailing++;
 				}
 				// OK, it should be finished now
 				dataset = state.getResults();
@@ -350,9 +365,14 @@ public class Dataset {
 			}
 		}
 		method.releaseConnection();
+		if (monitor.isCanceled()) return "";
 		logger.debug("Data set: " + dataset);
 		dataset = dataset.replaceAll("\n", "");
 		return dataset;
+	}
+
+	private static int andABit(int minimum) {
+		return (minimum + (int)Math.round(minimum*Math.random()));
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -360,7 +380,7 @@ public class Dataset {
 		String service = "http://apps.ideaconsult.net:8080/ambit2/";
 //		List<String> sets = getListOfAvailableDatasets(service);
 //		for (String set : sets) System.out.println(set);
-		String dataset = createNewDataset(service);
+		String dataset = createNewDataset(service, null);
 		List<IMolecule> mols = new ArrayList<IMolecule>();
 		mols.add(cdk.fromSMILES("COC"));
 		mols.add(cdk.fromSMILES("CNC"));

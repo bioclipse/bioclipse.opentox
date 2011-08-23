@@ -26,13 +26,18 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 
 public abstract class MolecularDescriptorAlgorithm extends Algorithm {
 
 	private static final Logger logger = Logger.getLogger(MolecularDescriptorAlgorithm.class);
 
-	public static String calculate(String service, String descriptor, String dataSetURI)
+	public static String calculate(String service, String descriptor, 
+		String dataSetURI, IProgressMonitor monitor)
 	throws HttpException, IOException, InterruptedException {
+		if (monitor == null) monitor = new NullProgressMonitor();
+
 		HttpClient client = new HttpClient();
 		dataSetURI = Dataset.normalizeURI(dataSetURI);
 		PostMethod method = new PostMethod(descriptor);
@@ -58,7 +63,7 @@ public abstract class MolecularDescriptorAlgorithm extends Algorithm {
 				logger.debug("OK, we got a task assigned: " + task);
 				Thread.sleep(andABit(500)); // let's be friendly, and wait 1 sec
 				TaskState state = Task.getState(task);
-				while (!state.isFinished()) {
+				while (!state.isFinished() && !monitor.isCanceled()) {
 					// let's be friendly, and wait 2 secs and a bit and increase
 					// that time after each wait
 					int waitingTime = andABit(2000*tailing);
