@@ -47,19 +47,25 @@ public abstract class ModelAlgorithm extends Algorithm {
 		// FIXME: I should really start using the RDF response...
 		String responseString = method.getResponseBodyAsString();
 		logger.debug("Status: " + status);
+		int tailing = 1;
 		if (status == 200 || status == 202) {
 			if (responseString.contains("/task/")) {
 				// OK, we got a task... let's wait until it is done
 				String task = responseString;
 				logger.debug("response: " + task);
-				Thread.sleep(1000); // let's be friendly, and wait 1 sec
+				Thread.sleep(andABit(500)); // let's be friendly, and wait 1 sec
 				TaskState state = Task.getState(task);
 				while (!state.isFinished()) {
-					Thread.sleep(3000); // let's be friendly, and wait 3 sec
+					// let's be friendly, and wait 2 secs and a bit and increase
+					// that time after each wait
+					Thread.sleep(andABit(2000*tailing));
 					state = Task.getState(task);
 					if (state.isRedirected()) {
 						task = state.getResults();
+						logger.debug("Got a Task redirect. New task:" + task);
 					}
+					// but wait at most 20 secs and a bit
+					if (tailing < 10) tailing++;
 				}
 				// OK, it should be finished now
 				dataset = state.getResults();
@@ -74,6 +80,10 @@ public abstract class ModelAlgorithm extends Algorithm {
 		method.releaseConnection();
 		dataset = dataset.replaceAll("\n", "");
 		return dataset;
+	}
+
+	private static int andABit(int minimum) {
+		return (minimum + (int)Math.round(minimum*Math.random()));
 	}
 
 }
