@@ -61,7 +61,9 @@ public abstract class MolecularDescriptorAlgorithm extends Algorithm {
 				while (!state.isFinished()) {
 					// let's be friendly, and wait 2 secs and a bit and increase
 					// that time after each wait
-					Thread.sleep(andABit(2000*tailing));
+					int waitingTime = andABit(2000*tailing);
+					logger.debug("Waiting " + waitingTime + "ms.");
+					Thread.sleep(waitingTime);
 					state = Task.getState(task);
 					if (state.isRedirected()) {
 						task = state.getResults();
