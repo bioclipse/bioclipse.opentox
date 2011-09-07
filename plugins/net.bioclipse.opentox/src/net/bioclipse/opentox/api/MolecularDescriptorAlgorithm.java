@@ -84,8 +84,10 @@ public abstract class MolecularDescriptorAlgorithm extends Algorithm {
 				// OK, that was quick!
 				dataset = responseString;
 			}
-		} else if (status == 401 || status == 403) {
-			throw new GeneralSecurityException("No Access");
+		} else if (status == 401) {
+			throw new GeneralSecurityException("Not authenticated");
+		} else if (status == 403) {
+			throw new GeneralSecurityException("Not authorized");
 		} else {
 			throw new IllegalStateException("Service error: " + status);
 		}

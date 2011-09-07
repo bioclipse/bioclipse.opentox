@@ -82,8 +82,10 @@ public abstract class ModelAlgorithm extends Algorithm {
 				dataset = responseString;
 				logger.debug("No Task, Data set: " + dataset);
 			}
-		} else if (status == 401 || status == 403) {
-			throw new GeneralSecurityException("No Access");
+		} else if (status == 401) {
+			throw new GeneralSecurityException("Not authenticated");
+		} else if (status == 403) {
+			throw new GeneralSecurityException("Not authorized");
 		} else {
 			throw new IllegalStateException("Service error: " + status);
 		}
