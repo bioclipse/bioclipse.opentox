@@ -20,6 +20,7 @@
 package net.bioclipse.opentox.api;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.HashMap;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -35,7 +36,7 @@ public abstract class MolecularDescriptorAlgorithm extends Algorithm {
 
 	public static String calculate(String service, String descriptor, 
 		String dataSetURI, IProgressMonitor monitor)
-	throws HttpException, IOException, InterruptedException {
+	throws HttpException, IOException, InterruptedException, GeneralSecurityException {
 		if (monitor == null) monitor = new NullProgressMonitor();
 
 		HttpClient client = new HttpClient();
@@ -83,6 +84,8 @@ public abstract class MolecularDescriptorAlgorithm extends Algorithm {
 				// OK, that was quick!
 				dataset = responseString;
 			}
+		} else if (status == 401 || status == 403) {
+			throw new GeneralSecurityException("No Access");
 		} else {
 			throw new IllegalStateException("Service error: " + status);
 		}
