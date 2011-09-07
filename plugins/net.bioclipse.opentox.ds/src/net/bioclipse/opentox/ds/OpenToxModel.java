@@ -74,7 +74,7 @@ public class OpenToxModel extends AbstractDSTest {
 
     		} catch (GeneralSecurityException e) {
 				logger.error("  == Opentox model without access: " + model);
-				String errorMessage = "No access";
+				String errorMessage = "No access: " + e.getMessage().toLowerCase();
 				return returnError(errorMessage, errorMessage);
     		}catch(Exception e){
 				logger.error("  == Opentox model calculation failed for: " + model);
