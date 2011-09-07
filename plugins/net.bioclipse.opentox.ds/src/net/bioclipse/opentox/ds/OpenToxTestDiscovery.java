@@ -63,6 +63,9 @@ public class OpenToxTestDiscovery implements ITestDiscovery {
 						//Add this model as a test if basic criteria are met
 						Map<String,String> props = opentox.getModelInfo(service.getServiceSPARQL(), model);
 						String title = props.get("http://purl.org/dc/elements/1.1/title");
+						if (title.endsWith("^^http://www.w3.org/2001/XMLSchema#string")) {
+							title = title.substring(0, title.indexOf("^^"));
+						}
 						IDSTest test = createOpenToxTest(model, title);
 						discoveredTests.add(test);
 						
