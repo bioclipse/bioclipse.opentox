@@ -51,12 +51,21 @@ public class Dataset {
 	private static final Logger logger = Logger.getLogger(Dataset.class);
 	
     private final static String QUERY_PREDICTED_FEATURES =
-        "SELECT ?desc ?label ?numval WHERE {" +
+        "SELECT ?desc ?label ?numval {" +
         "  ?entry a <http://www.opentox.org/api/1.1#DataEntry> ;" +
         "     <http://www.opentox.org/api/1.1#values> ?value ." +
         "  ?value <http://www.opentox.org/api/1.1#feature> ?feature;" +
         "     <http://www.opentox.org/api/1.1#value> ?numval ." +
         "  ?feature <http://purl.org/dc/elements/1.1/creator> ?desc ." +
+        "  ?feature <http://purl.org/dc/elements/1.1/title> ?label ." +
+        "}";
+    private final static String QUERY_PREDICTED_FEATURES_2 =
+        "SELECT ?desc ?label ?numval {" +
+        "  ?entry a <http://www.opentox.org/api/1.1#DataEntry> ;" +
+        "     <http://www.opentox.org/api/1.1#values> ?value ." +
+        "  ?value <http://www.opentox.org/api/1.1#feature> ?feature;" +
+        "     <http://www.opentox.org/api/1.1#value> ?numval ." +
+        "  ?feature <http://www.opentox.org/api/1.1#hasSource> ?desc ." +
         "  ?feature <http://purl.org/dc/elements/1.1/title> ?label ." +
         "}";
 
@@ -121,24 +130,34 @@ public class Dataset {
 	@SuppressWarnings("serial")
 	public static StringMatrix listPredictedFeatures(String datasetURI)
 	throws Exception {
+		logger.debug("Listing features for: " + datasetURI);
 		datasetURI = datasetURI.replaceAll("\n", "");
-		String baseURI = datasetURI.substring(0, datasetURI.indexOf("feature_uris[]="));
-		String featureURIs = datasetURI.substring(datasetURI.indexOf("feature_uris[]=")+15);
-		featureURIs = URIUtil.decode(featureURIs);
+		if (datasetURI.contains("feature_uris[]=")) {
+			String baseURI = datasetURI.substring(0, datasetURI.indexOf("feature_uris[]="));
+			String featureURIs = datasetURI.substring(datasetURI.indexOf("feature_uris[]=")+15);
+			featureURIs = URIUtil.decode(featureURIs);
+			String fullURI = baseURI + "feature_uris[]=" + featureURIs;
+			datasetURI = URIUtil.encodeQuery(fullURI);
+		}
 		HttpClient client = new HttpClient();
-		String fullURI = baseURI + "feature_uris[]=" + featureURIs;
-		fullURI = URIUtil.encodeQuery(fullURI);
-		GetMethod method = new GetMethod(fullURI);
+		GetMethod method = new GetMethod(datasetURI);
 		HttpMethodHelper.addMethodHeaders(method,
 			new HashMap<String,String>() {{ put("Accept", "application/rdf+xml"); }}
 		);
 		client.executeMethod(method);
 		String result = method.getResponseBodyAsString(); // without this things will fail??
+		if (datasetURI.contains("http://toxcreate3.in-silico.ch/")) logger.debug(result);
 		IRDFStore store = rdf.createInMemoryStore();
 		rdf.importFromStream(store, method.getResponseBodyAsStream(), "RDF/XML", null);
 		method.releaseConnection();
 		String dump = rdf.asRDFN3(store);
-		return rdf.sparql(store, QUERY_PREDICTED_FEATURES);
+		if (datasetURI.contains("http://toxcreate3.in-silico.ch/")) logger.debug(dump);
+		StringMatrix matrix = rdf.sparql(store, QUERY_PREDICTED_FEATURES);
+		if (matrix.getRowCount() == 0) {
+			// mmm... there seem flavor of constructs floating around...
+			matrix = rdf.sparql(store, QUERY_PREDICTED_FEATURES_2);
+		}
+		return matrix;
 	}
 
 	public static void deleteDataset(String datasetURI)
