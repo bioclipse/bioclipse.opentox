@@ -73,6 +73,10 @@ public class OpenToxModel extends AbstractDSTest {
 
     		}catch(Exception e){
 				logger.error("  == Opentox model calculation failed for: " + model);
+				logger.debug(e);
+				String errorMessage =
+					"Error during calculation: " + e.getMessage();
+				return returnError(errorMessage, errorMessage);
     		}
     		
     		//End if we have results
