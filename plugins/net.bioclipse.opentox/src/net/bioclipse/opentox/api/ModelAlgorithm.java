@@ -65,6 +65,7 @@ public abstract class ModelAlgorithm extends Algorithm {
 					// that time after each wait
 					int waitingTime = andABit(2000*tailing);
 					logger.debug("Waiting " + waitingTime + "ms.");
+					Thread.sleep(waitingTime);
 					state = Task.getState(task);
 					if (state.isRedirected()) {
 						task = state.getResults();
