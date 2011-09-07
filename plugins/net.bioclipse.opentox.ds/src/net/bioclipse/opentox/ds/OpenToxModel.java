@@ -1,5 +1,6 @@
 package net.bioclipse.opentox.ds;
 
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +72,10 @@ public class OpenToxModel extends AbstractDSTest {
     		try{
     			OTres = opentox.predictWithModelWithLabel(service, model, cdkmol, monitor);
 
+    		} catch (GeneralSecurityException e) {
+				logger.error("  == Opentox model without access: " + model);
+				String errorMessage = "No access";
+				return returnError(errorMessage, errorMessage);
     		}catch(Exception e){
 				logger.error("  == Opentox model calculation failed for: " + model);
 				logger.debug(e);
