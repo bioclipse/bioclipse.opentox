@@ -56,15 +56,6 @@ public class Dataset {
         "     <http://www.opentox.org/api/1.1#values> ?value ." +
         "  ?value <http://www.opentox.org/api/1.1#feature> ?feature;" +
         "     <http://www.opentox.org/api/1.1#value> ?numval ." +
-        "  ?feature <http://purl.org/dc/elements/1.1/creator> ?desc ." +
-        "  ?feature <http://purl.org/dc/elements/1.1/title> ?label ." +
-        "}";
-    private final static String QUERY_PREDICTED_FEATURES_2 =
-        "SELECT ?desc ?label ?numval {" +
-        "  ?entry a <http://www.opentox.org/api/1.1#DataEntry> ;" +
-        "     <http://www.opentox.org/api/1.1#values> ?value ." +
-        "  ?value <http://www.opentox.org/api/1.1#feature> ?feature;" +
-        "     <http://www.opentox.org/api/1.1#value> ?numval ." +
         "  ?feature <http://www.opentox.org/api/1.1#hasSource> ?desc ." +
         "  ?feature <http://purl.org/dc/elements/1.1/title> ?label ." +
         "}";
@@ -151,10 +142,6 @@ public class Dataset {
 		method.releaseConnection();
 		String dump = rdf.asRDFN3(store);
 		StringMatrix matrix = rdf.sparql(store, QUERY_PREDICTED_FEATURES);
-		if (matrix.getRowCount() == 0) {
-			// mmm... there seem flavor of constructs floating around...
-			matrix = rdf.sparql(store, QUERY_PREDICTED_FEATURES_2);
-		}
 		return matrix;
 	}
 
