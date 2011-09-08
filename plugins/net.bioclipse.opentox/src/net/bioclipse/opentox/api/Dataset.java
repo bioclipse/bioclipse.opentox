@@ -351,7 +351,7 @@ public class Dataset {
 					// that time after each wait
 					int waitingTime = andABit(2000*tailing);
 					logger.debug("Waiting " + waitingTime + "ms.");
-					Thread.sleep(waitingTime);
+					waitUnlessInterrupted(waitingTime, monitor);
 					state = Task.getState(task);
 					if (state.isRedirected()) {
 						task = state.getResults();
@@ -360,6 +360,7 @@ public class Dataset {
 					// but wait at most 20 secs and a bit
 					if (tailing < 10) tailing++;
 				}
+				if (monitor.isCanceled()) Task.delete(task);
 				// OK, it should be finished now
 				dataset = state.getResults();
 			} else {
@@ -373,6 +374,17 @@ public class Dataset {
 		logger.debug("Data set: " + dataset);
 		dataset = dataset.replaceAll("\n", "");
 		return dataset;
+	}
+
+	private static void waitUnlessInterrupted(
+		int waitingTime, IProgressMonitor monitor)
+	throws InterruptedException {
+		int passed = 0;
+		final int step = 300; // every 0.3 sec check if the process is canceled 
+		while (passed < waitingTime && !monitor.isCanceled()) {
+			Thread.sleep(step);
+			passed += step;
+		}
 	}
 
 	private static int andABit(int minimum) {
