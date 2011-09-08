@@ -146,12 +146,10 @@ public class Dataset {
 		);
 		client.executeMethod(method);
 		String result = method.getResponseBodyAsString(); // without this things will fail??
-		if (datasetURI.contains("http://toxcreate3.in-silico.ch/")) logger.debug(result);
 		IRDFStore store = rdf.createInMemoryStore();
 		rdf.importFromStream(store, method.getResponseBodyAsStream(), "RDF/XML", null);
 		method.releaseConnection();
 		String dump = rdf.asRDFN3(store);
-		if (datasetURI.contains("http://toxcreate3.in-silico.ch/")) logger.debug(dump);
 		StringMatrix matrix = rdf.sparql(store, QUERY_PREDICTED_FEATURES);
 		if (matrix.getRowCount() == 0) {
 			// mmm... there seem flavor of constructs floating around...
