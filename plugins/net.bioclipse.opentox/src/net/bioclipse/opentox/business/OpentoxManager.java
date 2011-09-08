@@ -747,10 +747,12 @@ public class OpentoxManager implements IBioclipseManager {
     	String results = ModelAlgorithm.calculate(service, model, dataset, monitor);
     	if (monitor.isCanceled()) return calcResults;
     	StringMatrix features = Dataset.listPredictedFeatures(results);
-    	List<String> fcol = removeDataType(features.getColumn("numval"));
-    	List<String> lcol = features.getColumn("label");
-    	for (int i=0; i<lcol.size(); i++){
-    		calcResults.put(lcol.get(i), fcol.get(i));
+    	if (features.getRowCount() > 0) {
+    		List<String> fcol = removeDataType(features.getColumn("numval"));
+    		List<String> lcol = features.getColumn("label");
+    		for (int i=0; i<lcol.size(); i++){
+    			calcResults.put(lcol.get(i), fcol.get(i));
+    		}
     	}
 
     	Dataset.deleteDataset(dataset);
