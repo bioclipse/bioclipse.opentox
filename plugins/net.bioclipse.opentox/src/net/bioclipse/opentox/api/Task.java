@@ -20,17 +20,41 @@
 package net.bioclipse.opentox.api;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.HashMap;
 
 import net.bioclipse.opentox.Activator;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 
 public class Task {
 
 	private static final Logger logger = Logger.getLogger(Task.class);
+
+	public static void delete(String task) throws IOException, GeneralSecurityException {
+		HttpClient client = new HttpClient();
+		DeleteMethod method = new DeleteMethod(task);
+		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
+		client.executeMethod(method);
+		int status = method.getStatusCode();
+		switch (status) {
+			case 200:
+				// excellent, it worked
+				break;
+			case 401:
+				throw new GeneralSecurityException("Not authorized");
+			case 404:
+				// not found, well, I guess equals 'deleted'
+				break;
+			case 503:
+				throw new IOException("Service unavailable");
+			default:
+				throw new IOException("Unknown server state: " + status);
+		}
+	}
 
 	public static TaskState getState(String task)
 	throws IOException {
