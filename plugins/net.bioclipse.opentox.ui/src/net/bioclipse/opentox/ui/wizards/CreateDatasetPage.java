@@ -8,6 +8,7 @@
  *****************************************************************************/
 package net.bioclipse.opentox.ui.wizards;
 
+import java.net.URL;
 import java.util.List;
 
 import net.bioclipse.opentox.OpenToxService;
@@ -33,6 +34,7 @@ public class CreateDatasetPage extends WizardPage {
 	private Combo cboLicense;
 	private IFile file;
 	private Text txtTitle;
+	private Text customLicense;
 
 	protected CreateDatasetPage() {
 		super("Create Dataset");
@@ -129,7 +131,8 @@ public class CreateDatasetPage extends WizardPage {
         cboLicense.add( "ODC Public Domain Dedication and Licence" ); // http://www.opendatacommons.org/licenses/pddl/1-0/
         cboLicense.add( "Open Database License" ); // http://opendatacommons.org/licenses/odbl/1.0/
         cboLicense.add( "Open Data Commons Attribution License" ); // http://opendatacommons.org/licenses/by/1.0/
-        cboLicense.add( "None specified" );
+        cboLicense.add( "None" );
+        cboLicense.add( "Custom" );
 
         cboLicense.addSelectionListener( new SelectionListener(){
 
@@ -140,26 +143,65 @@ public class CreateDatasetPage extends WizardPage {
                 Combo cbo=(Combo) e.getSource();
                 if (cbo.getSelectionIndex()==0){
                 	((CreateDatasetWizard)getWizard()).setLicense("http://creativecommons.org/publicdomain/zero/1.0/");
+                	customLicense.setEnabled(false);
                 }
                 else if (cbo.getSelectionIndex()==1){
                 	((CreateDatasetWizard)getWizard()).setLicense("http://www.opendatacommons.org/licenses/pddl/1.0/");
+                	customLicense.setEnabled(false);
                 }
                 else if (cbo.getSelectionIndex()==2){
                 	((CreateDatasetWizard)getWizard()).setLicense("http://opendatacommons.org/licenses/odbl/1.0/");
+                	customLicense.setEnabled(false);
                 }
                 else if (cbo.getSelectionIndex()==3){
                 	((CreateDatasetWizard)getWizard()).setLicense("http://opendatacommons.org/licenses/by/1.0/");
+                	customLicense.setEnabled(false);
                 }
                 else if (cbo.getSelectionIndex()==4){
                 	((CreateDatasetWizard)getWizard()).setLicense(null);
+                	customLicense.setEnabled(false);
+                }
+                else if (cbo.getSelectionIndex()==5){
+                	customLicense.setEnabled(true);
                 }
                 else{
                 	System.out.println("license combo OUT OF BOUNDS");
                 }
             }
         });
+        cboLicense.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         cboLicense.select(0);
     	((CreateDatasetWizard)getWizard()).setLicense("http://creativecommons.org/publicdomain/zero/1.0/");
+
+    	// custom license line with an empty label
+    	lblTitle = new Label(container, SWT.NULL);
+		lblTitle.setText("Custom:");   
+		lblTitle.setLayoutData(new GridData(GridData.BEGINNING));
+    	customLicense = new Text(container, SWT.BORDER | SWT.SINGLE);
+    	customLicense.setEnabled(false); // by default license is CC0, not 'Custom'
+    	customLicense.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				String customURL = customLicense.getText();
+				if (customURL.length() > 0) {
+					try {
+						URL url = new URL(customURL);
+						if (url.getHost().length() > 0) {
+							setErrorMessage(null);
+							setPageComplete(true);
+							((CreateDatasetWizard)getWizard()).setLicense(
+								customLicense.getText()
+							);
+							return;
+						}
+					} catch (Exception e1) {}
+				}
+				setErrorMessage("Custom license must be a valid URL.");
+				setPageComplete(false);
+				((CreateDatasetWizard)getWizard()).setLicense(null);
+			}
+		});
+    	customLicense.setText("");
+    	customLicense.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		setControl(container);
 		dialogChanged();
