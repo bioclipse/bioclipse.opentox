@@ -138,7 +138,9 @@ public class CreateDatasetWizard extends Wizard implements INewWizard {
 
 					monitor.subTask("Setting license");
 					monitor.worked(1);
-					opentox.setDatasetLicense(datasetURI, license);
+					if (license != null) {
+						opentox.setDatasetLicense(datasetURI, license);
+					}
 
 					monitor.subTask("Opening browser");
 					Display.getDefault().syncExec(new Runnable() {

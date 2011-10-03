@@ -127,6 +127,9 @@ public class CreateDatasetPage extends WizardPage {
 
         cboLicense.add( "Creative Commons Zero" ); // http://creativecommons.org/publicdomain/zero/1.0/
         cboLicense.add( "ODC Public Domain Dedication and Licence" ); // http://www.opendatacommons.org/licenses/pddl/1-0/
+        cboLicense.add( "Open Database License" ); // http://opendatacommons.org/licenses/odbl/1.0/
+        cboLicense.add( "Open Data Commons Attribution License" ); // http://opendatacommons.org/licenses/by/1.0/
+        cboLicense.add( "None specified" );
 
         cboLicense.addSelectionListener( new SelectionListener(){
 
@@ -139,7 +142,16 @@ public class CreateDatasetPage extends WizardPage {
                 	((CreateDatasetWizard)getWizard()).setLicense("http://creativecommons.org/publicdomain/zero/1.0/");
                 }
                 else if (cbo.getSelectionIndex()==1){
-                	((CreateDatasetWizard)getWizard()).setLicense("http://www.opendatacommons.org/licenses/pddl/1-0/");
+                	((CreateDatasetWizard)getWizard()).setLicense("http://www.opendatacommons.org/licenses/pddl/1.0/");
+                }
+                else if (cbo.getSelectionIndex()==2){
+                	((CreateDatasetWizard)getWizard()).setLicense("http://opendatacommons.org/licenses/odbl/1.0/");
+                }
+                else if (cbo.getSelectionIndex()==3){
+                	((CreateDatasetWizard)getWizard()).setLicense("http://opendatacommons.org/licenses/by/1.0/");
+                }
+                else if (cbo.getSelectionIndex()==4){
+                	((CreateDatasetWizard)getWizard()).setLicense(null);
                 }
                 else{
                 	System.out.println("license combo OUT OF BOUNDS");
