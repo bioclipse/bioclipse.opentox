@@ -163,6 +163,7 @@ public class CreateDatasetPage extends WizardPage {
                 }
                 else if (cbo.getSelectionIndex()==5){
                 	customLicense.setEnabled(true);
+                	checkCustomLicense(customLicense.getText());
                 }
                 else{
                 	System.out.println("license combo OUT OF BOUNDS");
@@ -181,23 +182,7 @@ public class CreateDatasetPage extends WizardPage {
     	customLicense.setEnabled(false); // by default license is CC0, not 'Custom'
     	customLicense.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				String customURL = customLicense.getText();
-				if (customURL.length() > 0) {
-					try {
-						URL url = new URL(customURL);
-						if (url.getHost().length() > 0) {
-							setErrorMessage(null);
-							setPageComplete(true);
-							((CreateDatasetWizard)getWizard()).setLicense(
-								customLicense.getText()
-							);
-							return;
-						}
-					} catch (Exception e1) {}
-				}
-				setErrorMessage("Custom license must be a valid URL.");
-				setPageComplete(false);
-				((CreateDatasetWizard)getWizard()).setLicense(null);
+				checkCustomLicense(customLicense.getText());
 			}
 		});
     	customLicense.setText("");
@@ -207,6 +192,24 @@ public class CreateDatasetPage extends WizardPage {
 		dialogChanged();
 	}
 
+	private void checkCustomLicense(String customURL) {
+		if (customURL.length() > 0) {
+			try {
+				URL url = new URL(customURL);
+				if (url.getHost().length() > 0) {
+					setErrorMessage(null);
+					setPageComplete(true);
+					((CreateDatasetWizard)getWizard()).setLicense(
+						customLicense.getText()
+					);
+					return;
+				}
+			} catch (Exception e1) {}
+		}
+		setErrorMessage("Custom license must be a valid URL.");
+		setPageComplete(false);
+		((CreateDatasetWizard)getWizard()).setLicense(null);
+	}
 
 	private void dialogChanged() {
 		if (txtTitle.getText().isEmpty()){
