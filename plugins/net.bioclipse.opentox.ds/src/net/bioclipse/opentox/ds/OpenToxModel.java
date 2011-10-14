@@ -104,4 +104,9 @@ public class OpenToxModel extends AbstractDSTest {
 		return results;
 	}
 
+	@Override
+	public List<String> getRequiredParameters() {
+		return new ArrayList<String>();
+	}
+
 }
