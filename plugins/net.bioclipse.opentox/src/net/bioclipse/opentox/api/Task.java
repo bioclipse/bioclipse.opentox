@@ -74,6 +74,7 @@ public class Task {
 		logger.debug(" -> " + status);
 		switch (status) {
 		case 404:
+			logger.error("Task gone missing (404): " + task);
 			state.setExists(false);
 			break;
 		case 200:
@@ -92,6 +93,7 @@ public class Task {
 			state.setFinished(false);
 			break;
 		default:
+			logger.error("Task error (" + status + "): " + task);
 			throw new IllegalStateException(
 				"Service error: " + status + ":\n  " +
 				method.getStatusText()
