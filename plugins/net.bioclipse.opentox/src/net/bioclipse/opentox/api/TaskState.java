@@ -21,16 +21,36 @@ package net.bioclipse.opentox.api;
 
 public class TaskState {
 	
+	/** The status of the task. */
+	enum STATUS {
+		CANCELLED,
+		COMPLETED,
+		RUNNING,
+		ERROR,
+		UNKNOWN
+	}
+	
+	private STATUS status = STATUS.UNKNOWN;
 	private boolean exists = false;
-	private boolean isFinished = false;
 	private boolean isRedirected = false; 
 	private String results = null;
-	
+	private float percentageCompleted = 0.0f;
+
 	public boolean isFinished() {
-		return isFinished;
+		return status == STATUS.ERROR || status == STATUS.COMPLETED ;
+	}
+	public void setStatus(STATUS status) {
+		this.status = status;
+	}
+	public STATUS getStatus() {
+		return this.status;
 	}
 	public void setFinished(boolean isFinished) {
-		this.isFinished = isFinished;
+		if (isFinished) {
+			this.status = STATUS.COMPLETED;
+		} else {
+			this.status = STATUS.RUNNING;
+		}
 	}
 	public boolean isRedirected() {
 		return isRedirected;
@@ -49,6 +69,12 @@ public class TaskState {
 	}
 	public boolean exists() {
 		return exists;
+	}
+	public void setPercentageCompleted(float percentageCompleted) {
+		this.percentageCompleted = percentageCompleted;
+	}
+	public float getPercentageCompleted() {
+		return percentageCompleted;
 	}
 
 }

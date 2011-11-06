@@ -20,10 +20,14 @@
 package net.bioclipse.opentox.api;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 
+import net.bioclipse.core.domain.StringMatrix;
 import net.bioclipse.opentox.Activator;
+import net.bioclipse.rdf.business.IRDFStore;
+import net.bioclipse.rdf.business.RDFManager;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.DeleteMethod;
@@ -33,6 +37,17 @@ import org.apache.log4j.Logger;
 public class Task {
 
 	private static final Logger logger = Logger.getLogger(Task.class);
+	
+	private static RDFManager rdf = new RDFManager();
+	
+	private final static String QUERY_TASK_DETAILS =
+        "PREFIX ot: <http://www.opentox.org/api/1.1#>" +
+        "" +
+        "SELECT * WHERE {" +
+        "  ?task ot:hasStatus ?status ." +
+        "  OPTIONAL { ?task ot:percentageCompleted ?completed }" +
+        "  OPTIONAL { ?task ot:resultURI ?result }" +
+        "}";
 
 	public static void delete(String task) throws IOException, GeneralSecurityException {
 		HttpClient client = new HttpClient();
@@ -61,10 +76,10 @@ public class Task {
 		HttpClient client = new HttpClient();
 		GetMethod method = new GetMethod(task);
 		HttpMethodHelper.addMethodHeaders(method,
-			new HashMap<String,String>() {{ put("Accept", "text/uri-list"); }}
+			new HashMap<String,String>() {{ put("Accept", "application/rdf+xml"); }}
 		);
 		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
-		method.setRequestHeader("Accept", "text/uri-list");
+		method.setRequestHeader("Accept", "application/rdf+xml");
 		client.executeMethod(method);
 		int status = method.getStatusCode();
 		logger.debug("Task status: " + status);
@@ -72,28 +87,31 @@ public class Task {
 		TaskState state = new TaskState();
 		logger.debug("Task: " + task);
 		logger.debug(" -> " + status);
+		InputStream result = method.getResponseBodyAsStream();
+		// logger.debug("RDF: " + result);
 		switch (status) {
 		case 404:
 			logger.error("Task gone missing (404): " + task);
 			state.setExists(false);
 			break;
 		case 200:
-			String result = method.getResponseBodyAsString();
-			if (result == null || result.length() == 0)
+			if (result == null)
 				throw new IOException("Missing dataset URI for finished (200) Task.");
 			state.setFinished(true);
-			state.setResults(result);
+			state.setResults(getResultSetURI(createStore(result)));
 			break;
 		case 201:
 			state.setFinished(true);
 			state.setRedirected(true);
-			state.setResults(method.getResponseBodyAsString());
+			state.setResults(getResultSetURI(createStore(result)));
 			break;
 		case 202:
 			state.setFinished(false);
+			state.setPercentageCompleted(getPercentageCompleted(createStore(result)));
 			break;
 		default:
 			logger.error("Task error (" + status + "): " + task);
+			logger.debug("Response: " + result);
 			throw new IllegalStateException(
 				"Service error: " + status + ":\n  " +
 				method.getStatusText()
@@ -102,6 +120,58 @@ public class Task {
 		
 		method.releaseConnection();
 		return state;
+	}
+	
+	private static float getPercentageCompleted(IRDFStore store) {
+		try {
+			StringMatrix matrix = rdf.sparql(store, QUERY_TASK_DETAILS);
+			if (matrix != null && matrix.getRowCount() != 0 &&
+			    matrix.hasColumn("completed")) {
+				String floatStr = matrix.get(0, "completed"); 
+				if (floatStr.contains("^^"))
+					floatStr = floatStr.substring(0, floatStr.indexOf("^^"));
+				logger.debug("Found completed: " + floatStr);
+				return Float.parseFloat(floatStr);
+			} else {
+				return 0.0f;
+			}
+		} catch (Exception e) {
+			logger.debug("Error while getting the percentage: " + e.getMessage());
+		}
+		return 0.0f;
+	}
+
+	private static IRDFStore createStore(InputStream rdfResults) {
+		IRDFStore store = rdf.createInMemoryStore();
+		try {
+			return rdf.importFromStream(store, rdfResults, "RDF/XML", null);
+		} catch (Exception e) {
+			logger.debug("Error while creating RDF from String: " + e.getMessage());
+			logger.debug(e);
+		}
+		throw new IllegalStateException(
+			"Service error: unexpected RDF content:\n" + rdfResults
+		);
+	}
+	
+	private static String getResultSetURI(IRDFStore store) {
+		try {
+			StringMatrix matrix = rdf.sparql(store, QUERY_TASK_DETAILS);
+			logger.debug("SPARQL results (URI): " + matrix);
+			if (matrix != null && matrix.getRowCount() != 0 &&
+				matrix.hasColumn("result")) {
+				String uri = matrix.get(1, "result"); 
+				if (uri.contains("^^")) uri = uri.substring(0, uri.indexOf("^^"));
+				logger.debug("Found uri: " + uri);
+				return uri;
+			}
+		} catch (Exception e) {
+			logger.debug("Error while getting the result set URI: " + e.getMessage());
+			logger.debug(e);
+		}
+		throw new IllegalStateException(
+			"Service error: missing result URI"
+		);
 	}
 
 	public static void main(String[] args) throws Exception {
