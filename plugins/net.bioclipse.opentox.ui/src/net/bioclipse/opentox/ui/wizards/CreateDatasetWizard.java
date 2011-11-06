@@ -133,8 +133,11 @@ public class CreateDatasetWizard extends Wizard implements INewWizard {
 					System.out.println("Produced DS URI: " + datasetURI);
 
 					monitor.subTask("Setting title");
-					monitor.worked(1);
-					opentox.setDatasetTitle(datasetURI, title);
+					if (title != null && title.length() > 0) {
+						System.out.println("Title: " + title);
+						monitor.worked(1);
+						opentox.setDatasetTitle(datasetURI, title);
+					}
 
 					monitor.subTask("Setting license");
 					monitor.worked(1);
