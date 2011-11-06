@@ -38,6 +38,7 @@ public abstract class ModelAlgorithm extends Algorithm {
 		String dataSetURI, IProgressMonitor monitor)
 	throws HttpException, IOException, InterruptedException, GeneralSecurityException {
 		if (monitor == null) monitor = new NullProgressMonitor();
+		int worked = 0;
 
 		HttpClient client = new HttpClient();
 		dataSetURI = Dataset.normalizeURI(dataSetURI);
@@ -62,6 +63,12 @@ public abstract class ModelAlgorithm extends Algorithm {
 				Thread.sleep(andABit(500)); // let's be friendly, and wait 1 sec
 				TaskState state = Task.getState(task);
 				while (!state.isFinished() && !monitor.isCanceled()) {
+					int onlineWorked = (int)state.getPercentageCompleted();
+					if (onlineWorked > worked) {
+						// work done is difference between done before and online done
+						monitor.worked(onlineWorked - worked); 
+						worked = onlineWorked;
+					}
 					// let's be friendly, and wait 2 secs and a bit and increase
 					// that time after each wait
 					int waitingTime = andABit(2000*tailing);
@@ -82,6 +89,7 @@ public abstract class ModelAlgorithm extends Algorithm {
 				// OK, that was quick!
 				dataset = responseString;
 				logger.debug("No Task, Data set: " + dataset);
+				monitor.worked(100);
 			}
 		} else if (status == 401) {
 			throw new GeneralSecurityException("Not authenticated");
