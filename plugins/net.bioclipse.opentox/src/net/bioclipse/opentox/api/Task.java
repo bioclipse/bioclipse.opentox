@@ -24,8 +24,10 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 
+import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.StringMatrix;
 import net.bioclipse.opentox.Activator;
+import net.bioclipse.opentox.api.TaskState.STATUS;
 import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.business.RDFManager;
 
@@ -47,6 +49,14 @@ public class Task {
         "  ?task ot:hasStatus ?status ." +
         "  OPTIONAL { ?task ot:percentageCompleted ?completed }" +
         "  OPTIONAL { ?task ot:resultURI ?result }" +
+        "}";
+
+	private final static String QUERY_ERROR_REPORT =
+        "PREFIX ot: <http://www.opentox.org/api/1.1#>" +
+        "" +
+        "SELECT ?task ?message WHERE {" +
+        "  ?task ot:errorReport ?report ." +
+        "  ?report ot:message ?message ." +
         "}";
 
 	public static void delete(String task) throws IOException, GeneralSecurityException {
@@ -109,6 +119,17 @@ public class Task {
 			state.setFinished(false);
 			state.setPercentageCompleted(getPercentageCompleted(createStore(result)));
 			break;
+		case 500:
+			state.setFinished(true);
+			state.setStatus(STATUS.ERROR);
+			IRDFStore store = createStore(result);
+			try {
+				logger.debug("RDF: " + rdf.asRDFN3(store));
+			} catch (BioclipseException e) {}
+			String error = getErrorMessage(store);
+			throw new IllegalStateException(
+				"Service error: " + error
+			);
 		default:
 			logger.error("Task error (" + status + "): " + task);
 			logger.debug("Response: " + result);
@@ -122,12 +143,29 @@ public class Task {
 		return state;
 	}
 	
+	private static String getErrorMessage(IRDFStore store) {
+		try {
+			StringMatrix matrix = rdf.sparql(store, QUERY_ERROR_REPORT);
+			logger.debug("SPARQL results (error): " + matrix);
+			if (matrix != null && matrix.getRowCount() != 0 &&
+			    matrix.hasColumn("message")) {
+				String message = matrix.get(1, "message"); 
+				if (message.contains("^^"))
+					message = message.substring(0, message.lastIndexOf("^^"));
+				return message;
+			}
+		} catch (Exception e) {
+			logger.debug("Error while getting the error message: " + e.getMessage());
+		}
+		return "unknown error";
+	}
+
 	private static float getPercentageCompleted(IRDFStore store) {
 		try {
 			StringMatrix matrix = rdf.sparql(store, QUERY_TASK_DETAILS);
 			if (matrix != null && matrix.getRowCount() != 0 &&
 			    matrix.hasColumn("completed")) {
-				String floatStr = matrix.get(0, "completed"); 
+				String floatStr = matrix.get(1, "completed"); 
 				if (floatStr.contains("^^"))
 					floatStr = floatStr.substring(0, floatStr.indexOf("^^"));
 				logger.debug("Found completed: " + floatStr);
@@ -157,7 +195,6 @@ public class Task {
 	private static String getResultSetURI(IRDFStore store) {
 		try {
 			StringMatrix matrix = rdf.sparql(store, QUERY_TASK_DETAILS);
-			logger.debug("SPARQL results (URI): " + matrix);
 			if (matrix != null && matrix.getRowCount() != 0 &&
 				matrix.hasColumn("result")) {
 				String uri = matrix.get(1, "result"); 
