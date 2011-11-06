@@ -87,7 +87,11 @@ public abstract class ModelAlgorithm extends Algorithm {
 			throw new GeneralSecurityException("Not authenticated");
 		} else if (status == 403) {
 			throw new GeneralSecurityException("Not authorized");
+		} else if (status == 404) {
+			logger.debug("Model not found (404): " + responseString);
+			throw new UnsupportedOperationException("Service not found");
 		} else {
+			logger.debug("Model error (" + status + "): " + responseString);
 			throw new IllegalStateException("Service error: " + status);
 		}
 		method.releaseConnection();
