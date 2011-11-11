@@ -193,9 +193,14 @@ public class OpentoxManager implements IBioclipseManager {
 
         IRDFStore store = rdf.createInMemoryStore();
         List<String> dataSets = Collections.emptyList();
+        Map<String, String> extraHeaders = new HashMap<String, String>();
+        String token = Activator.getToken();
+        if (token != null) {
+        	extraHeaders.put("subjectid", Activator.getToken());
+        }
         try {
             // download the list of data sets as RDF
-            rdf.importURL(store, service + "dataset", monitor);
+            rdf.importURL(store, service + "dataset", extraHeaders, monitor);
             String dump = rdf.asRDFN3(store);
             System.out.println("RDF: " + dump);
             monitor.worked(1);
@@ -400,10 +405,16 @@ public class OpentoxManager implements IBioclipseManager {
         monitor.beginTask("Looking up compound identifiers...", 3);
         IRDFStore store = rdf.createInMemoryStore();
         try {
+            Map<String, String> extraHeaders = new HashMap<String, String>();
+            String token = Activator.getToken();
+            if (token != null) {
+            	extraHeaders.put("subjectid", Activator.getToken());
+            }
             // download the list of compounds as RDF
             rdf.importURL(
                 store,
                 service + "dataset/" + dataSet + "/compound",
+                extraHeaders,
                 monitor
             );
             monitor.worked(1);
