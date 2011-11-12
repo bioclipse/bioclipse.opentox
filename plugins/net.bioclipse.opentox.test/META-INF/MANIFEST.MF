@@ -14,7 +14,8 @@ Require-Bundle: org.eclipse.ui,
  net.sf.cglib,
  org.springframework.osgi.aopalliance.osgi,
  net.bioclipse.opentox,
- net.bioclipse.cdk.business
+ net.bioclipse.cdk.business,
+ net.bioclipse.inchi
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.apache.log4j,
  org.junit,

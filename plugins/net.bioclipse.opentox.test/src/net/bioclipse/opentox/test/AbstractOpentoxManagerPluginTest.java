@@ -14,10 +14,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import net.bioclipse.cdk.business.CDKManager;
+import net.bioclipse.cdk.domain.CDKMolecule;
 import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IStringMatrix;
 import net.bioclipse.core.tests.AbstractManagerTest;
+import net.bioclipse.inchi.InChI;
 import net.bioclipse.managers.business.IBioclipseManager;
 import net.bioclipse.opentox.business.IOpentoxManager;
 
@@ -105,9 +107,15 @@ extends AbstractManagerTest {
     }
 
     @Test public void testSearchMolecule() throws BioclipseException {
+    	ICDKMolecule mol = cdk.fromSMILES("C");
+    	mol.setProperty(
+    		CDKMolecule.INCHI_OBJECT, new InChI(
+    			"InChI=1S/CH4/h1H4",
+    			"VNWKTOKETHGBQD-UHFFFAOYSA-N"
+    		)
+    	);
     	List<String> hits = opentox.search(
-    	    TEST_SERVER_OT,
-    		cdk.fromSMILES("COC")
+    	    TEST_SERVER_OT, mol
     	);
     	Assert.assertNotNull(hits);
     	// expect at least one hit:
