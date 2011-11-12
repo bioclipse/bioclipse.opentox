@@ -208,7 +208,7 @@ public interface IOpentoxManager extends IBioclipseManager {
         methodSummary=
             "Search the models available from the given service that " +
             "match the given title search string.",
-        params="String ontologyServer, Search query"
+        params="String ontologyServer, String query"
     )
     public IStringMatrix searchModels(String ontologyServer, String query);
     
