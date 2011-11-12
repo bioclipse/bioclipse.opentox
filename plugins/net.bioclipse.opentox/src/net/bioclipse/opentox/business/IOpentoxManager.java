@@ -190,7 +190,7 @@ public interface IOpentoxManager extends IBioclipseManager {
         methodSummary=
             "Search the data sets available from the given service that " +
             "match the given title search string.",
-        params="String ontologyServer, Search query"
+        params="String ontologyServer, String query"
     )
     public IStringMatrix searchDataSets(String ontologyServer, String query);
     
@@ -199,7 +199,7 @@ public interface IOpentoxManager extends IBioclipseManager {
         methodSummary=
             "Search the descriptors available from the given service that " +
             "match the given title search string.",
-        params="String ontologyServer, Search query"
+        params="String ontologyServer, String query"
     )
     public IStringMatrix searchDescriptors(String ontologyServer, String query);
     
