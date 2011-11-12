@@ -92,7 +92,7 @@ public interface IOpentoxManager extends IBioclipseManager {
     @PublishedMethod(
         methodSummary=
             "Predicts modeled properties for the given molecule.",
-        params="String service, String model, IMolecule molecule"
+        params="String service, String model, List<? extends IMolecule> molecules"
     )
     public Map<String,String> predictWithModelWithLabel(String service, String model, List<? extends IMolecule> molecules);
 
