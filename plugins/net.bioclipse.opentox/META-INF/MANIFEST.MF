@@ -26,11 +26,9 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.ui,
  net.bioclipse.usermanager
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: org.apache.log4j,
+Import-Package: org.apache.commons.codec,
  org.apache.commons.logging,
- org.slf4j.impl,
- ch.qos.logback.core.joran.spi,
- org.apache.commons.codec
+ org.apache.log4j
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  jars/opentox-opensso-0.0.2-jar-with-dependencies.jar
