@@ -55,5 +55,12 @@
    </menuContribution>
   </extension>
 
+<extension
+      point="net.bioclipse.usermanager.accounts">
+   <account
+         class="net.bioclipse.opentox.ui.OpenToxAccount">
+   </account>
+</extension>
+
 
 </plugin>
