@@ -81,10 +81,11 @@ public class OpenToxAccount implements IAccounts {
 	 * This method is responsible for create the open-tox account. 
 	 */
 	@Override
-	public void createAccount() {
-		System.out.println("Creating a open tox account...");
+	public Boolean createAccount() {
+		System.out.println("Creating an open tox account...");
 		System.out.println("Name: " + nameTxt.getText());
 		System.out.println("Password: " + pswTxt.getText());
+		return true;
 	}
 	
 	/**
