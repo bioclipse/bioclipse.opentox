@@ -1,3 +1,14 @@
+/* *****************************************************************************
+ * Copyright (c) 2007-2009 Bioclipse Project
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     
+ ******************************************************************************/
+
 package net.bioclipse.opentox.ui;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -10,13 +21,22 @@ import org.eclipse.swt.widgets.Text;
 
 import net.bioclipse.usermanager.IAccounts;
 
+/**
+ * This class creates an open-tox account.
+ * 
+ * @author Klas Jšnsson
+ *
+ */
 public class OpenToxAccount implements IAccounts {
 
 	private Text nameTxt;
 	private Text pswTxt;
 	
 	public OpenToxAccount() {	}
-
+	
+	/**
+	 * Creates the composite where the user fill in the needed information.
+	 */
 	@Override
 	public Composite createComposite(Composite container)  {
 		int hight = 160;
@@ -47,17 +67,19 @@ public class OpenToxAccount implements IAccounts {
 		im_label.setBounds(x, 0, image.getBounds().width, 
 				image.getBounds().height);
 		im_label.setImage(image);
-		System.out.println(im_label.getImage());
 		nameTxt.setFocus();
 		
 		return as;	 
 	}
-
+	
 	@Override
 	public String getName() {
 		return "OpenTox Account";
 	}
 
+	/**
+	 * This method is responsible for create the open-tox account. 
+	 */
 	@Override
 	public void createAccount() {
 		System.out.println("Creating a open tox account...");
@@ -65,6 +87,11 @@ public class OpenToxAccount implements IAccounts {
 		System.out.println("Password: " + pswTxt.getText());
 	}
 	
+	/**
+	 * This method is used to set the first text-box in focus (i.e. the one 
+	 * where the user is supposed to fill in the user-name to the open-tox 
+	 * account).
+	 */
 	@Override
 	public void setFocus() {
 		nameTxt.setFocus();
