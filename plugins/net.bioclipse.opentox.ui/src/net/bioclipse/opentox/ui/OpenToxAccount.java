@@ -11,6 +11,8 @@
 
 package net.bioclipse.opentox.ui;
 
+import java.util.HashMap;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -19,7 +21,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import net.bioclipse.usermanager.AccountType;
+import net.bioclipse.usermanager.Activator;
 import net.bioclipse.usermanager.IAccounts;
+import net.bioclipse.usermanager.business.IUserManager;
+import net.bioclipse.usermanager.business.UserManager;
 
 /**
  * This class creates an open-tox account.
@@ -58,7 +64,7 @@ public class OpenToxAccount implements IAccounts {
 		pswLabel.setBounds(10, 60, 60, 14);
 		pswLabel.setText("Password:");
 		pswTxt = new Text(as, SWT.BORDER | SWT.PASSWORD);
-		pswTxt.setBounds(80, 57, 200, 20);;
+		pswTxt.setBounds(80, 57, 200, 20);
 		ImageDescriptor imDesc = ImageDescriptor.createFromFile(this.getClass(), "opentox.jpg");
 		Image temp = imDesc.createImage();
 		Image image = new Image(container.getDisplay(), temp , SWT.IMAGE_COPY);
@@ -82,9 +88,20 @@ public class OpenToxAccount implements IAccounts {
 	 */
 	@Override
 	public Boolean createAccount() {
-		System.out.println("Creating an open tox account...");
-		System.out.println("Name: " + nameTxt.getText());
-		System.out.println("Password: " + pswTxt.getText());
+		IUserManager usermanager = Activator.getDefault().getUserManager();
+		
+		usermanager.getAvailableAccountTypes()[0].getName();
+//		usermanager.getAccountIdsByAccountTypeName(accountTypeName)
+//		AccountType accountType;
+//		usermanager.createAccount( , 
+//		        		         new HashMap<String, String>() {{
+//		        		        	 put( "Name",     nameTxt.getText() );
+//		        		        	 put( "Password", pswTxt.getText()  );
+//		        		         accountType.}}, 
+//		        		         accountType)
+//		System.out.println("Creating an open tox account...");
+//		System.out.println("Name: " + nameTxt.getText());
+//		System.out.println("Password: " + pswTxt.getText());
 		return true;
 	}
 	
