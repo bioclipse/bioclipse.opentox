@@ -2,20 +2,16 @@
 <feature
       id="net.bioclipse.opentox.ds_feature"
       label="OpenTox for DS"
-      version="1.0.0.qualifier"
+      version="2.5.0.qualifier"
       provider-name="The Bioclipse team"
       plugin="net.bioclipse.opentox.ds">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+   <description>
+      OpenTox extension for the Bioclipse Decision Support feature.
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
-   </copyright>
-
-   <license url="http://www.example.com/license">
-      [Enter License Description here.]
+   <license url="http://www.eclipse.org/org/documents/epl-v10.php">
+      EPL + exception to allow GPL plugins.
    </license>
 
    <plugin
