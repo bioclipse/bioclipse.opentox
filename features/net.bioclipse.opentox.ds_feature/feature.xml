@@ -10,8 +10,8 @@
       OpenTox extension for the Bioclipse Decision Support feature.
    </description>
 
-   <license url="http://www.eclipse.org/org/documents/epl-v10.php">
-      EPL + exception to allow GPL plugins.
+   <license url="">
+      EPL + exception to also allow GPL extensions.
    </license>
 
    <plugin
