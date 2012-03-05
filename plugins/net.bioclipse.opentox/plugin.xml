@@ -43,14 +43,17 @@
          point="net.bioclipse.usermanager.accountType">
       <AccountType
             id="net.bioclipse.opentox.OpenSSOAccount"
+            logoPath="platform:/plugin/net.bioclipse.opentox.ui/icons/opentox.jpg"
             name="OpenTox OpenSSO Account">
          <property
                name="username"
-               required="true">
+               required="true"
+               secret="false">
          </property>
          <property
                name="password"
-               required="true">
+               required="true"
+               secret="true">
          </property>
       </AccountType>
    </extension>
