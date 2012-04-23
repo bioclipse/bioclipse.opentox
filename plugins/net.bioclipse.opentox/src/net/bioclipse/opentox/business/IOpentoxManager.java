@@ -52,9 +52,9 @@ public interface IOpentoxManager extends IBioclipseManager {
     @PublishedMethod(
         methodSummary=
             "Lists the predictive models available from the given service.",
-        params="String service"
+        params="String ontologyServer"
     )
-    public List<String> listModels(String service);
+    public List<String> listModels(String ontologyServer);
 
     @Recorded
     @PublishedMethod(
