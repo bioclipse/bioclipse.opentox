@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="net.bioclipse.opentox">
+         <service
+               id="net.bioclipse.opentox.ideaconsult"
+               name="IdeaConsult Ltd. OpenTox Server"
+               serviceURL="http://apps.ideaconsult.net:8080/ambit2/"
+               serviceSPARQL="http://apps.ideaconsult.net:8080/ontology/">
+         </service>
+   </extension>
+
+</plugin>

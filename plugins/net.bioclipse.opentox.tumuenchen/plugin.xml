@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="net.bioclipse.opentox">
+         <service
+               id="net.bioclipse.opentox.tumuenchen"
+               name="TU Muenchen OpenTox Server"
+               serviceURL="http://opentox.informatik.tu-muenchen.de:8080/OpenTox-dev/">
+         </service>
+   </extension>
+
+</plugin>
