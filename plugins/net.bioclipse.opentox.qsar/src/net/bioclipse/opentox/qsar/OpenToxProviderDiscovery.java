@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IStringMatrix;
 import net.bioclipse.opentox.Activator;
 import net.bioclipse.opentox.business.IOpentoxManager;
@@ -77,8 +78,14 @@ public class OpenToxProviderDiscovery implements IDiscoveryService{
 					+ provider.getService());
 			
 			//Read descriptors from SPARQL using RDF in OpenTox manager
-			IStringMatrix stringMat = opentox.listDescriptors(
-					provider.getServiceSPARQL());
+			IStringMatrix stringMat;
+			try {
+				stringMat = opentox.listDescriptors(
+						provider.getServiceSPARQL());
+			} catch (BioclipseException e) {
+				e.printStackTrace();
+				return returnList;
+			}
 
 			for (int i=0; i< stringMat.getRowCount(); i++){
 

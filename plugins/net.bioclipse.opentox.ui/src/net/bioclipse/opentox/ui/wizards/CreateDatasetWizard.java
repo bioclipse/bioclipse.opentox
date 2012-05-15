@@ -9,29 +9,20 @@
 package net.bioclipse.opentox.ui.wizards;
 
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.util.List;
 
 import net.bioclipse.browser.editors.RichBrowserEditor;
 import net.bioclipse.cdk.business.ICDKManager;
 import net.bioclipse.cdk.domain.ICDKMolecule;
-import net.bioclipse.core.business.BioclipseException;
-import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.opentox.Activator;
 import net.bioclipse.opentox.business.IOpentoxManager;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Display;
@@ -111,7 +102,7 @@ public class CreateDatasetWizard extends Wizard implements INewWizard {
 		try {
 			getContainer().run(true, true, new IRunnableWithProgress() {
 				public void run(IProgressMonitor monitor) {
-
+				try {
 					IOpentoxManager opentox = Activator.getDefault().getJavaOpentoxManager();
 					ICDKManager cdk = net.bioclipse.cdk.business.Activator.getDefault().getJavaCDKManager();
 
@@ -119,13 +110,7 @@ public class CreateDatasetWizard extends Wizard implements INewWizard {
 					monitor.subTask("Parsing data file");
 					monitor.worked(1);
 					List<ICDKMolecule> mols=null;
-					try {
 						mols = cdk.loadMolecules(file, new SubProgressMonitor(monitor, 7));
-					} catch (Exception e) {
-						e.printStackTrace();
-						monitor.done();
-						return;
-					}
 
 					monitor.subTask("Uploading data");
 					monitor.worked(1);
@@ -167,6 +152,10 @@ public class CreateDatasetWizard extends Wizard implements INewWizard {
 					});
 
 					monitor.done();
+				} catch (Exception exception) {
+					monitor.done();
+					return;
+				}
 				}
 			});
 		} catch (InvocationTargetException e) {
