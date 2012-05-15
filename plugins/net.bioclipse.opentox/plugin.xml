@@ -26,6 +26,20 @@
    </extension>
    
    <extension
+         point="net.bioclipse.opentox">
+         <service
+               id="net.bioclipse.opentox.ambit2"
+               name="Ambit2"
+               serviceURL="http://apps.ideaconsult.net:8080/ambit2/"
+               serviceSPARQL="http://apps.ideaconsult.net:8080/ontology/">
+         </service>
+         <service
+               id="net.bioclipse.opentox.tum"
+               name="TUM"
+               serviceURL="http://opentox.informatik.tu-muenchen.de:8080/OpenTox-dev/">
+         </service>
+   </extension>
+   <extension
          point="net.bioclipse.usermanager.accountType">
       <AccountType
             id="net.bioclipse.opentox.OpenSSOAccount"
