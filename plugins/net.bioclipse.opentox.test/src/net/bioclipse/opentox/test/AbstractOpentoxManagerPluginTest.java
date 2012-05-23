@@ -10,7 +10,6 @@
  ******************************************************************************/
 package net.bioclipse.opentox.test;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import net.bioclipse.cdk.business.CDKManager;
@@ -40,7 +39,7 @@ extends AbstractManagerTest {
 		
     protected static IOpentoxManager opentox;
     
-    @Test public void testAuthentication() {
+    @Test public void testAuthentication() throws Exception {
         opentox.logout();
         Assert.assertNull(opentox.getToken());
         opentox.login(TEST_ACCOUNT, TEST_ACCOUNT_PWD);
@@ -51,7 +50,7 @@ extends AbstractManagerTest {
         Assert.assertNull(opentox.getToken());
     }
 
-    @Test public void testSearchDescriptors() {
+    @Test public void testSearchDescriptors() throws Exception {
     	IStringMatrix descriptors = opentox.searchDescriptors(
     		TEST_SERVER_ONT, "LogP"
     	);
@@ -60,7 +59,7 @@ extends AbstractManagerTest {
     	Assert.assertNotSame(0, descriptors.getRowCount());
     }
 
-    @Test public void testSearchModels() {
+    @Test public void testSearchModels() throws Exception {
     	IStringMatrix models = opentox.searchModels(
     		TEST_SERVER_ONT, "ToxTree"
     	);
@@ -69,7 +68,7 @@ extends AbstractManagerTest {
     	Assert.assertNotSame(0, models.getRowCount());
     }
 
-    @Test public void testSearchDataSets() {
+    @Test public void testSearchDataSets() throws Exception {
     	IStringMatrix models = opentox.searchDataSets(
     		TEST_SERVER_ONT, "EPA"
     	);
@@ -78,7 +77,7 @@ extends AbstractManagerTest {
     	Assert.assertNotSame(0, models.getRowCount());
     }
 
-    @Test public void testListDatasets() {
+    @Test public void testListDatasets() throws Exception {
     	List<String> sets = opentox.listDataSets(
     		TEST_SERVER_OT
     	);
@@ -87,7 +86,7 @@ extends AbstractManagerTest {
     	Assert.assertNotSame(0, sets.size());
     }
 
-    @Test public void testListAlgorithms() {
+    @Test public void testListAlgorithms() throws Exception {
     	List<String> algos = opentox.listAlgorithms(
     		TEST_SERVER_ONT
     	);
@@ -96,7 +95,7 @@ extends AbstractManagerTest {
     	Assert.assertNotSame(0, algos.size());
     }
 
-    @Test public void testSearchInChI() {
+    @Test public void testSearchInChI() throws Exception {
     	List<String> hits = opentox.search(
     	    TEST_SERVER_OT,
     		"InChI=1/CH4/h1H4"
@@ -122,7 +121,7 @@ extends AbstractManagerTest {
     	Assert.assertNotSame(0, hits.size());
     }
 
-    @Test public void testListDescriptors() {
+    @Test public void testListDescriptors() throws Exception {
     	IStringMatrix descriptors = opentox.listDescriptors(
     		TEST_SERVER_ONT
     	);
@@ -131,8 +130,7 @@ extends AbstractManagerTest {
     	Assert.assertNotSame(0, descriptors.getRowCount());
     }
 
-    @Test public void testCalculateDescriptor_List_Molecule()
-    throws BioclipseException, InvocationTargetException {
+    @Test public void testCalculateDescriptor_List_Molecule() throws Exception {
     	IStringMatrix stringMat = opentox.listDescriptors(TEST_SERVER_ONT);
 
     	String descriptor = stringMat.get(1, "algo");
@@ -149,8 +147,7 @@ extends AbstractManagerTest {
     	Assert.assertSame(2, descriptorVals.size());
     }
     
-    @Test public void testCalculateDescriptor()
-    throws BioclipseException, InvocationTargetException {
+    @Test public void testCalculateDescriptor() throws Exception {
     	IStringMatrix stringMat = opentox.listDescriptors(TEST_SERVER_ONT);
 
     	String descriptor = stringMat.get(1, "algo");

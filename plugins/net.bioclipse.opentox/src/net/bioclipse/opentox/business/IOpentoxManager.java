@@ -16,6 +16,7 @@ import java.util.Map;
 import net.bioclipse.core.PublishedClass;
 import net.bioclipse.core.PublishedMethod;
 import net.bioclipse.core.Recorded;
+import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.core.domain.IStringMatrix;
 import net.bioclipse.jobs.BioclipseUIJob;
@@ -40,21 +41,21 @@ public interface IOpentoxManager extends IBioclipseManager {
             "Logs in on OpenTox. Returns true if the login worked.",
         params="String user, String password"
     )
-    public boolean login(String user, String password);
+    public boolean login(String user, String password) throws BioclipseException;
 
     @Recorded
     @PublishedMethod(
         methodSummary="Logs out on OpenTox."
     )
-    public void logout();
+    public void logout() throws BioclipseException;
 
     @Recorded
     @PublishedMethod(
         methodSummary=
             "Lists the predictive models available from the given service.",
-        params="String service"
+        params="String ontologyServer"
     )
-    public List<String> listModels(String service);
+    public List<String> listModels(String ontologyServer) throws BioclipseException;
 
     @Recorded
     @PublishedMethod(
@@ -62,7 +63,7 @@ public interface IOpentoxManager extends IBioclipseManager {
             "Calculates a descriptor value for a set of molecules.",
         params="String service, String descriptor, List<? extends IMolecule> molecules"
     )
-    public List<String> calculateDescriptor(String service, String descriptor, List<? extends IMolecule> molecules);
+    public List<String> calculateDescriptor(String service, String descriptor, List<? extends IMolecule> molecules) throws Exception;
 
     @Recorded
     @PublishedMethod(
@@ -70,7 +71,7 @@ public interface IOpentoxManager extends IBioclipseManager {
             "Calculates a descriptor value for a single molecule.",
         params="String service, String descriptor, IMolecule molecule"
     )
-    public List<String> calculateDescriptor(String service, String descriptor, IMolecule molecule);
+    public List<String> calculateDescriptor(String service, String descriptor, IMolecule molecule) throws Exception;
 
     @Recorded
     @PublishedMethod(
@@ -86,7 +87,7 @@ public interface IOpentoxManager extends IBioclipseManager {
             "Predicts modeled properties for the given molecule.",
         params="String service, String model, IMolecule molecule"
     )
-    public List<String> predictWithModel(String service, String model, IMolecule molecule);
+    public List<String> predictWithModel(String service, String model, IMolecule molecule) throws Exception;
     
     @Recorded
     @PublishedMethod(
@@ -94,7 +95,7 @@ public interface IOpentoxManager extends IBioclipseManager {
             "Predicts modeled properties for the given molecule.",
         params="String service, String model, List<? extends IMolecule> molecules"
     )
-    public Map<String,String> predictWithModelWithLabel(String service, String model, List<? extends IMolecule> molecules);
+    public Map<String,String> predictWithModelWithLabel(String service, String model, List<? extends IMolecule> molecules) throws Exception;
 
     @Recorded
     @PublishedMethod(
@@ -166,7 +167,7 @@ public interface IOpentoxManager extends IBioclipseManager {
             "end point.",
         params="String ontologyServer"
     )
-    public List<String> listAlgorithms(String ontologyServer);
+    public List<String> listAlgorithms(String ontologyServer) throws BioclipseException;
 
     @Recorded
     @PublishedMethod(
@@ -175,7 +176,7 @@ public interface IOpentoxManager extends IBioclipseManager {
             "end point.",
         params="String ontologyServer"
     )
-    public IStringMatrix listDescriptors(String ontologyServer);
+    public IStringMatrix listDescriptors(String ontologyServer) throws BioclipseException;
     
     @Recorded
     @PublishedMethod(
@@ -183,7 +184,7 @@ public interface IOpentoxManager extends IBioclipseManager {
             "Lists the data sets available from the given service.",
         params="String service"
     )
-    public List<String> listDataSets(String service);
+    public List<String> listDataSets(String service) throws BioclipseException;
     
     @Recorded
     @PublishedMethod(
@@ -192,7 +193,7 @@ public interface IOpentoxManager extends IBioclipseManager {
             "match the given title search string.",
         params="String ontologyServer, String query"
     )
-    public IStringMatrix searchDataSets(String ontologyServer, String query);
+    public IStringMatrix searchDataSets(String ontologyServer, String query) throws BioclipseException;
     
     @Recorded
     @PublishedMethod(
@@ -201,7 +202,7 @@ public interface IOpentoxManager extends IBioclipseManager {
             "match the given title search string.",
         params="String ontologyServer, String query"
     )
-    public IStringMatrix searchDescriptors(String ontologyServer, String query);
+    public IStringMatrix searchDescriptors(String ontologyServer, String query) throws BioclipseException;
     
     @Recorded
     @PublishedMethod(
@@ -210,31 +211,31 @@ public interface IOpentoxManager extends IBioclipseManager {
             "match the given title search string.",
         params="String ontologyServer, String query"
     )
-    public IStringMatrix searchModels(String ontologyServer, String query);
+    public IStringMatrix searchModels(String ontologyServer, String query) throws BioclipseException;
     
     @Recorded
     @PublishedMethod(
         methodSummary="Creates a new dataset.",
         params="String service"
     )
-    public String createDataset(String service);
-    public void createDataset(String service, BioclipseUIJob<String> uiJob);
+    public String createDataset(String service) throws BioclipseException;
+    public void createDataset(String service, BioclipseUIJob<String> uiJob) throws BioclipseException;
     
     @Recorded
     @PublishedMethod(
         methodSummary="Creates a new dataset.",
         params="String service, List<? extends IMolecule> molecules"
     )
-    public String createDataset(String service, List<? extends IMolecule> molecules);
-    public void createDataset(String service, List<? extends IMolecule> molecules, BioclipseUIJob<String> uiJob);
+    public String createDataset(String service, List<? extends IMolecule> molecules) throws BioclipseException;
+    public void createDataset(String service, List<? extends IMolecule> molecules, BioclipseUIJob<String> uiJob) throws BioclipseException;
     
     @Recorded
     @PublishedMethod(
         methodSummary="Creates a new dataset.",
         params="String service, IMolecule molecule"
     )
-    public String createDataset(String service, IMolecule molecule);
-    public void createDataset(String service, IMolecule molecule, BioclipseUIJob<String> uiJob);
+    public String createDataset(String service, IMolecule molecule) throws BioclipseException;
+    public void createDataset(String service, IMolecule molecule, BioclipseUIJob<String> uiJob) throws BioclipseException;
     
     @Recorded
     @PublishedMethod(
@@ -242,8 +243,8 @@ public interface IOpentoxManager extends IBioclipseManager {
         	"must be a URI.",
         params="String datasetURI, String license"
     )
-    public String setDatasetLicense(String datasetURI, String license);
-    public void setDatasetLicense(String datasetURI, String license, BioclipseUIJob<String> uiJob);
+    public String setDatasetLicense(String datasetURI, String license) throws Exception;
+    public void setDatasetLicense(String datasetURI, String license, BioclipseUIJob<String> uiJob) throws Exception;
     
     @Recorded
     @PublishedMethod(
@@ -251,23 +252,23 @@ public interface IOpentoxManager extends IBioclipseManager {
         	"must be a URI.",
         params="String datasetURI, String holder"
     )
-    public String setDatasetRightsHolder(String datasetURI, String holder);
-    public void setDatasetRightsHolder(String datasetURI, String holder, BioclipseUIJob<String> uiJob);
+    public String setDatasetRightsHolder(String datasetURI, String holder) throws Exception;
+    public void setDatasetRightsHolder(String datasetURI, String holder, BioclipseUIJob<String> uiJob) throws Exception;
     
     @Recorded
     @PublishedMethod(
         methodSummary="Sets the title of the data set.",
         params="String datasetURI, String title"
     )
-    public String setDatasetTitle(String datasetURI, String title);
-    public void setDatasetTitle(String datasetURI, String title, BioclipseUIJob<String> uiJob);
+    public String setDatasetTitle(String datasetURI, String title) throws Exception;
+    public void setDatasetTitle(String datasetURI, String title, BioclipseUIJob<String> uiJob) throws Exception;
     
     @Recorded
     @PublishedMethod(
         methodSummary="Adds a molecule to an existing dataset.",
         params="String datasetURI, IMolecule mol"
     )
-    public void addMolecule(String datasetURI, IMolecule mol);
+    public void addMolecule(String datasetURI, IMolecule mol) throws BioclipseException;
     
     @Recorded
     @PublishedMethod(
@@ -281,7 +282,7 @@ public interface IOpentoxManager extends IBioclipseManager {
         methodSummary="Deletes a dataset.",
         params="String datasetURI"
     )
-    public void deleteDataset(String datasetURI);
+    public void deleteDataset(String datasetURI) throws BioclipseException;
 
     @Recorded
     @PublishedMethod(
@@ -289,7 +290,7 @@ public interface IOpentoxManager extends IBioclipseManager {
             "Lists the compounds available from the given data set.",
         params="String service, Integer dataSet"
     )
-    public List<Integer> listCompounds(String service, Integer dataSet);
+    public List<Integer> listCompounds(String service, Integer dataSet) throws BioclipseException;
     
     @Recorded
     @PublishedMethod(
@@ -299,7 +300,7 @@ public interface IOpentoxManager extends IBioclipseManager {
         params="String service, String dataSet, Integer compound"
     )
     public String downloadCompoundAsMDLMolfile(String service, String dataSet,
-        Integer compound);
+        Integer compound) throws BioclipseException;
 
     @Recorded
     @PublishedMethod(
@@ -309,7 +310,7 @@ public interface IOpentoxManager extends IBioclipseManager {
         params="String service, String dataSet, String filename"
     )
     public String downloadDataSetAsMDLSDfile(String service, String dataSet,
-        String filename);
+        String filename) throws BioclipseException;
 
     @Recorded
     @PublishedMethod(
@@ -317,7 +318,7 @@ public interface IOpentoxManager extends IBioclipseManager {
             "Searches the OpenTox network for the given molecule.",
         params="String service, IMolecule molecule"
     )
-    public List<String> search(String service, IMolecule molecule);
+    public List<String> search(String service, IMolecule molecule) throws BioclipseException;
 
     @Recorded
     @PublishedMethod(
@@ -325,5 +326,5 @@ public interface IOpentoxManager extends IBioclipseManager {
             "Searches the OpenTox network for the given molecule.",
         params="String service, String inchi"
     )
-    public List<String> search(String service, String inchi);
+    public List<String> search(String service, String inchi) throws BioclipseException;
 }
