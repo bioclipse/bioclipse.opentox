@@ -199,7 +199,10 @@ extends AbstractManagerTest {
     	// now do the testing
     	List<String> compounds = opentox.listCompounds(uriString);
     	Assert.assertNotNull(compounds);
-    	Assert.assertEquals(2, compounds.size());
+    	Assert.assertEquals(
+    		"Incorrect molecule count for " + uriString,
+    		2, compounds.size()
+    	);
     }
 
     @Test public void testListCompoundsDataSet2() throws Exception {
