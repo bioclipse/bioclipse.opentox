@@ -91,4 +91,9 @@ public class OpenToxLogInOutListener implements IUserManagerListener {
 			}
 		}
 	}
+
+	@Override
+	public String getAccountType() {
+		return "opentox";
+	}
 }
