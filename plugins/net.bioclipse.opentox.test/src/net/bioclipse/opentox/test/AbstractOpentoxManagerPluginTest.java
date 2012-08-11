@@ -10,6 +10,7 @@
  ******************************************************************************/
 package net.bioclipse.opentox.test;
 
+import java.net.URI;
 import java.util.List;
 
 import net.bioclipse.cdk.business.CDKManager;
@@ -128,6 +129,24 @@ extends AbstractManagerTest {
     	Assert.assertNotNull(descriptors);
     	// expect at least one hit:
     	Assert.assertNotSame(0, descriptors.getRowCount());
+    }
+
+    @Test public void testCreateDataSetFromSet() throws Exception {
+    	List<ICDKMolecule> molecules = cdk.createMoleculeList();
+    	molecules.add(cdk.fromSMILES("COC"));
+    	molecules.add(cdk.fromSMILES("CNC"));
+
+    	String uriString = opentox.createDataset(TEST_SERVER_OT, molecules);
+    	Assert.assertNotNull(uriString);
+    	URI uri = new URI(uriString);
+    	Assert.assertNotNull(uri);
+    }
+
+    @Test public void testCreateDataSet() throws Exception {
+    	String uriString = opentox.createDataset(TEST_SERVER_OT, cdk.fromSMILES("COC"));
+    	Assert.assertNotNull(uriString);
+    	URI uri = new URI(uriString);
+    	Assert.assertNotNull(uri);
     }
 
     @Test public void testCalculateDescriptor_List_Molecule() throws Exception {
