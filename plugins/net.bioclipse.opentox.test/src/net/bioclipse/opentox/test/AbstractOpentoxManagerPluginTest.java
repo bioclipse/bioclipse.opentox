@@ -188,6 +188,26 @@ extends AbstractManagerTest {
     	opentox.addMolecules(uriString, molecules);
     }
 
+    @Test public void testListCompounds() throws Exception {
+    	List<ICDKMolecule> molecules = cdk.createMoleculeList();
+    	molecules.add(cdk.fromSMILES("COC"));
+    	molecules.add(cdk.fromSMILES("CNC"));
+
+    	String uriString = opentox.createDataset(TEST_SERVER_OT);
+    	opentox.addMolecules(uriString, molecules);
+
+    	// now do the testing
+    	List<String> compounds = opentox.listCompounds(uriString);
+    	Assert.assertNotNull(compounds);
+    	Assert.assertEquals(2, compounds.size());
+    }
+
+    @Test public void testListCompoundsDataSet2() throws Exception {
+    	List<Integer> compounds = opentox.listCompounds(TEST_SERVER_OT, 2);
+    	Assert.assertNotNull(compounds);
+    	Assert.assertNotSame(0, compounds.size());
+    }
+
     @Test public void testCreateDataSetFromSet() throws Exception {
     	List<ICDKMolecule> molecules = cdk.createMoleculeList();
     	molecules.add(cdk.fromSMILES("COC"));

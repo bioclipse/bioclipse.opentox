@@ -302,6 +302,14 @@ public interface IOpentoxManager extends IBioclipseManager {
     @Recorded
     @PublishedMethod(
         methodSummary=
+            "Lists the compounds available from the given data set.",
+        params="String dataSet"
+    )
+    public List<String> listCompounds(String dataSet) throws BioclipseException;
+    
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
             "Downloads a compound and returns it as a MDL molfile formated " +
             "String.",
         params="String service, String dataSet, Integer compound"

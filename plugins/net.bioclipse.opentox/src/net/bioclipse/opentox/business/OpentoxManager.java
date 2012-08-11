@@ -443,6 +443,11 @@ public class OpentoxManager implements IBioclipseManager {
 
     public List<Integer> listCompounds(String service, Integer dataSet,
             IProgressMonitor monitor) throws BioclipseException {
+    	return listCompounds(service + "dataset/" + dataSet, monitor);
+    }
+
+    public List<Integer> listCompounds(String dataSet,
+            IProgressMonitor monitor) throws BioclipseException {
         List<Integer> compounds = new ArrayList<Integer>();
 
         if (monitor == null) monitor = new NullProgressMonitor();
@@ -458,7 +463,7 @@ public class OpentoxManager implements IBioclipseManager {
             // download the list of compounds as RDF
             rdf.importURL(
                 store,
-                service + "dataset/" + dataSet + "/compound",
+                dataSet + "/compound",
                 extraHeaders,
                 monitor
             );
