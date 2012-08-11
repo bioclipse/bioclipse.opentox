@@ -131,6 +131,20 @@ extends AbstractManagerTest {
     	Assert.assertNotSame(0, descriptors.getRowCount());
     }
 
+    @Test public void testCreateEmptyDataSet() throws Exception {
+    	String uriString = opentox.createDataset(TEST_SERVER_OT);
+    	Assert.assertNotNull(uriString);
+    	Assert.assertTrue(uriString.startsWith("http://"));
+    	URI uri = new URI(uriString);
+    	Assert.assertNotNull(uri);
+    }
+
+    @Test public void testAddMolecule() throws Exception {
+    	String uriString = opentox.createDataset(TEST_SERVER_OT);
+    	Assert.assertNotNull(uriString);
+    	opentox.addMolecule(uriString, cdk.fromSMILES("COC"));
+    }
+
     @Test public void testCreateDataSetFromSet() throws Exception {
     	List<ICDKMolecule> molecules = cdk.createMoleculeList();
     	molecules.add(cdk.fromSMILES("COC"));
