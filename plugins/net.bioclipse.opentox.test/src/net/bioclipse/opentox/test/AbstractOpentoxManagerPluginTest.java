@@ -193,7 +193,8 @@ extends AbstractManagerTest {
     	molecules.add(cdk.fromSMILES("COC"));
     	molecules.add(cdk.fromSMILES("CNC"));
 
-    	String uriString = opentox.createDataset(TEST_SERVER_OT, molecules);
+    	String uriString = opentox.createDataset(TEST_SERVER_OT);
+    	opentox.addMolecules(uriString, molecules);
 
     	// now do the testing
     	List<String> compounds = opentox.listCompounds(uriString);
