@@ -880,6 +880,24 @@ public class OpentoxManager implements IBioclipseManager {
 		}
 	}
 
+	public String createModel(
+	    	String algoURI, String datasetURI, List<String> featureURIs,
+	    	String predictionFeatureURI, IProgressMonitor monitor) throws BioclipseException {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	monitor.beginTask("Creating a new model...", 1);
+
+    	String modelURI;
+		try {
+			modelURI = ModelAlgorithm.createModel(
+				algoURI, datasetURI, featureURIs, predictionFeatureURI, monitor);
+	    	return modelURI;
+		} catch (Exception exception) {
+			throw new BioclipseException(
+				"Error while creating a new prediction model: " + exception.getMessage(), exception
+			);
+		}
+	}
+
 	private static String normalizeURI(String datasetURI) {
 		datasetURI = datasetURI.replaceAll("\\n", "");
 		datasetURI = datasetURI.replaceAll("\\r", "");

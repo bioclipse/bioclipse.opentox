@@ -351,4 +351,15 @@ public interface IOpentoxManager extends IBioclipseManager {
         params="String service, String inchi"
     )
     public List<String> search(String service, String inchi) throws BioclipseException;
+
+    @Recorded
+    @PublishedMethod(
+    	methodSummary="Creates a new regression model using the given algorithm, for the " +
+    			"given data set, with the features as independent variables, and the " +
+    			"prediction features as the dependent feature.",
+    	params="String algoURI, String datasetURI, List<String> featureURIs, String predictionFeatureURI"
+    )
+    public String createModel(
+    	String algoURI, String datasetURI, List<String> featureURIs, String predictionFeatureURI)
+    throws BioclipseException;
 }
