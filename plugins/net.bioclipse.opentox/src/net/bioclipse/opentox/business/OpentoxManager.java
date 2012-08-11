@@ -85,7 +85,7 @@ public class OpentoxManager implements IBioclipseManager {
 
     private final static String QUERY_COMPOUNDS =
         "SELECT ?compound ?id WHERE {" +
-        "  ?set a <http://www.opentox.org/api/1.1#Compound> ." +
+        "  ?compound a <http://www.opentox.org/api/1.1#Compound> ." +
         "}";
     
     /**
