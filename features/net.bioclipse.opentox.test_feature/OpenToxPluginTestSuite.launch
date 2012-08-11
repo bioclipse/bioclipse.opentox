@@ -18,7 +18,6 @@
 <stringAttribute key="location" value="${workspace_loc}/../junit-workspace"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/net.bioclipse.opentox.test/src/net/bioclipse/opentox/test/AllOpentoxManagerPluginTests.java"/>
-<listEntry value="/net.bioclipse.opentox.test/src/net/bioclipse/opentox/test/AllOpentoxManagerTests.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
