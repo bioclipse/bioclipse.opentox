@@ -56,8 +56,6 @@ public class OpenToxLogInOutListener implements IUserManagerListener {
 				);
 				if (otssoAccounts.size() > 0) {
 					String account = otssoAccounts.get(0);
-					System.out.println(" user: " + userManager.getProperty(account, "username"));
-					System.out.println(" pwd: " + userManager.getProperty(account, "password"));
 					loginSucceeded = Activator.login(
 						userManager.getProperty(account, "username"),
 						userManager.getProperty(account, "password")	
