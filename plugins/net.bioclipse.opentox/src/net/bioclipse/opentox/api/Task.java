@@ -212,10 +212,4 @@ public class Task {
 		);
 	}
 
-	public static void main(String[] args) throws Exception {
-		String task = "http://apps.ideaconsult.net:8080/ambit2/task/1";
-		// getListOfAvailableDatasets(service);
-		TaskState state = getState(task);
-	}
-
 }

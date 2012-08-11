@@ -5,6 +5,7 @@ Bundle-SymbolicName: net.bioclipse.opentox; singleton:=true
 Bundle-Version: 2.5.0.qualifier
 Bundle-Activator: net.bioclipse.opentox.Activator
 Export-Package: net.bioclipse.opentox,
+ net.bioclipse.opentox.api,
  net.bioclipse.opentox.business,
  net.bioclipse.opentox.prefs
 Require-Bundle: org.eclipse.ui,
