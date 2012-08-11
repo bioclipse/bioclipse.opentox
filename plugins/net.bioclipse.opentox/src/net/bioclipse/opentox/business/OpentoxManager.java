@@ -545,7 +545,7 @@ public class OpentoxManager implements IBioclipseManager {
 		}
     }
 
-    public void addMolecule(String datasetURI, List<IMolecule> molecules, IProgressMonitor monitor)
+    public void addMolecules(String datasetURI, List<IMolecule> molecules, IProgressMonitor monitor)
     throws BioclipseException {
     	if (monitor == null) monitor = new NullProgressMonitor();
     	
