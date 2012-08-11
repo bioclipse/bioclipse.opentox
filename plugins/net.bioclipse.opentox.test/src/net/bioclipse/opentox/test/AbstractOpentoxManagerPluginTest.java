@@ -96,6 +96,25 @@ extends AbstractManagerTest {
     	Assert.assertNotSame(0, algos.size());
     }
 
+    @Test public void testGetAlgorithmsInfo() throws Exception {
+    	List<String> algos = opentox.listAlgorithms(
+    		TEST_SERVER_ONT
+    	);
+    	Assert.assertNotNull(algos);
+    	Assert.assertNotSame(0, algos.size());
+    	String algo = algos.get(0);
+    	opentox.getAlgorithmInfo(TEST_SERVER_ONT, algo);
+    }
+
+    @Test public void testGetAlgorithmsInfos() throws Exception {
+    	List<String> algos = opentox.listAlgorithms(
+    		TEST_SERVER_ONT
+    	);
+    	Assert.assertNotNull(algos);
+    	Assert.assertNotSame(0, algos.size());
+    	opentox.getAlgorithmInfo(TEST_SERVER_ONT, algos);
+    }
+
     @Test public void testSearchInChI() throws Exception {
     	List<String> hits = opentox.search(
     	    TEST_SERVER_OT,
@@ -131,6 +150,13 @@ extends AbstractManagerTest {
     	Assert.assertNotSame(0, descriptors.getRowCount());
     }
 
+    @Test public void testListModels() throws Exception {
+    	List<String> models = opentox.listModels(TEST_SERVER_ONT);
+    	Assert.assertNotNull(models);
+    	// expect at least one hit:
+    	Assert.assertNotSame(0, models.size());
+    }
+
     @Test public void testCreateEmptyDataSet() throws Exception {
     	String uriString = opentox.createDataset(TEST_SERVER_OT);
     	Assert.assertNotNull(uriString);
@@ -143,6 +169,16 @@ extends AbstractManagerTest {
     	String uriString = opentox.createDataset(TEST_SERVER_OT);
     	Assert.assertNotNull(uriString);
     	opentox.addMolecule(uriString, cdk.fromSMILES("COC"));
+    }
+
+    @Test public void testAddMolecules() throws Exception {
+    	List<ICDKMolecule> molecules = cdk.createMoleculeList();
+    	molecules.add(cdk.fromSMILES("COC"));
+    	molecules.add(cdk.fromSMILES("CNC"));
+
+    	String uriString = opentox.createDataset(TEST_SERVER_OT);
+    	Assert.assertNotNull(uriString);
+    	opentox.addMolecules(uriString, molecules);
     }
 
     @Test public void testCreateDataSetFromSet() throws Exception {
