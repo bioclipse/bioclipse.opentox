@@ -188,6 +188,13 @@ public interface IOpentoxManager extends IBioclipseManager {
     
     @Recorded
     @PublishedMethod(
+        methodSummary="Lists the features available from the given service.",
+        params="String service"
+    )
+    public List<String> listFeatures(String service) throws BioclipseException;
+    
+    @Recorded
+    @PublishedMethod(
         methodSummary=
             "Search the data sets available from the given service that " +
             "match the given title search string.",

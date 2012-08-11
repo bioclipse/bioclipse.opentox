@@ -157,6 +157,13 @@ extends AbstractManagerTest {
     	Assert.assertNotSame(0, models.size());
     }
 
+    @Test public void testListFeatures() throws Exception {
+    	List<String> features = opentox.listFeatures(TEST_SERVER_OT);
+    	Assert.assertNotNull(features);
+    	// expect at least one hit:
+    	Assert.assertNotSame(0, features.size());
+    }
+
     @Test public void testCreateEmptyDataSet() throws Exception {
     	String uriString = opentox.createDataset(TEST_SERVER_OT);
     	Assert.assertNotNull(uriString);

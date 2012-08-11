@@ -78,6 +78,11 @@ public class OpentoxManager implements IBioclipseManager {
         "  ?set a <http://www.opentox.org/api/1.1#Dataset> ." +
         "}";
 
+    private final static String QUERY_FEATURES =
+        "SELECT ?feature WHERE {" +
+        "  ?feature a <http://www.opentox.org/api/1.1#Feature> ." +
+        "}";
+
     private final static String QUERY_COMPOUNDS =
         "SELECT ?compound ?id WHERE {" +
         "  ?set a <http://www.opentox.org/api/1.1#Compound> ." +
@@ -224,6 +229,46 @@ public class OpentoxManager implements IBioclipseManager {
 
         monitor.done();
         return dataSets;
+    }
+
+    public List<String> listFeatures(String service, IProgressMonitor monitor)
+    throws BioclipseException {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	monitor.beginTask("Requesting available features...", 3);
+
+    	IRDFStore store = rdf.createInMemoryStore();
+    	List<String> dataSets = Collections.emptyList();
+    	Map<String, String> extraHeaders = new HashMap<String, String>();
+    	String token = Activator.getToken();
+    	if (token != null) {
+    		extraHeaders.put("subjectid", Activator.getToken());
+    	}
+    	try {
+    		// download the list of data sets as RDF
+    		rdf.importURL(store, service + "feature", extraHeaders, monitor);
+    		String dump = rdf.asRDFN3(store);
+    		System.out.println("RDF: " + dump);
+    		monitor.worked(1);
+
+    		// query the downloaded RDF
+    		IStringMatrix results = rdf.sparql(store, QUERY_FEATURES);
+    		monitor.worked(1);
+
+    		if (results.getRowCount() > 0) {
+    			dataSets = results.getColumn("feature");
+    		}
+    		monitor.worked(1);
+    	} catch (BioclipseException exception) {
+    		throw exception;
+    	} catch (Exception exception) {
+    		throw new BioclipseException(
+    			"Error while accessing RDF API of service: " + exception.getMessage(),
+    			exception
+    		);
+    	}
+
+    	monitor.done();
+    	return dataSets;
     }
 
     public IStringMatrix searchDataSets(String ontologyServer, String query, IProgressMonitor monitor)
