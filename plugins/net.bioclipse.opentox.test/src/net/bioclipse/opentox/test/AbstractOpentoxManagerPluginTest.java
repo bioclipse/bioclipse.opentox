@@ -211,6 +211,22 @@ extends AbstractManagerTest {
     	Assert.assertNotSame(0, compounds.size());
     }
 
+    @Test public void testDownloadAsMDLMolfile() throws Exception {
+    	String mdlMolfile = opentox.downloadCompoundAsMDLMolfile(
+    		TEST_SERVER_OT, "http://apps.ideaconsult.net:8080/ambit2/dataset/2", 1
+    	);
+    	Assert.assertNotNull(mdlMolfile);
+    	Assert.assertTrue(mdlMolfile.contains("V2000"));
+    }
+
+    @Test public void testDownloadAsMDLMolfileFromURI() throws Exception {
+    	String mdlMolfile = opentox.downloadCompoundAsMDLMolfile(
+    		"http://apps.ideaconsult.net:8080/ambit2/dataset/2/compound/1"
+    	);
+    	Assert.assertNotNull(mdlMolfile);
+    	Assert.assertTrue(mdlMolfile.contains("V2000"));
+    }
+
     @Test public void testCreateDataSetFromSet() throws Exception {
     	List<ICDKMolecule> molecules = cdk.createMoleculeList();
     	molecules.add(cdk.fromSMILES("COC"));

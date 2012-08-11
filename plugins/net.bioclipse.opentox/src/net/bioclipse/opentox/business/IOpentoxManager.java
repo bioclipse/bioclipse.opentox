@@ -320,6 +320,15 @@ public interface IOpentoxManager extends IBioclipseManager {
     @Recorded
     @PublishedMethod(
         methodSummary=
+            "Downloads a compound and returns it as a MDL molfile formated " +
+            "String.",
+        params="String compoundURI"
+    )
+    public String downloadCompoundAsMDLMolfile(String compoundURI) throws BioclipseException;
+
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
             "Downloads a data set and saves it as a MDL SD file formated " +
             "file with the given filename.",
         params="String service, String dataSet, String filename"

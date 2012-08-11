@@ -470,14 +470,17 @@ public class OpentoxManager implements IBioclipseManager {
             monitor.worked(1);
 
             // query the downloaded RDF
+            System.out.println(rdf.dump(store));
             IStringMatrix results = rdf.sparql(store, QUERY_COMPOUNDS);
             monitor.worked(1);
 
             // return the data set identifiers
-            for (String compound : results.getColumn("compound")) {
-                compounds.add(
-                    Integer.valueOf(compound.substring(compound.lastIndexOf('/')+1))
-                );
+            if (results.getRowCount() > 0) {
+                for (String compound : results.getColumn("compound")) {
+                    compounds.add(
+                        Integer.valueOf(compound.substring(compound.lastIndexOf('/')+1))
+                    );
+                }
             }
             monitor.worked(1);
         } catch (BioclipseException exception) {
@@ -496,14 +499,18 @@ public class OpentoxManager implements IBioclipseManager {
     public String downloadCompoundAsMDLMolfile(String service, String dataSet,
             Integer compound, IProgressMonitor monitor)
         throws BioclipseException {
+        return downloadCompoundAsMDLMolfile(dataSet + "/compound/" + compound, monitor);
+    }
+
+    public String downloadCompoundAsMDLMolfile(String compoundURI, IProgressMonitor monitor)
+        throws BioclipseException {
 
         if (monitor == null) monitor = new NullProgressMonitor();
 
         monitor.beginTask("Downloading compound...", 1);
 
-        String url = dataSet + "/compound/" + compound;
         String result = bioclipse.download(
-            url, "chemical/x-mdl-molfile", monitor
+            compoundURI, "chemical/x-mdl-molfile", monitor
         );
         monitor.done();
 
