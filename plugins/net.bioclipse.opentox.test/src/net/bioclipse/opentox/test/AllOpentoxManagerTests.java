@@ -10,6 +10,8 @@
  ******************************************************************************/
 package net.bioclipse.opentox.test;
 
+import net.bioclipse.opentox.test.api.TaskTest;
+
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -17,7 +19,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 	APITest.class,
-	CoverageTest.class
+	CoverageTest.class,
+	TaskTest.class
 })
 public class AllOpentoxManagerTests {
 
