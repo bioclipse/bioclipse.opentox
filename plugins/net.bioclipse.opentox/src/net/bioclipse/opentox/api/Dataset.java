@@ -167,7 +167,7 @@ public class Dataset {
 		SDFWriter writer = new SDFWriter(strWriter);
 		writer.write(cdk.asCDKMolecule(mol).getAtomContainer());
 		writer.close();
-		addMolecules(datasetURI, strWriter.toString());
+		addMolecules(datasetURI, strWriter.toString(), null);
 	}
 
 	public static void addMolecules(String datasetURI, List<IMolecule> mols)
@@ -178,7 +178,7 @@ public class Dataset {
 			writer.write(cdk.asCDKMolecule(mol).getAtomContainer());
 		}
 		writer.close();
-		addMolecules(datasetURI, strWriter.toString());
+		addMolecules(datasetURI, strWriter.toString(), null);
 	}
 
 	public static void setMetadata(String datasetURI, String predicate, String value)
@@ -251,8 +251,10 @@ public class Dataset {
 	}
 
 	@SuppressWarnings("serial")
-	public static void addMolecules(String datasetURI, String sdFile)
+	public static void addMolecules(String datasetURI, String sdFile, IProgressMonitor monitor)
 	throws Exception {
+		if (monitor == null) monitor = new NullProgressMonitor();
+
 		HttpClient client = new HttpClient();
 		datasetURI = normalizeURI(datasetURI);
 		PutMethod method = new PutMethod(datasetURI);
@@ -266,23 +268,37 @@ public class Dataset {
 		client.executeMethod(method);
 		int status = method.getStatusCode();
 		String dataset = "";
+		String responseString = method.getResponseBodyAsString();
+		logger.debug("Response: " + responseString);
+		int tailing = 1;
 		if (status == 200) {
 			// OK, that was quick!
 			dataset = method.getResponseBodyAsString();
-		} else if (status == 202) {
+			logger.debug("No Task, Data set: " + dataset);
+		} else if (status == 202 || status == 201) {
 			// OK, we got a task... let's wait until it is done
 			String task = method.getResponseBodyAsString();
 			Thread.sleep(1000); // let's be friendly, and wait 1 sec
 			TaskState state = Task.getState(task);
-			while (!state.isFinished()) {
-				Thread.sleep(3000); // let's be friendly, and wait 3 sec
+			while (!state.isFinished() && !monitor.isCanceled()) {
+				// let's be friendly, and wait 2 secs and a bit and increase
+				// that time after each wait
+				int waitingTime = andABit(2000*tailing);
+				logger.debug("Waiting " + waitingTime + "ms.");
+				waitUnlessInterrupted(waitingTime, monitor);
 				state = Task.getState(task);
 				if (state.isRedirected()) {
 					task = state.getResults();
+					logger.debug("  new task, new task!!: " + task);
 				}
+				// but wait at most 20 secs and a bit
+				if (tailing < 10) tailing++;
 			}
+			if (monitor.isCanceled()) Task.delete(task);
 			// OK, it should be finished now
 			dataset = state.getResults();
+		} else {
+			logger.warn("Unexpected return code when adding molecules: " + status);
 		}
 		method.releaseConnection();
 	}
@@ -339,7 +355,7 @@ public class Dataset {
 		String responseString = method.getResponseBodyAsString();
 		logger.debug("Response: " + responseString);
 		int tailing = 1;
-		if (status == 200 || status == 202) {
+		if (status == 200 || status == 201 || status == 202) {
 			if (responseString.contains("/task/")) {
 				logger.debug("Task: " + responseString);
 				// OK, we got a task... let's wait until it is done

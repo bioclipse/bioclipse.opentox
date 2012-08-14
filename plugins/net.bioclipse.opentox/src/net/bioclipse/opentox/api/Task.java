@@ -81,6 +81,7 @@ public class Task {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	public static TaskState getState(String task)
 	throws IOException {
 		HttpClient client = new HttpClient();
@@ -106,7 +107,7 @@ public class Task {
 			break;
 		case 200:
 			if (result == null)
-				throw new IOException("Missing dataset URI for finished (200) Task.");
+				throw new IOException("Missing dataset URI for finished (200) Task: " + task);
 			state.setFinished(true);
 			state.setResults(getResultSetURI(createStore(result)));
 			break;
@@ -128,7 +129,7 @@ public class Task {
 			} catch (BioclipseException e) {}
 			String error = getErrorMessage(store);
 			throw new IllegalStateException(
-				"Service error: " + error
+				"Service error (500) for " + task + ": " + error
 			);
 		default:
 			logger.error("Task error (" + status + "): " + task);
@@ -209,12 +210,6 @@ public class Task {
 		throw new IllegalStateException(
 			"Service error: missing result URI"
 		);
-	}
-
-	public static void main(String[] args) throws Exception {
-		String task = "http://apps.ideaconsult.net:8080/ambit2/task/1";
-		// getListOfAvailableDatasets(service);
-		TaskState state = getState(task);
 	}
 
 }

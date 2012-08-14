@@ -78,9 +78,14 @@ public class OpentoxManager implements IBioclipseManager {
         "  ?set a <http://www.opentox.org/api/1.1#Dataset> ." +
         "}";
 
+    private final static String QUERY_FEATURES =
+        "SELECT ?feature WHERE {" +
+        "  ?feature a <http://www.opentox.org/api/1.1#Feature> ." +
+        "}";
+
     private final static String QUERY_COMPOUNDS =
         "SELECT ?compound ?id WHERE {" +
-        "  ?set a <http://www.opentox.org/api/1.1#Compound> ." +
+        "  ?compound a <http://www.opentox.org/api/1.1#Compound> ." +
         "}";
     
     /**
@@ -224,6 +229,46 @@ public class OpentoxManager implements IBioclipseManager {
 
         monitor.done();
         return dataSets;
+    }
+
+    public List<String> listFeatures(String service, IProgressMonitor monitor)
+    throws BioclipseException {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	monitor.beginTask("Requesting available features...", 3);
+
+    	IRDFStore store = rdf.createInMemoryStore();
+    	List<String> dataSets = Collections.emptyList();
+    	Map<String, String> extraHeaders = new HashMap<String, String>();
+    	String token = Activator.getToken();
+    	if (token != null) {
+    		extraHeaders.put("subjectid", Activator.getToken());
+    	}
+    	try {
+    		// download the list of data sets as RDF
+    		rdf.importURL(store, service + "feature", extraHeaders, monitor);
+    		String dump = rdf.asRDFN3(store);
+    		System.out.println("RDF: " + dump);
+    		monitor.worked(1);
+
+    		// query the downloaded RDF
+    		IStringMatrix results = rdf.sparql(store, QUERY_FEATURES);
+    		monitor.worked(1);
+
+    		if (results.getRowCount() > 0) {
+    			dataSets = results.getColumn("feature");
+    		}
+    		monitor.worked(1);
+    	} catch (BioclipseException exception) {
+    		throw exception;
+    	} catch (Exception exception) {
+    		throw new BioclipseException(
+    			"Error while accessing RDF API of service: " + exception.getMessage(),
+    			exception
+    		);
+    	}
+
+    	monitor.done();
+    	return dataSets;
     }
 
     public IStringMatrix searchDataSets(String ontologyServer, String query, IProgressMonitor monitor)
@@ -398,6 +443,11 @@ public class OpentoxManager implements IBioclipseManager {
 
     public List<Integer> listCompounds(String service, Integer dataSet,
             IProgressMonitor monitor) throws BioclipseException {
+    	return listCompounds(service + "dataset/" + dataSet, monitor);
+    }
+
+    public List<Integer> listCompounds(String dataSet,
+            IProgressMonitor monitor) throws BioclipseException {
         List<Integer> compounds = new ArrayList<Integer>();
 
         if (monitor == null) monitor = new NullProgressMonitor();
@@ -413,21 +463,24 @@ public class OpentoxManager implements IBioclipseManager {
             // download the list of compounds as RDF
             rdf.importURL(
                 store,
-                service + "dataset/" + dataSet + "/compound",
+                dataSet + "/compound",
                 extraHeaders,
                 monitor
             );
             monitor.worked(1);
 
             // query the downloaded RDF
+            System.out.println(rdf.dump(store));
             IStringMatrix results = rdf.sparql(store, QUERY_COMPOUNDS);
             monitor.worked(1);
 
             // return the data set identifiers
-            for (String compound : results.getColumn("compound")) {
-                compounds.add(
-                    Integer.valueOf(compound.substring(compound.lastIndexOf('/')+1))
-                );
+            if (results.getRowCount() > 0) {
+                for (String compound : results.getColumn("compound")) {
+                    compounds.add(
+                        Integer.valueOf(compound.substring(compound.lastIndexOf('/')+1))
+                    );
+                }
             }
             monitor.worked(1);
         } catch (BioclipseException exception) {
@@ -446,14 +499,18 @@ public class OpentoxManager implements IBioclipseManager {
     public String downloadCompoundAsMDLMolfile(String service, String dataSet,
             Integer compound, IProgressMonitor monitor)
         throws BioclipseException {
+        return downloadCompoundAsMDLMolfile(dataSet + "/compound/" + compound, monitor);
+    }
+
+    public String downloadCompoundAsMDLMolfile(String compoundURI, IProgressMonitor monitor)
+        throws BioclipseException {
 
         if (monitor == null) monitor = new NullProgressMonitor();
 
         monitor.beginTask("Downloading compound...", 1);
 
-        String url = dataSet + "/compound/" + compound;
         String result = bioclipse.download(
-            url, "chemical/x-mdl-molfile", monitor
+            compoundURI, "chemical/x-mdl-molfile", monitor
         );
         monitor.done();
 
@@ -545,7 +602,7 @@ public class OpentoxManager implements IBioclipseManager {
 		}
     }
 
-    public void addMolecule(String datasetURI, List<IMolecule> molecules, IProgressMonitor monitor)
+    public void addMolecules(String datasetURI, List<IMolecule> molecules, IProgressMonitor monitor)
     throws BioclipseException {
     	if (monitor == null) monitor = new NullProgressMonitor();
     	
@@ -819,6 +876,24 @@ public class OpentoxManager implements IBioclipseManager {
 			throw new BioclipseException(
 				"Error while creating request URI...",
 				exception
+			);
+		}
+	}
+
+	public String createModel(
+	    	String algoURI, String datasetURI, List<String> featureURIs,
+	    	String predictionFeatureURI, IProgressMonitor monitor) throws BioclipseException {
+    	if (monitor == null) monitor = new NullProgressMonitor();
+    	monitor.beginTask("Creating a new model...", 1);
+
+    	String modelURI;
+		try {
+			modelURI = ModelAlgorithm.createModel(
+				algoURI, datasetURI, featureURIs, predictionFeatureURI, monitor);
+	    	return modelURI;
+		} catch (Exception exception) {
+			throw new BioclipseException(
+				"Error while creating a new prediction model: " + exception.getMessage(), exception
 			);
 		}
 	}

@@ -188,6 +188,13 @@ public interface IOpentoxManager extends IBioclipseManager {
     
     @Recorded
     @PublishedMethod(
+        methodSummary="Lists the features available from the given service.",
+        params="String service"
+    )
+    public List<String> listFeatures(String service) throws BioclipseException;
+    
+    @Recorded
+    @PublishedMethod(
         methodSummary=
             "Search the data sets available from the given service that " +
             "match the given title search string.",
@@ -295,12 +302,29 @@ public interface IOpentoxManager extends IBioclipseManager {
     @Recorded
     @PublishedMethod(
         methodSummary=
+            "Lists the compounds available from the given data set.",
+        params="String dataSet"
+    )
+    public List<String> listCompounds(String dataSet) throws BioclipseException;
+    
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
             "Downloads a compound and returns it as a MDL molfile formated " +
             "String.",
         params="String service, String dataSet, Integer compound"
     )
     public String downloadCompoundAsMDLMolfile(String service, String dataSet,
         Integer compound) throws BioclipseException;
+
+    @Recorded
+    @PublishedMethod(
+        methodSummary=
+            "Downloads a compound and returns it as a MDL molfile formated " +
+            "String.",
+        params="String compoundURI"
+    )
+    public String downloadCompoundAsMDLMolfile(String compoundURI) throws BioclipseException;
 
     @Recorded
     @PublishedMethod(
@@ -327,4 +351,15 @@ public interface IOpentoxManager extends IBioclipseManager {
         params="String service, String inchi"
     )
     public List<String> search(String service, String inchi) throws BioclipseException;
+
+    @Recorded
+    @PublishedMethod(
+    	methodSummary="Creates a new regression model using the given algorithm, for the " +
+    			"given data set, with the features as independent variables, and the " +
+    			"prediction features as the dependent feature.",
+    	params="String algoURI, String datasetURI, List<String> featureURIs, String predictionFeatureURI"
+    )
+    public String createModel(
+    	String algoURI, String datasetURI, List<String> featureURIs, String predictionFeatureURI)
+    throws BioclipseException;
 }

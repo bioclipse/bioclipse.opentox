@@ -10,6 +10,7 @@
  ******************************************************************************/
 package net.bioclipse.opentox.test;
 
+import java.net.URI;
 import java.util.List;
 
 import net.bioclipse.cdk.business.CDKManager;
@@ -95,6 +96,25 @@ extends AbstractManagerTest {
     	Assert.assertNotSame(0, algos.size());
     }
 
+    @Test public void testGetAlgorithmsInfo() throws Exception {
+    	List<String> algos = opentox.listAlgorithms(
+    		TEST_SERVER_ONT
+    	);
+    	Assert.assertNotNull(algos);
+    	Assert.assertNotSame(0, algos.size());
+    	String algo = algos.get(0);
+    	opentox.getAlgorithmInfo(TEST_SERVER_ONT, algo);
+    }
+
+    @Test public void testGetAlgorithmsInfos() throws Exception {
+    	List<String> algos = opentox.listAlgorithms(
+    		TEST_SERVER_ONT
+    	);
+    	Assert.assertNotNull(algos);
+    	Assert.assertNotSame(0, algos.size());
+    	opentox.getAlgorithmInfo(TEST_SERVER_ONT, algos);
+    }
+
     @Test public void testSearchInChI() throws Exception {
     	List<String> hits = opentox.search(
     	    TEST_SERVER_OT,
@@ -128,6 +148,100 @@ extends AbstractManagerTest {
     	Assert.assertNotNull(descriptors);
     	// expect at least one hit:
     	Assert.assertNotSame(0, descriptors.getRowCount());
+    }
+
+    @Test public void testListModels() throws Exception {
+    	List<String> models = opentox.listModels(TEST_SERVER_ONT);
+    	Assert.assertNotNull(models);
+    	// expect at least one hit:
+    	Assert.assertNotSame(0, models.size());
+    }
+
+    @Test public void testListFeatures() throws Exception {
+    	List<String> features = opentox.listFeatures(TEST_SERVER_OT);
+    	Assert.assertNotNull(features);
+    	// expect at least one hit:
+    	Assert.assertNotSame(0, features.size());
+    }
+
+    @Test public void testCreateEmptyDataSet() throws Exception {
+    	String uriString = opentox.createDataset(TEST_SERVER_OT);
+    	Assert.assertNotNull(uriString);
+    	Assert.assertTrue(uriString.startsWith("http://"));
+    	URI uri = new URI(uriString);
+    	Assert.assertNotNull(uri);
+    }
+
+    @Test public void testAddMolecule() throws Exception {
+    	String uriString = opentox.createDataset(TEST_SERVER_OT);
+    	Assert.assertNotNull(uriString);
+    	opentox.addMolecule(uriString, cdk.fromSMILES("COC"));
+    }
+
+    @Test public void testAddMolecules() throws Exception {
+    	List<ICDKMolecule> molecules = cdk.createMoleculeList();
+    	molecules.add(cdk.fromSMILES("COC"));
+    	molecules.add(cdk.fromSMILES("CNC"));
+
+    	String uriString = opentox.createDataset(TEST_SERVER_OT);
+    	Assert.assertNotNull(uriString);
+    	opentox.addMolecules(uriString, molecules);
+    }
+
+    @Test public void testListCompounds() throws Exception {
+    	List<ICDKMolecule> molecules = cdk.createMoleculeList();
+    	molecules.add(cdk.fromSMILES("COC"));
+    	molecules.add(cdk.fromSMILES("CNC"));
+
+    	String uriString = opentox.createDataset(TEST_SERVER_OT, molecules);
+
+    	// now do the testing
+    	List<String> compounds = opentox.listCompounds(uriString);
+    	Assert.assertNotNull(compounds);
+    	Assert.assertEquals(
+    		"Incorrect molecule count for " + uriString,
+    		2, compounds.size()
+    	);
+    }
+
+    @Test public void testListCompoundsDataSet2() throws Exception {
+    	List<Integer> compounds = opentox.listCompounds(TEST_SERVER_OT, 2);
+    	Assert.assertNotNull(compounds);
+    	Assert.assertNotSame(0, compounds.size());
+    }
+
+    @Test public void testDownloadAsMDLMolfile() throws Exception {
+    	String mdlMolfile = opentox.downloadCompoundAsMDLMolfile(
+    		TEST_SERVER_OT, "http://apps.ideaconsult.net:8080/ambit2/dataset/2", 1
+    	);
+    	Assert.assertNotNull(mdlMolfile);
+    	Assert.assertTrue(mdlMolfile.contains("V2000"));
+    }
+
+    @Test public void testDownloadAsMDLMolfileFromURI() throws Exception {
+    	String mdlMolfile = opentox.downloadCompoundAsMDLMolfile(
+    		"http://apps.ideaconsult.net:8080/ambit2/dataset/2/compound/1"
+    	);
+    	Assert.assertNotNull(mdlMolfile);
+    	Assert.assertTrue(mdlMolfile.contains("V2000"));
+    }
+
+    @Test public void testCreateDataSetFromSet() throws Exception {
+    	List<ICDKMolecule> molecules = cdk.createMoleculeList();
+    	molecules.add(cdk.fromSMILES("COC"));
+    	molecules.add(cdk.fromSMILES("CNC"));
+
+    	String uriString = opentox.createDataset(TEST_SERVER_OT, molecules);
+    	Assert.assertNotNull(uriString);
+    	URI uri = new URI(uriString);
+    	Assert.assertNotNull(uri);
+    }
+
+    @Test public void testCreateDataSet() throws Exception {
+    	String uriString = opentox.createDataset(TEST_SERVER_OT, cdk.fromSMILES("COC"));
+    	Assert.assertNotNull(uriString);
+    	URI uri = new URI(uriString);
+    	Assert.assertNotNull(uri);
     }
 
     @Test public void testCalculateDescriptor_List_Molecule() throws Exception {

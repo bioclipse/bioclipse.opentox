@@ -24,25 +24,30 @@ public class OpenToxLogInOutListener implements IUserManagerListener {
 	}
 	
 	@Override
-	public void receiveUserManagerEvent(UserManagerEvent event) {
+	public boolean receiveUserManagerEvent(UserManagerEvent event) {
 		System.out.println("Received event: " + event);
+		boolean eventSucceeded = true;
 		switch (event) {
 		case LOGIN:
-			updateOnLogin();
+		    eventSucceeded = updateOnLogin();
 			break;
 		case LOGOUT:
 			updateOnLogout();
 			break;
 		case UPDATE:
-			update();
+			eventSucceeded = update();
+			break;
 		default:
 			break;
 		}
+		
+		return eventSucceeded;
 	}
 
-	private void updateOnLogin() {
+	private boolean updateOnLogin() {
 		System.out.println("Logging in on OpenTox...");
 		System.out.println("Keyring User is logged in: " + userManager.isLoggedIn());
+		boolean loginSucceeded = false;
 		if (userManager.isLoggedIn() && Activator.getToken() == null) {
 			try {
 				System.out.println("Logging in on OpenTox: ");
@@ -51,9 +56,7 @@ public class OpenToxLogInOutListener implements IUserManagerListener {
 				);
 				if (otssoAccounts.size() > 0) {
 					String account = otssoAccounts.get(0);
-					System.out.println(" user: " + userManager.getProperty(account, "username"));
-					System.out.println(" pwd: " + userManager.getProperty(account, "password"));
-					Activator.login(
+					loginSucceeded = Activator.login(
 						userManager.getProperty(account, "username"),
 						userManager.getProperty(account, "password")	
 					);
@@ -62,12 +65,14 @@ public class OpenToxLogInOutListener implements IUserManagerListener {
 				// FIXME: should do proper feedback
 				System.out.println("Error while logging in: " + e.getMessage());
 				e.printStackTrace();
+				loginSucceeded = false;
 			}
 		}
+		return loginSucceeded;
 	}
 
-	private void update() {
-		updateOnLogin();
+	private boolean update() {
+		return updateOnLogin();
 	}
 
 	private void updateOnLogout() {
@@ -83,5 +88,10 @@ public class OpenToxLogInOutListener implements IUserManagerListener {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	@Override
+	public String getAccountType() {
+		return "opentox";
 	}
 }
