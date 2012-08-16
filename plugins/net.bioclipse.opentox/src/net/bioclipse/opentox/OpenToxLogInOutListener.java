@@ -18,7 +18,7 @@ import net.bioclipse.usermanager.business.IUserManager;
 public class OpenToxLogInOutListener implements IUserManagerListener {
 
 	private IUserManager userManager;
-	private static String accountType = "";
+	public static String myAccountType = "";
 	
 	public OpenToxLogInOutListener(IUserManager userManager) {
 		this.userManager = userManager;
@@ -56,6 +56,7 @@ public class OpenToxLogInOutListener implements IUserManagerListener {
 				        .getAccountIdsByAccountTypeName( getAccountType() );
 				if (otssoAccounts.size() > 0) {
 					String account = otssoAccounts.get(0);
+
 					loginSucceeded = Activator.login(
 						userManager.getProperty(account, "username"),
 						userManager.getProperty(account, "password")	
@@ -92,11 +93,11 @@ public class OpenToxLogInOutListener implements IUserManagerListener {
 
 	@Override
 	public String getAccountType() {
-	    if (accountType.isEmpty())
-	        // TODO When the variable is initiated here it should get its name 
-	        // from the extension-point some how...
-	        accountType = "OpenTox OpenSSO Account";
-	    
-	    return accountType;
+	    if (myAccountType.isEmpty())
+            // TODO When the variable is initiated here it should get its name 
+            // from the extension-point some how...
+            myAccountType = "OpenTox OpenSSO Account";
+        
+        return myAccountType;
 	}
 }
