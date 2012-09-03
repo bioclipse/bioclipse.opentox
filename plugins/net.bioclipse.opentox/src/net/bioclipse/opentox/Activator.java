@@ -109,13 +109,13 @@ public class Activator extends AbstractUIPlugin {
         //This way we have the list openToxServices synced with the prefs
 //        List<String[]> toPrefs = new ArrayList<String[]>();
         for (OpenToxService eps : epservices){
-        	String[] entry = new String[3];
-        	entry[0]=eps.getName();
-        	entry[1]=eps.getService();
-        	entry[2]=eps.getServiceSPARQL();
-        	
-        	if (!listContains( toPrefs, entry ))
-        	    toPrefs.add(entry);
+            String[] entry = new String[3];
+            entry[0]=eps.getName();
+            entry[1]=eps.getService();
+            entry[2]=eps.getServiceSPARQL();
+
+            if (!listContains( toPrefs, entry ))
+                toPrefs.add(entry);
         }
               
         String toPrefsString = ServicesPreferencePage.convertToPreferenceString(toPrefs);

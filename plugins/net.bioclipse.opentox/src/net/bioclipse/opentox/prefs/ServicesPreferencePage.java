@@ -210,7 +210,16 @@ IWorkbenchPreferencePage {
                 }
 
                 String[] chosen = (String[]) obj;
-
+                /* TODO Fix this in a better way. Without the if-statement below
+                 * we'll get an unexpected ArrayIndexOutOfBoundsException in 
+                 * some cases, 'cos the last element is missing in the selection */
+                if (chosen.length < 3) {
+                    String[] temp = {"NA", "NA", "NA"};
+                    for (int i = 0; i < chosen.length; i++) 
+                        temp[i] = chosen[i];   
+                    chosen = temp;
+                }    
+                
                 ServicesEditDialog dlg=new ServicesEditDialog(getShell(), chosen[0], chosen[1], chosen[2]);
 
                 dlg.open();
