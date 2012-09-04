@@ -19,6 +19,7 @@ import net.bioclipse.opentox.OpenToxConstants;
 import net.bioclipse.ui.prefs.IPreferenceConstants;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
@@ -45,6 +46,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormAttachment;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 /**
  * 
@@ -54,10 +57,12 @@ import org.eclipse.swt.layout.FormAttachment;
 public class ServicesPreferencePage extends PreferencePage implements
 IWorkbenchPreferencePage {
 
-    private static final Logger logger = Logger.getLogger(ServicesPreferencePage.class.toString());
+    private static final Logger logger = 
+            Logger.getLogger(ServicesPreferencePage.class.toString());
 
-    private static IPreferenceStore prefsStore=Activator.getDefault().getPreferenceStore();
-
+    private static Preferences preferences = 
+            ConfigurationScope.INSTANCE.getNode( OpenToxConstants.PLUGIN_ID );
+    
     private List<String[]> appList;
     private TableViewer checkboxTableViewer;
 
@@ -205,7 +210,16 @@ IWorkbenchPreferencePage {
                 }
 
                 String[] chosen = (String[]) obj;
-
+                /* TODO Fix this in a better way. Without the if-statement below
+                 * we'll get an unexpected ArrayIndexOutOfBoundsException in 
+                 * some cases, 'cos the last element is missing in the selection */
+                if (chosen.length < 3) {
+                    String[] temp = {"NA", "NA", "NA"};
+                    for (int i = 0; i < chosen.length; i++) 
+                        temp[i] = chosen[i];   
+                    chosen = temp;
+                }    
+                
                 ServicesEditDialog dlg=new ServicesEditDialog(getShell(), chosen[0], chosen[1], chosen[2]);
 
                 dlg.open();
@@ -280,12 +294,15 @@ IWorkbenchPreferencePage {
 
         String value=convertToPreferenceString(appList);
         logger.debug("Update sites prefs to store: " + value);
-        prefsStore.setValue(OpenToxConstants.SERVICES,value);
-
-
+        
         //Save prefs as this must be done explicitly
-        Activator.getDefault().savePluginPreferences();
-
+        preferences.put( OpenToxConstants.SERVICES, value );
+        try {
+            preferences.flush();
+        } catch ( BackingStoreException e ) {
+            logger.error( e.getMessage() );
+            e.printStackTrace();
+        }
         return true;
     }
 
@@ -295,9 +312,8 @@ IWorkbenchPreferencePage {
      */
     public static List<String[]> getPreferencesFromStore() {
 
-
-        String entireString=prefsStore.getString(OpenToxConstants.SERVICES);
-
+        String entireString=preferences.get( OpenToxConstants.SERVICES, "n/a" );
+        
         return convertPreferenceStringToArraylist(entireString);
     }
 
@@ -307,8 +323,7 @@ IWorkbenchPreferencePage {
      * 
      */
     public static List<String[]> getDefaultPreferencesFromStore() {
-        String entireString=prefsStore.getDefaultString(OpenToxConstants.SERVICES);
-
+        String entireString=preferences.get( OpenToxConstants.SERVICES, "n/a" );
         return convertPreferenceStringToArraylist(entireString);
     }
 

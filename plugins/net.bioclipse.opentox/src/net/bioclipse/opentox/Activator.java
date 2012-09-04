@@ -20,10 +20,12 @@ import net.bioclipse.opentox.prefs.ServicesPreferencePage;
 import net.bioclipse.usermanager.business.IUserManager;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.opentox.aa.opensso.OpenSSOToken;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -98,31 +100,63 @@ public class Activator extends AbstractUIPlugin {
         	}
         }
         
+        Preferences preferences = 
+                ConfigurationScope.INSTANCE
+                .getNode( OpenToxConstants.PLUGIN_ID );
+        List<String[]> toPrefs = ServicesPreferencePage.convertPreferenceStringToArraylist( preferences.get( OpenToxConstants.SERVICES, "n/a" ) );
+        
         //Save the, possibly changed, list of services to prefs
         //This way we have the list openToxServices synced with the prefs
-        List<String[]> toPrefs=new ArrayList<String[]>();
+//        List<String[]> toPrefs = new ArrayList<String[]>();
         for (OpenToxService eps : epservices){
-        	String[] entry = new String[3];
-        	entry[0]=eps.getName();
-        	entry[1]=eps.getService();
-        	entry[2]=eps.getServiceSPARQL();
-        	
-        	toPrefs.add(entry);
-        }
-        String toPrefsString = ServicesPreferencePage.convertToPreferenceString(toPrefs);
+            String[] entry = new String[3];
+            entry[0]=eps.getName();
+            entry[1]=eps.getService();
+            entry[2]=eps.getServiceSPARQL();
 
+            if (!listContains( toPrefs, entry ))
+                toPrefs.add(entry);
+        }
+              
+        String toPrefsString = ServicesPreferencePage.convertToPreferenceString(toPrefs);
+        
         //Save the serialized services to preferences
-        IPreferenceStore prefsStore=Activator.getDefault().getPreferenceStore();
-        prefsStore.setValue(OpenToxConstants.SERVICES, toPrefsString);
+        preferences.put( OpenToxConstants.SERVICES, toPrefsString );
+        try {
+            preferences.flush();
+        } catch ( BackingStoreException e ) {
+            logger.error( e.getMessage() );
+            e.printStackTrace();
+        }
         
         logger.debug("Saved the serialized services prefs string: " + toPrefsString);
 
         logger.debug("OpenTox initialization ended");
         
     }
-
-
 	
+    /* This method is written 'cos using "toPrefs.contains( entry )" in the if-
+     * statement on line 117 above didn't worked. */
+    private boolean listContains(List<String[]> list, String[] item) {
+        boolean found = false, itemEquals;
+        for (String[] listItem : list) {
+            itemEquals = false;
+            for (int i = 0; i < listItem.length; i++) {
+                if (item[i] == null || item[i].isEmpty()) {
+                    if (listItem[i].equals( "NA" ) || listItem[i].isEmpty() )
+                        itemEquals = true;
+                } else if (listItem[i].equals( item[i] ) )
+                        itemEquals = true;
+                else
+                    itemEquals = false;
+            }
+            if (itemEquals)
+                found = true;
+        }
+
+        return found;    
+    }
+    
 	public void stop(BundleContext context) throws Exception {
         plugin = null;
         super.stop(context);

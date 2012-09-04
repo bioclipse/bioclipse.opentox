@@ -5,5 +5,6 @@ public class OpenToxConstants {
 	public static final String PREFS_SEPERATOR = "__SEP__";
 	public static final String SERVICES = "opentox.services";
 	public static final String PREFERENCES_OBJECT_DELIMITER = null;
+	public static final String PLUGIN_ID="net.bioclipse.opentox";
 
 }
