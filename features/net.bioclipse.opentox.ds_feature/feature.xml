@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.bioclipse.opentox.ds_feature"
-      label="OpenTox for DS"
+      label="OpenTox"
       version="2.5.0.qualifier"
-      provider-name="The Bioclipse team"
+      provider-name="bioclipse.net"
       plugin="net.bioclipse.opentox.ds">
 
    <description>
-      OpenTox extension for the Bioclipse Decision Support feature.
+      Remote toxicity predictions on the OpenTox federated infrastructure (www.opentox.org). Models discovered on startup and includes several endpoints and methods for prediction.
    </description>
 
    <license url="">
