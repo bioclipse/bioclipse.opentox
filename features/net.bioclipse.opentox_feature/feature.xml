@@ -3,11 +3,11 @@
       id="net.bioclipse.opentox_feature"
       label="Bioclipse OpenTox"
       version="2.5.0.qualifier"
-      provider-name="Bioclipse Team"
+      provider-name="bioclipse.net"
       plugin="net.bioclipse.opentox">
 
    <description>
-      Bioclipse OpenTox - Interacting with OpenTox API 1.1 services.
+      Interacting with OpenTox services (www.opentox.org). Includes e.g. functionality to create/upload/download/search for chemical structures (including chemical and biological properties), datasets, and models to predict toxicological properties.
    </description>
 
    <copyright>
