@@ -96,7 +96,7 @@ public class OpenToxLogInOutListener implements IUserManagerListener {
 	    if (myAccountType.isEmpty())
             // TODO When the variable is initiated here it should get its name 
             // from the extension-point some how...
-            myAccountType = "OpenTox OpenSSO Account";
+            myAccountType = "OpenTox";
         
         return myAccountType;
 	}

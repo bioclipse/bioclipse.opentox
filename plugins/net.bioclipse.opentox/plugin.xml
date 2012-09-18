@@ -44,7 +44,7 @@
       <AccountType
             id="net.bioclipse.opentox.OpenSSOAccount"
             logoPath="platform:/plugin/net.bioclipse.opentox.ui/icons/opentox.jpg"
-            name="OpenTox OpenSSO Account">
+            name="OpenTox">
          <property
                name="username"
                required="true"
