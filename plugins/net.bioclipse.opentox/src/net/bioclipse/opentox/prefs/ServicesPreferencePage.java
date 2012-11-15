@@ -20,8 +20,8 @@ import net.bioclipse.ui.prefs.IPreferenceConstants;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -214,10 +214,9 @@ IWorkbenchPreferencePage {
                  * we'll get an unexpected ArrayIndexOutOfBoundsException in 
                  * some cases, 'cos the last element is missing in the selection */
                 if (chosen.length < 3) {
-                    String[] temp = {"NA", "NA", "NA"};
-                    for (int i = 0; i < chosen.length; i++) 
-                        temp[i] = chosen[i];   
-                    chosen = temp;
+                    for(int i= chosen.length;i<3;i++) {
+                        chosen[i] = "NA";
+                    }
                 }    
                 
                 ServicesEditDialog dlg=new ServicesEditDialog(getShell(), chosen[0], chosen[1], chosen[2]);
@@ -313,7 +312,6 @@ IWorkbenchPreferencePage {
     public static List<String[]> getPreferencesFromStore() {
 
         String entireString=preferences.get( OpenToxConstants.SERVICES, "n/a" );
-        
         return convertPreferenceStringToArraylist(entireString);
     }
 
@@ -323,7 +321,10 @@ IWorkbenchPreferencePage {
      * 
      */
     public static List<String[]> getDefaultPreferencesFromStore() {
-        String entireString=preferences.get( OpenToxConstants.SERVICES, "n/a" );
+        
+        Preferences node = DefaultScope.INSTANCE.getNode(Activator.PLUGIN_ID);
+        String entireString = node.get( OpenToxConstants.SERVICES, "n/a" );
+        
         return convertPreferenceStringToArraylist(entireString);
     }
 

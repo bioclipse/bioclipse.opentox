@@ -57,5 +57,11 @@
          </property>
       </AccountType>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="net.bioclipse.opentox.business.OpentoxPreferenceInitializer">
+      </initializer>
+   </extension>
 
 </plugin>

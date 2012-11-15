@@ -155,7 +155,6 @@ public class ServicesEditDialog extends TitleAreaDialog{
 		return serviceInfo;
 	}
 
-
 	@Override
 	protected boolean isResizable() {
 		return true;
