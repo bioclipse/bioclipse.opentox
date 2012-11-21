@@ -13,6 +13,7 @@ import net.bioclipse.ds.model.IConsensusCalculator;
 import net.bioclipse.ds.model.IDSTest;
 import net.bioclipse.ds.model.ITestDiscovery;
 import net.bioclipse.opentox.OpenToxService;
+import net.bioclipse.opentox.ServiceReader;
 import net.bioclipse.opentox.business.IOpentoxManager;
 
 import org.apache.log4j.Logger;
@@ -44,8 +45,7 @@ public class OpenToxTestDiscovery implements ITestDiscovery {
 										  .getDefault().getJavaOpentoxManager();
 
 		//Get the registered services
-		List<OpenToxService> OTservices 
-						 = net.bioclipse.opentox.Activator.getOpenToxServices();
+		List<OpenToxService> OTservices = ServiceReader.readServicesFromPreferences();
 		
 		if (OTservices==null) throw new BioclipseException("No OpenTox " +
 				"services available. Cannot discover services.");

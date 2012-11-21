@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.List;
 
 import net.bioclipse.opentox.OpenToxService;
+import net.bioclipse.opentox.ServiceReader;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -77,8 +78,7 @@ public class CreateDatasetPage extends WizardPage {
         cboServer.setLayoutData(gds); 
 
 		//Get the registered services
-		List<OpenToxService> OTservices 
-						 = net.bioclipse.opentox.Activator.getOpenToxServices();
+		List<OpenToxService> OTservices = ServiceReader.readServicesFromPreferences();
 
 		for (OpenToxService service : OTservices){
 	        cboServer.add( service.getName() );
@@ -93,13 +93,13 @@ public class CreateDatasetPage extends WizardPage {
                 Combo cbo=(Combo) e.getSource();
 
                 int ix = cbo.getSelectionIndex();
-                String service = net.bioclipse.opentox.Activator.getOpenToxServices().get(ix).getService();
+                String service = ServiceReader.readServicesFromPreferences().get(ix).getService();
             	((CreateDatasetWizard)getWizard()).setService(service);
 
             }
         });
         cboServer.select(0);
-        String service = net.bioclipse.opentox.Activator.getOpenToxServices().get(0).getService();
+        String service = OTservices.get(0).getService();
     	((CreateDatasetWizard)getWizard()).setService(service);
 
 		//Title

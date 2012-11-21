@@ -35,9 +35,6 @@ public class Activator extends AbstractUIPlugin {
     private static Activator plugin;
 
     //A list of OpenTox services in order
-    private static List<OpenToxService> openToxServices;
-
-    //A list of OpenTox services in order
     private static OpenSSOToken token = null;
 
     // Trackers for getting the managers
@@ -143,26 +140,5 @@ public class Activator extends AbstractUIPlugin {
     	
     	return Activator.token.getToken();
     }
-    
-    public static List<OpenToxService> getOpenToxServices() {
-		return openToxServices;
-	}
-
-	public static void setOpenToxServices(List<OpenToxService> openToxServices2) {
-		openToxServices = openToxServices2;
-	}
-
-	/**
-	 * the current OT service is the one first in the list
-	 * @return
-	 */
-	public static OpenToxService getCurrentDSService() {
-		
-		if (openToxServices==null || openToxServices.size()<=0)
-			return null;
-		else
-			return openToxServices.get(0);
-	}
-    
     
 }

@@ -11,6 +11,7 @@ import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
 import net.bioclipse.opentox.Activator;
 import net.bioclipse.opentox.OpenToxService;
+import net.bioclipse.opentox.ServiceReader;
 import net.bioclipse.opentox.business.OpentoxManager;
 
 import org.apache.log4j.Logger;
@@ -43,16 +44,17 @@ public class OpenToxModel extends AbstractDSTest {
 			IProgressMonitor monitor) {
 
 		//Use the currently selected OpenTox service
-		OpenToxService otservice = Activator.getCurrentDSService();
-		if (otservice==null){
+	    List<OpenToxService> otservices = ServiceReader.readServicesFromPreferences();
+		OpenToxService otservice;
+		if ( otservices.isEmpty() || (otservice = otservices.get(0))==null){
 			logger.error("No OpenTox service found");
-			returnError("No OpenTox service found", "No OpenTox service found");
+			return returnError("No OpenTox service found", "No OpenTox service found");
 		}
 
 		String service=otservice.getService();
 		if (service==null){
 			logger.error("Current OpenTox service has no service URL");
-			returnError("Current OpenTox service has no service URL", 
+			return returnError("Current OpenTox service has no service URL", 
 					"Current OpenTox service has no service URL");
 		}
 

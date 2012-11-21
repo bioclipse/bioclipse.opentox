@@ -11,7 +11,9 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 /**
  * 
@@ -81,8 +83,11 @@ public class ServiceReader {
 		logger.debug("Reading services from preferences...");
 
 		List<OpenToxService> services=new ArrayList<OpenToxService>();
+		ScopedPreferenceStore prefsStore = new ScopedPreferenceStore( 
+		                                           ConfigurationScope.INSTANCE, 
+		                                           OpenToxConstants.PLUGIN_ID );
+		prefsStore.setSearchContexts( null );
 
-        IPreferenceStore prefsStore=Activator.getDefault().getPreferenceStore();
         String entireString = prefsStore.getString(OpenToxConstants.SERVICES);
         List<String[]> parts = ServicesPreferencePage.convertPreferenceStringToArraylist(entireString);
         for (String[] entry : parts){
