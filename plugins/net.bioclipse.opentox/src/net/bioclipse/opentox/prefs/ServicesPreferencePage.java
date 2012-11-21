@@ -16,11 +16,15 @@ import java.util.List;
 
 import net.bioclipse.opentox.Activator;
 import net.bioclipse.opentox.OpenToxConstants;
+import net.bioclipse.opentox.business.OpentoxManager;
 import net.bioclipse.ui.prefs.IPreferenceConstants;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IPreferencesService;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ISelection;
@@ -43,6 +47,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormAttachment;
@@ -60,9 +65,6 @@ IWorkbenchPreferencePage {
     private static final Logger logger = 
             Logger.getLogger(ServicesPreferencePage.class.toString());
 
-    private static Preferences preferences = 
-            ConfigurationScope.INSTANCE.getNode( OpenToxConstants.PLUGIN_ID );
-    
     private List<String[]> appList;
     private TableViewer checkboxTableViewer;
 
@@ -283,7 +285,12 @@ IWorkbenchPreferencePage {
 
 
     public void init(IWorkbench workbench) {
-        setPreferenceStore(Activator.getDefault().getPreferenceStore());
+        ScopedPreferenceStore prefStore = 
+        new ScopedPreferenceStore( ConfigurationScope.INSTANCE, 
+                                                      OpenToxConstants.PLUGIN_ID );
+        
+        prefStore.setSearchContexts( null );
+        setPreferenceStore( prefStore );
     }
 
     /**
@@ -295,13 +302,7 @@ IWorkbenchPreferencePage {
         logger.debug("Update sites prefs to store: " + value);
         
         //Save prefs as this must be done explicitly
-        preferences.put( OpenToxConstants.SERVICES, value );
-        try {
-            preferences.flush();
-        } catch ( BackingStoreException e ) {
-            logger.error( e.getMessage() );
-            e.printStackTrace();
-        }
+        getPreferenceStore().setValue( OpenToxConstants.SERVICES, value );
         return true;
     }
 
@@ -311,7 +312,8 @@ IWorkbenchPreferencePage {
      */
     public static List<String[]> getPreferencesFromStore() {
 
-        String entireString=preferences.get( OpenToxConstants.SERVICES, "n/a" );
+        IPreferencesService service = Platform.getPreferencesService();
+        String entireString=service.getString(OpenToxConstants.PLUGIN_ID,OpenToxConstants.SERVICES,"n/a",null);
         return convertPreferenceStringToArraylist(entireString);
     }
 
@@ -385,8 +387,9 @@ IWorkbenchPreferencePage {
 
     protected void performDefaults() {
         super.performDefaults();
-
-        appList=getDefaultPreferencesFromStore();
+        //String values = getPreferenceStore().getString( OpenToxConstants.SERVICES );
+        String values = DefaultScope.INSTANCE.getNode( OpenToxConstants.PLUGIN_ID ).get( OpenToxConstants.SERVICES, "n/a" );
+        appList=convertPreferenceStringToArraylist(values);
         checkboxTableViewer.setInput(appList);
 
     }
