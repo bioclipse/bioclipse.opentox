@@ -2,7 +2,7 @@
 <feature
       id="net.bioclipse.opentox.test_feature"
       label="Bioclipse OpenTox Test Feature"
-      version="2.5.0.qualifier"
+      version="2.6.0.qualifier"
       provider-name="The Bioclipse Team"
       plugin="net.bioclipse.opentox">
 
