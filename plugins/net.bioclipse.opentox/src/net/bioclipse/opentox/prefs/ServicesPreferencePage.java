@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ISelection;
@@ -302,7 +303,13 @@ IWorkbenchPreferencePage {
         logger.debug("Update sites prefs to store: " + value);
         
         //Save prefs as this must be done explicitly
-        getPreferenceStore().setValue( OpenToxConstants.SERVICES, value );
+        Preferences pref =  InstanceScope.INSTANCE.getNode( OpenToxConstants.PLUGIN_ID );
+        pref.put( OpenToxConstants.SERVICES, value );
+        try {
+            pref.flush();
+        } catch ( BackingStoreException e ) {
+            logger.error( "Faild to store preference",e );
+        }
         return true;
     }
 
