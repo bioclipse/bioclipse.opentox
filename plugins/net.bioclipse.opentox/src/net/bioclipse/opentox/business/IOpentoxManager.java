@@ -45,10 +45,35 @@ public interface IOpentoxManager extends IBioclipseManager {
 
     @Recorded
     @PublishedMethod(
+        methodSummary=
+            "Logs in on OpenTox using the authorized service specified in authService. " +
+            "Returns true if the login worked. If you are allready logged in to another " +
+            "authorized service you will be logged out from that.",
+        params="String user, String password, String authService"
+    )
+    public boolean login(String user, String pass, String authService) throws BioclipseException;
+    
+    @Recorded
+    @PublishedMethod(
         methodSummary="Logs out on OpenTox."
     )
     public void logout() throws BioclipseException;
 
+    @Recorded
+    @PublishedMethod(
+        methodSummary="Returns the adress to the authorization server or " +
+        		"null if it cant be found, e.g. no user is logged in."
+    )
+    public String getAuthorizationServer();
+    
+    @Recorded
+    @PublishedMethod(
+        methodSummary="Sets the authorization server to the one in account " +
+        		"settings and log in to it, if logged in to the user account. " +
+        		"Else it is left empty."
+    )
+    public void resetAuthorizationServer();
+    
     @Recorded
     @PublishedMethod(
         methodSummary=
