@@ -58,7 +58,7 @@
          <property
                defaultValue="http://opensso.in-silico.ch/opensso/identity"
                name="auth. service"
-               required="false"
+               required="true"
                secret="false">
          </property>
       </AccountType>
