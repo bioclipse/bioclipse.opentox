@@ -756,6 +756,10 @@ public class OpentoxManager implements IBioclipseManager {
     	List<String> calcResults = new ArrayList<String>();
     	logger.debug("Creating data set");
     	String dataset = Dataset.createNewDataset(service, molecule, monitor);
+    	if (dataset == null) {
+    		logger.error("Failed to generate a data set");
+    		return calcResults;
+    	}
     	logger.debug("Calculating descriptor");
     	if (monitor.isCanceled()) return Collections.emptyList();
     	String results = MolecularDescriptorAlgorithm.calculate(
@@ -784,6 +788,10 @@ public class OpentoxManager implements IBioclipseManager {
     	List<String> calcResults = new ArrayList<String>();
     	for (IMolecule molecule : molecules) {
     		String dataset = Dataset.createNewDataset(service, molecule, monitor);
+    		if (dataset == null) {
+        		logger.error("Failed to generate a data set");
+        		return calcResults;
+        	}
         	if (monitor.isCanceled()) return calcResults;
     		String results = ModelAlgorithm.calculate(service, model, dataset, monitor);    		
         	if (monitor.isCanceled()) return calcResults;
@@ -808,6 +816,10 @@ public class OpentoxManager implements IBioclipseManager {
     	Map<String,String> calcResults = new HashMap<String, String>();
     	for (IMolecule molecule : molecules) {
     		String dataset = Dataset.createNewDataset(service, molecule, monitor);
+    		if (dataset == null) {
+        		logger.error("Failed to generate a data set");
+        		return calcResults;
+        	}
         	if (monitor.isCanceled()) return calcResults;
     		String results = ModelAlgorithm.calculate(service, model, dataset, monitor);
         	if (monitor.isCanceled()) return calcResults;
@@ -836,6 +848,10 @@ public class OpentoxManager implements IBioclipseManager {
 
     	List<String> calcResults = new ArrayList<String>();
     	String dataset = Dataset.createNewDataset(service, molecule, monitor);
+    	if (dataset == null) {
+    		logger.error("Failed to generate a data set");
+    		return calcResults;
+    	}
     	if (monitor.isCanceled()) return calcResults;
     	String results = ModelAlgorithm.calculate(service, model, dataset, monitor);
     	if (monitor.isCanceled()) return calcResults;
@@ -858,6 +874,10 @@ public class OpentoxManager implements IBioclipseManager {
 
     	Map<String,String> calcResults = new HashMap<String, String>();    	
     	String dataset = Dataset.createNewDataset(service, molecule, monitor);
+    	if (dataset == null) {
+    		logger.error("Failed to generate a data set");
+    		return calcResults;
+    	}
     	if (monitor.isCanceled()) return calcResults;
     	String results = ModelAlgorithm.calculate(service, model, dataset, monitor);
     	if (monitor.isCanceled()) return calcResults;
