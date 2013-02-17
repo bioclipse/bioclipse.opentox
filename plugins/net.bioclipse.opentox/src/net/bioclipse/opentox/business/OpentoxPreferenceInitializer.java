@@ -74,7 +74,7 @@ public class OpentoxPreferenceInitializer extends AbstractPreferenceInitializer 
             logger.error( e.getMessage() );
             e.printStackTrace();
         }
-        logger.debug( "Sat the loaded services as default" );
+        logger.debug( "Set the loaded services as default" );
         
         logger.debug("OpenTox initialization ended");
     }
