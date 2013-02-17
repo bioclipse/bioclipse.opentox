@@ -23,6 +23,12 @@
   	      	name="OpenTox"
 	      	class="net.bioclipse.opentox.prefs.ServicesPreferencePage">
 	   	</page>
+    	<page
+           category="net.bioclipse.opentox.prefs.ServicesPreferencePage"
+           class="net.bioclipse.opentox.prefs.NetworkPreferencePage"
+           id="net.bioclipse.opentox.prefs.NetworkPreferencePage"
+           name="Network">
+	   	</page>
    </extension>
    
    <extension

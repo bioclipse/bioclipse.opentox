@@ -27,6 +27,7 @@ import java.util.HashMap;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.StringMatrix;
 import net.bioclipse.opentox.Activator;
+import net.bioclipse.opentox.OpenToxConstants;
 import net.bioclipse.opentox.api.TaskState.STATUS;
 import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.business.RDFManager;
@@ -62,7 +63,9 @@ public class Task {
 	public static void delete(String task) throws IOException, GeneralSecurityException {
 		HttpClient client = new HttpClient();
 		DeleteMethod method = new DeleteMethod(task);
-		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
+		method.getParams().setParameter("http.socket.timeout",
+			Activator.getDefault().getPreferenceStore().getInt(OpenToxConstants.HTTP_TIMEOUT) * 1000
+		);
 		client.executeMethod(method);
 		int status = method.getStatusCode();
 		switch (status) {
@@ -89,7 +92,9 @@ public class Task {
 		HttpMethodHelper.addMethodHeaders(method,
 			new HashMap<String,String>() {{ put("Accept", "application/rdf+xml"); }}
 		);
-		method.getParams().setParameter("http.socket.timeout", new Integer(Activator.TIME_OUT));
+		method.getParams().setParameter("http.socket.timeout",
+			Activator.getDefault().getPreferenceStore().getInt(OpenToxConstants.HTTP_TIMEOUT) * 1000
+		);
 		method.setRequestHeader("Accept", "application/rdf+xml");
 		client.executeMethod(method);
 		int status = method.getStatusCode();

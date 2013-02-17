@@ -14,6 +14,7 @@ import net.bioclipse.opentox.business.IJavaOpentoxManager;
 import net.bioclipse.opentox.business.IJavaScriptOpentoxManager;
 import net.bioclipse.opentox.business.IOpentoxManager;
 import net.bioclipse.usermanager.business.IUserManager;
+
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -25,9 +26,6 @@ public class Activator extends AbstractUIPlugin {
 	
 	public static final String PLUGIN_ID="net.bioclipse.opentox";
     
-    /** HTTP time out in milliseconds. */
-    public static final Integer TIME_OUT = 5000; 
-
     // The shared instance
     private static Activator plugin;
 
@@ -109,5 +107,4 @@ public class Activator extends AbstractUIPlugin {
         }
         return manager;
     }
-    
 }

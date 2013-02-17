@@ -31,6 +31,8 @@ import net.bioclipse.cdk.business.CDKManager;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.core.domain.StringMatrix;
+import net.bioclipse.opentox.Activator;
+import net.bioclipse.opentox.OpenToxConstants;
 import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.business.RDFManager;
 
@@ -360,21 +362,23 @@ public class Dataset {
 				logger.debug("Task: " + responseString);
 				// OK, we got a task... let's wait until it is done
 				String task = method.getResponseBodyAsString();
-				Thread.sleep(1000); // let's be friendly, and wait 1 sec
+				int startWait = 1000 * Activator.getDefault().getPreferenceStore().getInt(OpenToxConstants.SHORTEST_WAIT_TIME_IN_SECS);
+				int endWait = 1000 * Activator.getDefault().getPreferenceStore().getInt(OpenToxConstants.LONGEST_WAIT_TIME_IN_SECS);
+				Thread.sleep(startWait); // let's be friendly and wait a bit
 				TaskState state = Task.getState(task);
 				while (!state.isFinished() && !monitor.isCanceled()) {
-					// let's be friendly, and wait 2 secs and a bit and increase
+					// let's be friendly, and wait some time and increase
 					// that time after each wait
-					int waitingTime = andABit(2000*tailing);
-					logger.debug("Waiting " + waitingTime + "ms.");
+					int waitingTime = andABit(startWait*tailing);
+					logger.debug("Waiting " + waitingTime + " ms.");
 					waitUnlessInterrupted(waitingTime, monitor);
 					state = Task.getState(task);
 					if (state.isRedirected()) {
 						task = state.getResults();
 						logger.debug("  new task, new task!!: " + task);
 					}
-					// but wait at most 20 secs and a bit
-					if (tailing < 10) tailing++;
+					// but wait at most the set endWait
+					if (startWait*tailing < endWait) tailing++;
 				}
 				if (monitor.isCanceled()) Task.delete(task);
 				// OK, it should be finished now
