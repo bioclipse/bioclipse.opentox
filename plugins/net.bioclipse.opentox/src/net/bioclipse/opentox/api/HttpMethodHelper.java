@@ -22,6 +22,7 @@ package net.bioclipse.opentox.api;
 import java.util.Map;
 
 import net.bioclipse.opentox.Activator;
+import net.bioclipse.opentox.OpenToxLogInOutListener;
 
 import org.apache.commons.httpclient.HttpMethodBase;
 
@@ -29,23 +30,31 @@ public class HttpMethodHelper {
 
 	public static HttpMethodBase addMethodHeaders(HttpMethodBase method,
 			Map<String, String> extraHeaders) {
-		// set the time out
-		method.getParams().setParameter(
-			"http.socket.timeout", new Integer(Activator.TIME_OUT)
-		);
-		// log in on OpenTox if needed...
-		if (Activator.getToken() != null) {
-        	method.setRequestHeader("subjectid", Activator.getToken());
-        }
-		// add other headers
-		if (extraHeaders != null) {
-        	for (String header : extraHeaders.keySet()) {
-        		method.setRequestHeader(
-        			header, extraHeaders.get(header)
-        		);
-        	}
-        }
-		return method;
+	    // set the time out
+	    method.getParams().setParameter("http.socket.timeout", 
+	                                    new Integer(Activator.TIME_OUT) );
+	    OpenToxLogInOutListener openToxLogInOutListener;
+	    try {
+	        openToxLogInOutListener = OpenToxLogInOutListener.getInstance();
+
+	        // log in on OpenTox if needed...
+	        if (openToxLogInOutListener.getToken() != null) {
+	            method.setRequestHeader("subjectid", 
+	                                    openToxLogInOutListener.getToken());
+	        }
+	        // add other headers
+	        if (extraHeaders != null) {
+	            for (String header : extraHeaders.keySet()) {
+	                method.setRequestHeader( header, extraHeaders.get(header) );
+	            }
+	        }
+	        return method;
+	    } catch ( InstantiationException e ) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	    }
+
+        return null;
 	}
 
 }

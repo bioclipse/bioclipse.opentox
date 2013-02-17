@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.security.auth.login.LoginException;
+
 import net.bioclipse.business.BioclipsePlatformManager;
 import net.bioclipse.cdk.business.CDKManager;
 import net.bioclipse.core.business.BioclipseException;
@@ -29,7 +31,7 @@ import net.bioclipse.core.domain.IStringMatrix;
 import net.bioclipse.core.domain.StringMatrix;
 import net.bioclipse.jobs.IReturner;
 import net.bioclipse.managers.business.IBioclipseManager;
-import net.bioclipse.opentox.Activator;
+import net.bioclipse.opentox.OpenToxLogInOutListener;
 import net.bioclipse.opentox.api.Algorithm;
 import net.bioclipse.opentox.api.Dataset;
 import net.bioclipse.opentox.api.Feature;
@@ -39,6 +41,7 @@ import net.bioclipse.opentox.api.ModelAlgorithm;
 import net.bioclipse.opentox.api.MolecularDescriptorAlgorithm;
 import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.business.RDFManager;
+import net.bioclipse.usermanager.business.IUserManager;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -54,7 +57,9 @@ public class OpentoxManager implements IBioclipseManager {
     private RDFManager rdf = new RDFManager();
     private BioclipsePlatformManager bioclipse = new BioclipsePlatformManager();
     private CDKManager cdk = new CDKManager();
-
+    private IUserManager userManager = net.bioclipse.usermanager.Activator
+            .getDefault().getUserManager();
+    
     private final static String QUERY_ALGORITHMS =
         "SELECT ?algo WHERE {" +
         "  ?algo a <http://www.opentox.org/api/1.1#Algorithm>." +
@@ -96,13 +101,27 @@ public class OpentoxManager implements IBioclipseManager {
         return "opentox";
     }
 
+    private OpenToxLogInOutListener getOpenToxListener() {
+        OpenToxLogInOutListener openToxLogInOutListener;
+        try {
+            openToxLogInOutListener = OpenToxLogInOutListener.getInstance();
+        } catch ( InstantiationException e ) {
+            openToxLogInOutListener = OpenToxLogInOutListener.
+                    getInstance(userManager);
+        }
+    
+    return openToxLogInOutListener;
+    }
+    
     public String getToken() {
-    	return Activator.getToken();
+        OpenToxLogInOutListener listener = this.getOpenToxListener();
+    	return listener.getToken();
     }
 
     public void logout() throws BioclipseException {
+        OpenToxLogInOutListener listener = this.getOpenToxListener();
     	try {
-			Activator.logout();
+    	    listener.logout();
 		} catch (Exception e) {
 			throw new BioclipseException(
 				"Error while logging out of OpenTox: " + e.getMessage(),
@@ -112,8 +131,16 @@ public class OpentoxManager implements IBioclipseManager {
     }
 
     public boolean login(String user, String pass) throws BioclipseException {
+        /* TODO The account type below (i.e. OpenTox) should not be hard coded. 
+         * It should come from the the extension point somehow */
+        String authService =  userManager.getProperty( "OpenTox", "auth. service" );
+        return login( user, pass, authService );
+    }
+    
+    public boolean login(String user, String pass, String authService) throws BioclipseException {
+        OpenToxLogInOutListener listener = this.getOpenToxListener();
     	try {
-			return Activator.login(user, pass);
+			return listener.login(user, pass, authService);
 		} catch (Exception e) {
 			throw new BioclipseException(
 				"Error while logging in on OpenTox: " + e.getMessage(),
@@ -121,7 +148,22 @@ public class OpentoxManager implements IBioclipseManager {
 			);
 		}
     }
-
+    
+    public String getAuthorizationServer() {
+        OpenToxLogInOutListener listener = this.getOpenToxListener();
+        try {
+            return listener.getAuthService();
+        } catch ( LoginException e ) {
+            logger.error( e );
+            return null;
+        }
+    }
+    
+    public void resetAuthorizationServer() {
+        OpenToxLogInOutListener listener = this.getOpenToxListener();
+        listener.resetAuthService();
+    }
+    
     public Map<String,String> getFeatureInfo(String ontologyServer, String feature, IProgressMonitor monitor) {
     	if (monitor == null) monitor = new NullProgressMonitor();
     	
@@ -199,9 +241,11 @@ public class OpentoxManager implements IBioclipseManager {
         IRDFStore store = rdf.createInMemoryStore();
         List<String> dataSets = Collections.emptyList();
         Map<String, String> extraHeaders = new HashMap<String, String>();
-        String token = Activator.getToken();
+        OpenToxLogInOutListener listener = this.getOpenToxListener();
+        
+        String token = listener.getToken();
         if (token != null) {
-        	extraHeaders.put("subjectid", Activator.getToken());
+        	extraHeaders.put("subjectid", listener.getToken());
         }
         try {
             // download the list of data sets as RDF
@@ -239,9 +283,11 @@ public class OpentoxManager implements IBioclipseManager {
     	IRDFStore store = rdf.createInMemoryStore();
     	List<String> dataSets = Collections.emptyList();
     	Map<String, String> extraHeaders = new HashMap<String, String>();
-    	String token = Activator.getToken();
+    	OpenToxLogInOutListener listener = this.getOpenToxListener();
+    	
+    	String token = listener.getToken();
     	if (token != null) {
-    		extraHeaders.put("subjectid", Activator.getToken());
+    		extraHeaders.put("subjectid", listener.getToken());
     	}
     	try {
     		// download the list of data sets as RDF
@@ -456,9 +502,10 @@ public class OpentoxManager implements IBioclipseManager {
         IRDFStore store = rdf.createInMemoryStore();
         try {
             Map<String, String> extraHeaders = new HashMap<String, String>();
-            String token = Activator.getToken();
+            OpenToxLogInOutListener listener = this.getOpenToxListener();
+            String token = listener.getToken();
             if (token != null) {
-            	extraHeaders.put("subjectid", Activator.getToken());
+            	extraHeaders.put("subjectid", listener.getToken());
             }
             // download the list of compounds as RDF
             rdf.importURL(
