@@ -9,7 +9,6 @@ import net.bioclipse.cdk.domain.ICDKMolecule;
 import net.bioclipse.ds.model.AbstractDSTest;
 import net.bioclipse.ds.model.DSException;
 import net.bioclipse.ds.model.ITestResult;
-import net.bioclipse.opentox.Activator;
 import net.bioclipse.opentox.OpenToxService;
 import net.bioclipse.opentox.ServiceReader;
 import net.bioclipse.opentox.business.OpentoxManager;
@@ -67,32 +66,23 @@ public class OpenToxModel extends AbstractDSTest {
 		logger.debug("Invoking model: " + model + " for service: " + service);
 		Map<String, String> OTres = null;
 		//retry 3 times, looks like a server issue
-		for (int i=0; i<4 && !monitor.isCanceled(); i++){
-			if (i>0)
-				logger.debug("  - Model: " + model + " retry number " + i);
-			
-    		try{
-    			OTres = opentox.predictWithModelWithLabel(service, model, cdkmol, monitor);
+		try{
+			OTres = opentox.predictWithModelWithLabel(service, model, cdkmol, monitor);
 
-    		} catch (GeneralSecurityException e) {
-				logger.error("  == Opentox model without access: " + model);
-				String errorMessage = "No access: " + e.getMessage().toLowerCase();
-				return returnError(errorMessage, errorMessage);
-    		} catch (UnsupportedOperationException e) {
-				logger.error("  == Opentox model unavailable: " + model);
-				String errorMessage = "Unavailable service: " + e.getMessage().toLowerCase();
-				return returnError(errorMessage, errorMessage);
-    		}catch(Exception e){
-				logger.error("  == Opentox model calculation failed for: " + model);
-				logger.debug(e);
-				String errorMessage =
+		} catch (GeneralSecurityException e) {
+			logger.error("  == Opentox model without access: " + model);
+			String errorMessage = "No access: " + e.getMessage().toLowerCase();
+			return returnError(errorMessage, errorMessage);
+		} catch (UnsupportedOperationException e) {
+			logger.error("  == Opentox model unavailable: " + model);
+			String errorMessage = "Unavailable service: " + e.getMessage().toLowerCase();
+			return returnError(errorMessage, errorMessage);
+		}catch(Exception e){
+			logger.error("  == Opentox model calculation failed for: " + model);
+			logger.debug(e);
+			String errorMessage =
 					"Error during calculation: " + e.getMessage();
-				return returnError(errorMessage, errorMessage);
-    		}
-    		
-    		//End if we have results
-    		if (OTres!=null) break;
-			
+			return returnError(errorMessage, errorMessage);
 		}
 		
 		if (OTres==null || OTres.size()<=0){
