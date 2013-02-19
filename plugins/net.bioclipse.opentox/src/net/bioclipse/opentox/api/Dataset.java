@@ -67,7 +67,7 @@ public class Dataset {
 	public static List<String> getListOfAvailableDatasets(String service)
 	throws IOException {
 		HttpClient client = new HttpClient();
-		GetMethod method = new GetMethod(service + "dataset");
+		GetMethod method = new GetMethod(normalizeURI(service) + "dataset");
 		HttpMethodHelper.addMethodHeaders(method,
 			new HashMap<String,String>() {{ put("Accept", "text/uri-list"); }}
 		);
@@ -340,7 +340,7 @@ public class Dataset {
 		if (monitor == null) monitor = new NullProgressMonitor();
 
 		HttpClient client = new HttpClient();
-		PostMethod method = new PostMethod(service + "dataset");
+		PostMethod method = new PostMethod(normalizeURI(service) + "dataset");
 		HttpMethodHelper.addMethodHeaders(method,
 			new HashMap<String,String>() {{
 				put("Accept", "text/uri-list");
