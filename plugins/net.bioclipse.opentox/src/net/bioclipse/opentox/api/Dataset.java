@@ -384,6 +384,9 @@ public class Dataset {
 				dataset = method.getResponseBodyAsString();
 				logger.debug("No Task, Data set: " + dataset);
 			}
+		} else {
+			logger.error("Data set creation failed: " + dataset);
+			return null;
 		}
 		method.releaseConnection();
 		if (monitor.isCanceled()) return "";
