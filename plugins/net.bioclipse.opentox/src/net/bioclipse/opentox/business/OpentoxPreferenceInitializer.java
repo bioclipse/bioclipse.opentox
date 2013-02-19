@@ -23,15 +23,22 @@ public class OpentoxPreferenceInitializer extends AbstractPreferenceInitializer 
     @Override
     public void initializeDefaultPreferences() {
         
+        Preferences preferences = 
+                DefaultScope.INSTANCE
+                .getNode( OpenToxConstants.PLUGIN_ID );    	
+
+        logger.debug("Initializing OpenTox Network preferences");
+
+        preferences.put(OpenToxConstants.SHORTEST_WAIT_TIME_IN_SECS, "2");
+        preferences.put(OpenToxConstants.LONGEST_WAIT_TIME_IN_SECS, "20");
+        preferences.put(OpenToxConstants.HTTP_TIMEOUT, "50");
+    	
         logger.debug("Initializing OpenTox services");
         
         //A list of OpenTox services in order
         List<OpenToxService> openToxServices = new ArrayList<OpenToxService>();
         List<String[]> toPrefs = new ArrayList<String[]>();
         
-        Preferences preferences = 
-                DefaultScope.INSTANCE
-                .getNode( OpenToxConstants.PLUGIN_ID );
           
         // Get the (new) services from the extension point. 
         List<OpenToxService> epservices = ServiceReader
