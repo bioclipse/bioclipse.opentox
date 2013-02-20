@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+
+<toc label="OpenTox">
+    <topic 
+        href="html/about.html"
+        label="About OpenTox">
+    </topic>
+    <topic 
+        href="html/Install.html"
+        label="Install OpenTox in Bioclipse">
+    </topic> 
+    <topic
+        href="html/preferences.html"
+        label="OpenTox preferences">
+    </topic>
+    <topic
+        href="html/scripting.html"
+        label="OpenTox scripting">
+    </topic>    
+</toc>
