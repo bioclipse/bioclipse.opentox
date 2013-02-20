@@ -22,6 +22,7 @@ package net.bioclipse.opentox.api;
 import java.util.Map;
 
 import net.bioclipse.opentox.Activator;
+import net.bioclipse.opentox.OpenToxConstants;
 import net.bioclipse.opentox.OpenToxLogInOutListener;
 
 import org.apache.commons.httpclient.HttpMethodBase;
@@ -31,8 +32,10 @@ public class HttpMethodHelper {
 	public static HttpMethodBase addMethodHeaders(HttpMethodBase method,
 			Map<String, String> extraHeaders) {
 	    // set the time out
-	    method.getParams().setParameter("http.socket.timeout", 
-	                                    new Integer(Activator.TIME_OUT) );
+	    method.getParams().setParameter(
+	    	"http.socket.timeout", 
+	        Activator.getDefault().getPreferenceStore().getInt(OpenToxConstants.HTTP_TIMEOUT) * 1000
+	    );
 	    OpenToxLogInOutListener openToxLogInOutListener;
 	    try {
 	        openToxLogInOutListener = OpenToxLogInOutListener.getInstance();

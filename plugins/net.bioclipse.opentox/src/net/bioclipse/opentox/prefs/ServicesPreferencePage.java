@@ -113,7 +113,7 @@ IWorkbenchPreferencePage {
 
     }
 
-    class ApplicationsContentProvider implements IStructuredContentProvider {
+    public class ApplicationsContentProvider implements IStructuredContentProvider {
         @SuppressWarnings("unchecked")
         public Object[] getElements(Object inputElement) {
             if (inputElement instanceof ArrayList) {
