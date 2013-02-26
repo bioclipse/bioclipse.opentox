@@ -75,5 +75,11 @@
             class="net.bioclipse.opentox.business.OpentoxPreferenceInitializer">
       </initializer>
    </extension>
+   <extension
+         point="net.bioclipse.usermanager.testLogin">
+         <TestLogin
+            testClass = "net.bioclipse.opentox.business.TestLogin">
+         </TestLogin>
+   </extension>
 
 </plugin>
