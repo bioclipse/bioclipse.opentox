@@ -22,6 +22,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
@@ -55,7 +56,7 @@ implements IWorkbenchPreferencePage {
 	protected Control createContents(Composite parent) {
 		System.out.println("Creating controls for the OT Network prefs page...");
 
-        timeout = new IntegerFieldEditor("HTTPTimeOut", "HTTP Time Out", parent);
+        timeout = new IntegerFieldEditor("HTTPTimeOut", "HTTP Time Out (in s)", parent);
         timeout.setValidateStrategy(StringFieldEditor.VALIDATE_ON_KEY_STROKE);
         timeout.setValidRange(2, 100);
         timeout.setPropertyChangeListener(new IPropertyChangeListener() {
@@ -71,7 +72,7 @@ implements IWorkbenchPreferencePage {
 			}
 		});
 
-        shortestTime = new IntegerFieldEditor("ShortestWaitTime", "Shortest Waiting Time", parent);
+        shortestTime = new IntegerFieldEditor("ShortestWaitTime", "Shortest Waiting Time (in s)", parent);
         shortestTime.setValidateStrategy(StringFieldEditor.VALIDATE_ON_KEY_STROKE);
         shortestTime.setValidRange(2, 100);
         shortestTime.setPropertyChangeListener(new IPropertyChangeListener() {
@@ -87,7 +88,7 @@ implements IWorkbenchPreferencePage {
 			}
 		});
 
-        longestTime = new IntegerFieldEditor("LongestWaitTime", "Longest Waiting Time", parent);
+        longestTime = new IntegerFieldEditor("LongestWaitTime", "Longest Waiting Time (in s)", parent);
         longestTime.setValidateStrategy(StringFieldEditor.VALIDATE_ON_KEY_STROKE);
         longestTime.setValidRange(2, 100);
         longestTime.setPropertyChangeListener(new IPropertyChangeListener() {
@@ -102,7 +103,7 @@ implements IWorkbenchPreferencePage {
 				setValid(false);
 			}
 		});
-
+        
         initializeValues();
 
 		return parent;
