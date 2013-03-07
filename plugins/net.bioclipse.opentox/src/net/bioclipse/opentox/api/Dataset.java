@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -388,6 +389,10 @@ public class Dataset {
 				dataset = method.getResponseBodyAsString();
 				logger.debug("No Task, Data set: " + dataset);
 			}
+		} else if (status == 401) {
+			throw new GeneralSecurityException("Not authenticated");
+		} else if (status == 403) {
+			throw new GeneralSecurityException("Not authorized");
 		} else {
 			logger.error("Data set creation failed: " + dataset);
 			return null;
