@@ -11,6 +11,7 @@
 package net.bioclipse.opentox.prefs;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,6 +39,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
@@ -161,30 +164,7 @@ IWorkbenchPreferencePage {
 
         appList=getPreferencesFromStore();
         checkboxTableViewer.setInput(appList);
-
-
-
-        final Button addButton = new Button(container, SWT.NONE);
-        formData.right = new FormAttachment(100, -89);
-        FormData formData_1 = new FormData();
-        formData_1.right = new FormAttachment(100, -9);
-        formData_1.left = new FormAttachment(table, 6);
-        addButton.setLayoutData(formData_1);
-        addButton.setText("Add");
-        addButton.addMouseListener(new MouseAdapter() {
-            public void mouseUp(MouseEvent e) {
-
-                ServicesEditDialog dlg=new ServicesEditDialog(getShell());
-                dlg.open();
-
-                String[] ret=dlg.getServiceInfo();
-                if (ret.length==3){
-                    appList.add(ret);
-                    checkboxTableViewer.refresh();
-                }
-            }
-        });
-
+        
         final Button editButton = new Button(container, SWT.NONE);
         FormData formData_2 = new FormData();
         formData_2.top = new FormAttachment(table, 0, SWT.TOP);
@@ -245,11 +225,10 @@ IWorkbenchPreferencePage {
         });
 
         final Button removeButton = new Button(container, SWT.NONE);
-        formData_1.top = new FormAttachment(removeButton, 6);
         FormData formData_3 = new FormData();
         formData_3.right = new FormAttachment(100, -9);
         formData_3.left = new FormAttachment(table, 6);
-        formData_3.top = new FormAttachment(0, 46);
+        formData_3.top = new FormAttachment(editButton, 10);
         removeButton.setLayoutData(formData_3);
         removeButton.setText("Remove");
         removeButton.addMouseListener(new MouseAdapter() {
@@ -271,12 +250,93 @@ IWorkbenchPreferencePage {
                     checkboxTableViewer.refresh();
                 }
 
-
             }
         });
 
+        final Button addButton = new Button(container, SWT.NONE);
+        formData.right = new FormAttachment(100, -89);
+        FormData formData_1 = new FormData();
+        formData_1.right = new FormAttachment(100, -9);
+        formData_1.left = new FormAttachment(table, 6);
+        formData_1.top = new FormAttachment(removeButton, 10);
+        addButton.setLayoutData(formData_1);
+        addButton.setText("Add");
+        addButton.addMouseListener(new MouseAdapter() {
+            public void mouseUp(MouseEvent e) {
 
+                ServicesEditDialog dlg=new ServicesEditDialog(getShell());
+                dlg.open();
 
+                String[] ret=dlg.getServiceInfo();
+                if (ret.length==3){
+                    appList.add(ret);
+                    checkboxTableViewer.refresh();
+                }
+            }
+        });
+        
+        final Button upButton = new Button(container, SWT.NONE);
+        FormData formData_4 = new FormData();
+        formData_4.right = new FormAttachment(100, -9);
+        formData_4.left = new FormAttachment(table, 6);
+        formData_4.top = new FormAttachment(addButton, 25);
+        upButton.setLayoutData( formData_4 );
+        upButton.setText( "Up" );//"\u25E2\u25E3" );
+        upButton.addSelectionListener( new SelectionListener() {
+            
+            @Override
+            public void widgetSelected( SelectionEvent e ) {
+                if(checkboxTableViewer.getSelection() instanceof IStructuredSelection) {
+                    IStructuredSelection selection = (IStructuredSelection)checkboxTableViewer.getSelection();
+                    Object[] objSelection=selection.toArray();
+
+                    for (int i=0;i<objSelection.length;i++){
+                        if (objSelection[i] instanceof String[]) {
+                            String[] row = (String[]) objSelection[i];
+                            int selRow = appList.indexOf( row );
+                            if (selRow > 0)
+                                Collections.swap( appList, selRow, selRow - 1 );
+                            checkboxTableViewer.refresh();
+                        }
+                    }
+                }
+            }
+            
+            @Override
+            public void widgetDefaultSelected( SelectionEvent e ) {     }
+        } );
+        
+        final Button downButton = new Button(container, SWT.NONE);
+        FormData formData_5 = new FormData();
+        formData_5.right = new FormAttachment(100, -9);
+        formData_5.left = new FormAttachment(table, 6);
+        formData_5.top = new FormAttachment(upButton, 0);
+        downButton.setLayoutData( formData_5 );
+        downButton.setText("Down" );// "\u25E5\u25E4" );
+        downButton.addSelectionListener( new SelectionListener() {
+            
+            @Override
+            public void widgetSelected( SelectionEvent e ) {
+                if(checkboxTableViewer.getSelection() instanceof IStructuredSelection) {
+                    IStructuredSelection selection = (IStructuredSelection)checkboxTableViewer.getSelection();
+                    Object[] objSelection=selection.toArray();
+
+                    for (int i=0;i<objSelection.length;i++){
+                        if (objSelection[i] instanceof String[]) {
+                            String[] row = (String[]) objSelection[i];
+                            int selRow = appList.indexOf( row );
+                            if (selRow < appList.size()-1)
+                                Collections.swap( appList, selRow, selRow + 1 );
+                            checkboxTableViewer.refresh();
+                        }
+                    }
+                }
+            }
+            
+            @Override
+            public void widgetDefaultSelected( SelectionEvent e ) {     }
+        } );
+        
         if (table.getItemCount()>0)
             table.setSelection(0);
         container.pack();
@@ -292,6 +352,7 @@ IWorkbenchPreferencePage {
         
         prefStore.setSearchContexts( null );
         setPreferenceStore( prefStore );
+        setMessage( "OpenTox\n Only the service site on the top row is used, please use the buttons to the right to move the items." );
     }
 
     /**
@@ -407,5 +468,5 @@ IWorkbenchPreferencePage {
         		"OpenTox Preferences",
         		message);
     }
-
+    
 }
