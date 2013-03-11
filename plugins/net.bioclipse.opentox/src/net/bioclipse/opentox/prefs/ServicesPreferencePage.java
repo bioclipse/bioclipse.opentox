@@ -74,7 +74,7 @@ IWorkbenchPreferencePage {
 
     private List<String[]> appList;
     private TableViewer checkboxTableViewer;
-
+    
     public ServicesPreferencePage() {
         super();
     }
@@ -278,6 +278,8 @@ IWorkbenchPreferencePage {
             }
         });
         
+        final Button downButton = new Button(container, SWT.NONE);
+        
         final Button upButton = new Button(container, SWT.NONE);
         FormData formData_4 = new FormData();
         formData_4.right = new FormAttachment(100, -9);
@@ -299,6 +301,14 @@ IWorkbenchPreferencePage {
                             int selRow = appList.indexOf( row );
                             if (selRow > 0)
                                 Collections.swap( appList, selRow, selRow - 1 );
+                            if (selRow-1 == 0)
+                                upButton.setEnabled( false );
+                            else
+                                upButton.setEnabled( true );
+                            if (selRow == appList.size()-1)
+                                downButton.setEnabled( false );
+                            else
+                                downButton.setEnabled( true );
                             checkboxTableViewer.refresh();
                         }
                     }
@@ -309,7 +319,6 @@ IWorkbenchPreferencePage {
             public void widgetDefaultSelected( SelectionEvent e ) {     }
         } );
         
-        final Button downButton = new Button(container, SWT.NONE);
         FormData formData_5 = new FormData();
         formData_5.right = new FormAttachment(100, -9);
         formData_5.left = new FormAttachment(table, 6);
@@ -330,6 +339,14 @@ IWorkbenchPreferencePage {
                             int selRow = appList.indexOf( row );
                             if (selRow < appList.size()-1)
                                 Collections.swap( appList, selRow, selRow + 1 );
+                            if (selRow+1 == appList.size()-1)
+                                downButton.setEnabled( false );
+                            else
+                                downButton.setEnabled( true );
+                            if (selRow+1 == 1)
+                                upButton.setEnabled( false );
+                            else
+                                upButton.setEnabled( true ); 
                             checkboxTableViewer.refresh();
                         }
                     }
@@ -352,6 +369,34 @@ IWorkbenchPreferencePage {
         Font font1 = new Font(display, fontName, 12, SWT.NORMAL);
         infoText.setFont( font1 );
         
+        table.addMouseListener( new MouseAdapter() {
+            public void mouseUp(MouseEvent e) {
+
+                if(checkboxTableViewer.getSelection() instanceof IStructuredSelection) {
+
+                    IStructuredSelection selection = (IStructuredSelection)checkboxTableViewer.getSelection();
+                    Object[] objSelection=selection.toArray();
+
+                    for (int i=0;i<objSelection.length;i++){
+                        if (objSelection[i] instanceof String[]) {
+                            String[] row = (String[]) objSelection[i];
+                            int selRow = appList.indexOf( row );
+                            if (selRow == 0)
+                                upButton.setEnabled( false );
+                            else
+                                upButton.setEnabled( true ); 
+                            if (selRow == appList.size()-1)
+                                downButton.setEnabled( false );
+                            else
+                                downButton.setEnabled( true );
+                        }
+                    }
+                    
+                } 
+                
+            }
+        } );
+
         if (table.getItemCount()>0)
             table.setSelection(0);
         container.pack();
