@@ -41,11 +41,14 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbench;
@@ -146,7 +149,7 @@ IWorkbenchPreferencePage {
         final Table table = checkboxTableViewer.getTable();
         FormData formData = new FormData(700,300);
         formData.left = new FormAttachment(0, 11);
-        formData.top = new FormAttachment(0, 10);
+        formData.top = new FormAttachment(0, 20);
         table.setLayoutData(formData);
 
         table.setHeaderVisible(true);
@@ -337,6 +340,18 @@ IWorkbenchPreferencePage {
             public void widgetDefaultSelected( SelectionEvent e ) {     }
         } );
         
+        Label infoText = new Label(container, SWT.NONE);
+        infoText.setText( "Only the service site on the top row is used, " +
+                "please use the buttons to the right to move the items." );
+        FormData formData_6 = new FormData();
+        formData_6.left = new FormAttachment(0,10);
+        formData_6.top = new FormAttachment(0,0);
+        infoText.setLayoutData( formData_6 );
+        Display display = container.getDisplay();
+        String fontName = display.getSystemFont().getFontData()[0].getName();
+        Font font1 = new Font(display, fontName, 12, SWT.NORMAL);
+        infoText.setFont( font1 );
+        
         if (table.getItemCount()>0)
             table.setSelection(0);
         container.pack();
@@ -352,7 +367,6 @@ IWorkbenchPreferencePage {
         
         prefStore.setSearchContexts( null );
         setPreferenceStore( prefStore );
-        setMessage( "OpenTox\n Only the service site on the top row is used, please use the buttons to the right to move the items." );
     }
 
     /**
