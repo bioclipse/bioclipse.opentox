@@ -17,7 +17,6 @@ import java.util.List;
 
 import net.bioclipse.opentox.Activator;
 import net.bioclipse.opentox.OpenToxConstants;
-import net.bioclipse.opentox.business.OpentoxManager;
 import net.bioclipse.ui.prefs.IPreferenceConstants;
 
 import org.apache.log4j.Logger;
@@ -25,7 +24,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
-import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
@@ -301,14 +299,15 @@ IWorkbenchPreferencePage {
                             int selRow = appList.indexOf( row );
                             if (selRow > 0)
                                 Collections.swap( appList, selRow, selRow - 1 );
-                            if (selRow-1 == 0)
+                            System.out.println(selRow);
+                            if (selRow <= 1)
                                 upButton.setEnabled( false );
                             else
                                 upButton.setEnabled( true );
-                            if (selRow == appList.size()-1)
-                                downButton.setEnabled( false );
-                            else
+                            if (selRow-1 < appList.size()-1)
                                 downButton.setEnabled( true );
+                            else
+                                downButton.setEnabled( false );
                             checkboxTableViewer.refresh();
                         }
                     }
@@ -343,10 +342,10 @@ IWorkbenchPreferencePage {
                                 downButton.setEnabled( false );
                             else
                                 downButton.setEnabled( true );
-                            if (selRow+1 == 1)
-                                upButton.setEnabled( false );
+                            if (selRow+1 != 0)
+                                upButton.setEnabled( true );
                             else
-                                upButton.setEnabled( true ); 
+                                upButton.setEnabled( false ); 
                             checkboxTableViewer.refresh();
                         }
                     }
