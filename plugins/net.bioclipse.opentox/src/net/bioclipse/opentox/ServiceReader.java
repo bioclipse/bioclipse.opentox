@@ -27,6 +27,17 @@ public class ServiceReader {
 	
 	private static final Logger logger = Logger.getLogger(ServiceReader.class);
 
+    private static ScopedPreferenceStore store;
+
+    public static ScopedPreferenceStore getPreferenceStore() {
+
+        if ( store == null ) {
+            store = new ScopedPreferenceStore( InstanceScope.INSTANCE,
+                                               OpenToxConstants.PLUGIN_ID );
+        }
+        return store;
+    }
+
 
 	public static List<OpenToxService> readServicesFromExtensionPoints() {
 		
@@ -86,8 +97,8 @@ public class ServiceReader {
 		logger.debug("Reading services from preferences...");
 
 		List<OpenToxService> services=new ArrayList<OpenToxService>();
-		IEclipsePreferences pref = InstanceScope.INSTANCE.getNode( OpenToxConstants.PLUGIN_ID );
-        String entireString = pref.get( OpenToxConstants.SERVICES, "NA" );
+        ScopedPreferenceStore prefsStore = getPreferenceStore();
+        String entireString = prefsStore.getString( OpenToxConstants.SERVICES );
 
         List<String[]> parts = ServicesPreferencePage.convertPreferenceStringToArraylist(entireString);
         for (String[] entry : parts){

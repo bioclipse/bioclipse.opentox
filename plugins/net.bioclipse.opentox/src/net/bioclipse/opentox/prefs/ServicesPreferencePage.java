@@ -17,6 +17,7 @@ import java.util.List;
 
 import net.bioclipse.opentox.Activator;
 import net.bioclipse.opentox.OpenToxConstants;
+import net.bioclipse.opentox.ServiceReader;
 import net.bioclipse.ui.prefs.IPreferenceConstants;
 
 import org.apache.log4j.Logger;
@@ -405,12 +406,8 @@ IWorkbenchPreferencePage {
 
 
     public void init(IWorkbench workbench) {
-        ScopedPreferenceStore prefStore = 
-        new ScopedPreferenceStore( ConfigurationScope.INSTANCE, 
-                                                      OpenToxConstants.PLUGIN_ID );
         
-        prefStore.setSearchContexts( null );
-        setPreferenceStore( prefStore );
+        setPreferenceStore( ServiceReader.getPreferenceStore() );
     }
 
     /**
@@ -422,13 +419,8 @@ IWorkbenchPreferencePage {
         logger.debug("Update sites prefs to store: " + value);
         
         //Save prefs as this must be done explicitly
-        Preferences pref =  InstanceScope.INSTANCE.getNode( OpenToxConstants.PLUGIN_ID );
-        pref.put( OpenToxConstants.SERVICES, value );
-        try {
-            pref.flush();
-        } catch ( BackingStoreException e ) {
-            logger.error( "Faild to store preference",e );
-        }
+        getPreferenceStore().setValue( OpenToxConstants.SERVICES, value );
+
         return true;
     }
 
@@ -438,8 +430,8 @@ IWorkbenchPreferencePage {
      */
     public static List<String[]> getPreferencesFromStore() {
 
-        IPreferencesService service = Platform.getPreferencesService();
-        String entireString=service.getString(OpenToxConstants.PLUGIN_ID,OpenToxConstants.SERVICES,"n/a",null);
+        String entireString = ServiceReader.getPreferenceStore()
+                        .getString( OpenToxConstants.SERVICES );
         return convertPreferenceStringToArraylist(entireString);
     }
 
@@ -450,8 +442,8 @@ IWorkbenchPreferencePage {
      */
     public static List<String[]> getDefaultPreferencesFromStore() {
         
-        Preferences node = DefaultScope.INSTANCE.getNode(Activator.PLUGIN_ID);
-        String entireString = node.get( OpenToxConstants.SERVICES, "n/a" );
+        String entireString = ServiceReader.getPreferenceStore()
+                        .getDefaultString( OpenToxConstants.SERVICES );
         
         return convertPreferenceStringToArraylist(entireString);
     }
@@ -514,8 +506,7 @@ IWorkbenchPreferencePage {
     protected void performDefaults() {
         super.performDefaults();
         //String values = getPreferenceStore().getString( OpenToxConstants.SERVICES );
-        String values = DefaultScope.INSTANCE.getNode( OpenToxConstants.PLUGIN_ID ).get( OpenToxConstants.SERVICES, "n/a" );
-        appList=convertPreferenceStringToArraylist(values);
+        appList = getDefaultPreferencesFromStore();
         checkboxTableViewer.setInput(appList);
 
     }
