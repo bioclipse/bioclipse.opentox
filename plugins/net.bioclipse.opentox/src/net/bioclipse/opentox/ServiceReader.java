@@ -1,6 +1,7 @@
 package net.bioclipse.opentox;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import net.bioclipse.opentox.prefs.ServicesPreferencePage;
@@ -94,7 +95,8 @@ public class ServiceReader {
         		OpenToxService service = new OpenToxService(entry[0],entry[1],entry[2]);
         		services.add(service);
         	}else{
-        		logger.debug("Opentox service preference entry incorrect size (and skipped): " + entry);
+                logger.debug( "Opentox service preference entry incorrect size (and skipped): " + Arrays
+                                              .toString( entry ) );
         	}
         }
 		
