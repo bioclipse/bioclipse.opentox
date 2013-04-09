@@ -18,13 +18,6 @@
 
     </extension>
     
-   <extension point="org.eclipse.ui.preferencePages">
-    	<page id="net.bioclipse.opentox.ds.prefs.OpenToxModelsPrefsPage"
-  	      	name="OpenTox Models"
-  	      	category="net.bioclipse.opentox.prefs.ServicesPreferencePage"
-	      	class="net.bioclipse.opentox.ds.prefs.OpenToxModelsPrefsPage">
-	   	</page>
-   </extension>    
     
 
 </plugin>
