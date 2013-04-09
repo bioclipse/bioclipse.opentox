@@ -3,11 +3,15 @@ package net.bioclipse.opentox.qsar;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IStringMatrix;
 import net.bioclipse.opentox.Activator;
+import net.bioclipse.opentox.OpenToxService;
+import net.bioclipse.opentox.ServiceReader;
 import net.bioclipse.opentox.business.IOpentoxManager;
 import net.bioclipse.qsar.descriptor.IDescriptorCalculator;
 import net.bioclipse.qsar.descriptor.model.DescriptorImpl;
@@ -128,20 +132,26 @@ public class OpenToxProviderDiscovery implements IDiscoveryService{
 	}
 
 
-	private ArrayList<OpenToxProvider> discoverProviders() {
+    private List<OpenToxProvider> discoverProviders() {
 
 		ArrayList<OpenToxProvider> endpoints = new ArrayList<OpenToxProvider>();
 			
+        List<OpenToxService> services = ServiceReader
+                        .readServicesFromPreferences();
+        if ( services.isEmpty() ) {
+            logger.error( "Could not find an OpenTox service" );
+            return Collections.emptyList();
+        }
+        OpenToxService service = services.get( 0 );
 			//Add a service
-			OpenToxProvider s1 = new OpenToxProvider(
-					"opentox.provider",
-					"Opentox",
-					"http://apps.ideaconsult.net:8080/ambit2/",
-					"http://apps.ideaconsult.net:8080/ontology/");
+        OpenToxProvider s1 = new OpenToxProvider( "opentox.provider",
+                                                  service.getName(),
+                                                  service.getService(),
+                                                  service.getServiceSPARQL() );
 			
-			endpoints.add(s1);
+        endpoints.add( s1 );
 
-			//TODO: add more here or discover it
+        // TODO: add more here or discover it
 
 
 		return endpoints;
