@@ -13,9 +13,9 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 /**
@@ -34,6 +34,9 @@ public class ServiceReader {
         if ( store == null ) {
             store = new ScopedPreferenceStore( InstanceScope.INSTANCE,
                                                OpenToxConstants.PLUGIN_ID );
+            store.setSearchContexts( new IScopeContext[] { InstanceScope.INSTANCE,
+                            ConfigurationScope.INSTANCE,
+                            DefaultScope.INSTANCE } );
         }
         return store;
     }
@@ -64,7 +67,7 @@ public class ServiceReader {
                 //Read all endpoints
                 if (element.getName().equals("service")){
 
-                    String pid=element.getAttribute("id");
+                    // String pid=element.getAttribute("id");
                     String pname=element.getAttribute("name");
                     String purl=element.getAttribute("serviceURL");
                     if (purl==null) purl="";
