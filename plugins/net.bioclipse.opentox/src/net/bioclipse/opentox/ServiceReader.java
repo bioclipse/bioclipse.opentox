@@ -35,8 +35,7 @@ public class ServiceReader {
             store = new ScopedPreferenceStore( InstanceScope.INSTANCE,
                                                OpenToxConstants.PLUGIN_ID );
             store.setSearchContexts( new IScopeContext[] { InstanceScope.INSTANCE,
-                            ConfigurationScope.INSTANCE,
-                            DefaultScope.INSTANCE } );
+                            ConfigurationScope.INSTANCE } );
         }
         return store;
     }
