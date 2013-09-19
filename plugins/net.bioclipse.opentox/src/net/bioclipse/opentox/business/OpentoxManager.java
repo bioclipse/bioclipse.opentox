@@ -804,7 +804,7 @@ public class OpentoxManager implements IBioclipseManager {
     	return calcResults;
     }
     
-    public Map<String,String> predictWithModelWithLabel(String service, String model,
+    public StringMatrix predictWithModelWithLabel(String service, String model,
     	List<IMolecule> molecules, IProgressMonitor monitor)
     throws Exception {
     	if (service == null) throw new BioclipseException("Service is null");
@@ -813,8 +813,11 @@ public class OpentoxManager implements IBioclipseManager {
     	if (monitor == null) monitor = new NullProgressMonitor();
     	monitor.beginTask("Calculate model for dataset", molecules.size());
 
-    	Map<String,String> calcResults = new HashMap<String, String>();
+    	StringMatrix calcResults = new StringMatrix();
+    	calcResults.setSize(molecules.size(), 0);
+    	int molCount = 0;
     	for (IMolecule molecule : molecules) {
+    		molCount++;
     		String dataset = Dataset.createNewDataset(service, molecule, monitor);
     		if (dataset == null) {
         		logger.error("Failed to generate a data set");
@@ -824,10 +827,20 @@ public class OpentoxManager implements IBioclipseManager {
     		String results = ModelAlgorithm.calculate(service, model, dataset, monitor);
         	if (monitor.isCanceled()) return calcResults;
     		StringMatrix features = Dataset.listPredictedFeatures(results);
+    		System.out.println("features: " + features);
     		List<String> fcol = removeDataType(features.getColumn("numval"));
-    		List<String> lcol = features.getColumn("desc");
+    		List<String> lcol = features.getColumn("label");
     		for (int i=0; i<fcol.size(); i++){
-    			calcResults.put(lcol.get(i), fcol.get(i));
+    			String colName = lcol.get(i);
+        		// ensure we have a matching column
+    			int colCount = -1;
+            	if (calcResults.hasColumn(colName)) {
+            		colCount = calcResults.getColumnNumber(colName);
+            	} else {
+            		colCount = calcResults.getColumnCount() + 1;
+            		calcResults.setColumnName(colCount, colName);
+            	}
+    			calcResults.set(molCount, colCount, fcol.get(i));
     		}
     		
     		Dataset.deleteDataset(dataset);

@@ -19,6 +19,7 @@ import net.bioclipse.core.Recorded;
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.core.domain.IMolecule;
 import net.bioclipse.core.domain.IStringMatrix;
+import net.bioclipse.core.domain.StringMatrix;
 import net.bioclipse.jobs.BioclipseUIJob;
 import net.bioclipse.managers.business.IBioclipseManager;
 
@@ -120,7 +121,7 @@ public interface IOpentoxManager extends IBioclipseManager {
             "Predicts modeled properties for the given molecule.",
         params="String service, String model, List<? extends IMolecule> molecules"
     )
-    public Map<String,String> predictWithModelWithLabel(String service, String model, List<? extends IMolecule> molecules) throws Exception;
+    public StringMatrix predictWithModelWithLabel(String service, String model, List<? extends IMolecule> molecules) throws Exception;
 
     @Recorded
     @PublishedMethod(
