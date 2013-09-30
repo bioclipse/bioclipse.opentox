@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OpenTox UI
 Bundle-SymbolicName: net.bioclipse.opentox.ui;singleton:=true
-Bundle-Version: 2.6.0.vqualifier
+Bundle-Version: 2.6.1.qualifier
 Bundle-Activator: net.bioclipse.opentox.ui.Activator
 Bundle-Vendor: The Bioclipse Team
 Require-Bundle: org.eclipse.ui,
@@ -13,7 +13,8 @@ Require-Bundle: org.eclipse.ui,
  net.bioclipse.cdk.business;bundle-version="2.5.0",
  net.bioclipse.core;bundle-version="2.5.0",
  net.bioclipse.browser;bundle-version="2.5.0",
- net.bioclipse.usermanager;bundle-version="2.5.0"
+ net.bioclipse.usermanager;bundle-version="2.5.0",
+ org.eclipse.help;bundle-version="3.6.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Import-Package: org.apache.log4j

@@ -10,14 +10,12 @@
  ******************************************************************************/
 package net.bioclipse.opentox;
 
-import java.util.List;
-
 import net.bioclipse.opentox.business.IJavaOpentoxManager;
 import net.bioclipse.opentox.business.IJavaScriptOpentoxManager;
 import net.bioclipse.opentox.business.IOpentoxManager;
 import net.bioclipse.usermanager.business.IUserManager;
+
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.opentox.aa.opensso.OpenSSOToken;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -28,14 +26,8 @@ public class Activator extends AbstractUIPlugin {
 	
 	public static final String PLUGIN_ID="net.bioclipse.opentox";
     
-    /** HTTP time out in milliseconds. */
-    public static final Integer TIME_OUT = 5000; 
-
     // The shared instance
     private static Activator plugin;
-
-    //A list of OpenTox services in order
-    private static OpenSSOToken token = null;
 
     // Trackers for getting the managers
     private ServiceTracker javaFinderTracker;
@@ -44,7 +36,7 @@ public class Activator extends AbstractUIPlugin {
     public Activator() {
     	IUserManager userManager = net.bioclipse.usermanager.Activator
     		.getDefault().getUserManager();
-    	OpenToxLogInOutListener listener = new OpenToxLogInOutListener(userManager);
+    	OpenToxLogInOutListener listener = OpenToxLogInOutListener.getInstance( userManager );
     	userManager.addListener(listener);
     }
 
@@ -115,30 +107,4 @@ public class Activator extends AbstractUIPlugin {
         }
         return manager;
     }
-
-    public static boolean login(String user, String pass)
-    throws Exception {
-    	if (Activator.token == null) {
-        	Activator.token = new OpenSSOToken(
-        		"http://opensso.in-silico.ch/opensso/identity"
-        	);
-    	}
-    	return token.login(user, pass);
-    }
-    
-    public static void logout()
-    throws Exception {
-    	if (Activator.token == null) // already logged out
-    		return;
-
-        Activator.token.logout();
-        Activator.token = null;
-    }
-    
-    public static String getToken() {
-    	if (Activator.token == null) return null;
-    	
-    	return Activator.token.getToken();
-    }
-    
 }

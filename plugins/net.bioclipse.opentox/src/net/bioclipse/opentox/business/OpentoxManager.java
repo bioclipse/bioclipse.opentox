@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.security.auth.login.LoginException;
+
 import net.bioclipse.business.BioclipsePlatformManager;
 import net.bioclipse.cdk.business.CDKManager;
 import net.bioclipse.core.business.BioclipseException;
@@ -29,7 +31,7 @@ import net.bioclipse.core.domain.IStringMatrix;
 import net.bioclipse.core.domain.StringMatrix;
 import net.bioclipse.jobs.IReturner;
 import net.bioclipse.managers.business.IBioclipseManager;
-import net.bioclipse.opentox.Activator;
+import net.bioclipse.opentox.OpenToxLogInOutListener;
 import net.bioclipse.opentox.api.Algorithm;
 import net.bioclipse.opentox.api.Dataset;
 import net.bioclipse.opentox.api.Feature;
@@ -39,6 +41,7 @@ import net.bioclipse.opentox.api.ModelAlgorithm;
 import net.bioclipse.opentox.api.MolecularDescriptorAlgorithm;
 import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.business.RDFManager;
+import net.bioclipse.usermanager.business.IUserManager;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -54,7 +57,9 @@ public class OpentoxManager implements IBioclipseManager {
     private RDFManager rdf = new RDFManager();
     private BioclipsePlatformManager bioclipse = new BioclipsePlatformManager();
     private CDKManager cdk = new CDKManager();
-
+    private IUserManager userManager = net.bioclipse.usermanager.Activator
+            .getDefault().getUserManager();
+    
     private final static String QUERY_ALGORITHMS =
         "SELECT ?algo WHERE {" +
         "  ?algo a <http://www.opentox.org/api/1.1#Algorithm>." +
@@ -96,13 +101,27 @@ public class OpentoxManager implements IBioclipseManager {
         return "opentox";
     }
 
+    private OpenToxLogInOutListener getOpenToxListener() {
+        OpenToxLogInOutListener openToxLogInOutListener;
+        try {
+            openToxLogInOutListener = OpenToxLogInOutListener.getInstance();
+        } catch ( InstantiationException e ) {
+            openToxLogInOutListener = OpenToxLogInOutListener.
+                    getInstance(userManager);
+        }
+    
+    return openToxLogInOutListener;
+    }
+    
     public String getToken() {
-    	return Activator.getToken();
+        OpenToxLogInOutListener listener = this.getOpenToxListener();
+    	return listener.getToken();
     }
 
     public void logout() throws BioclipseException {
+        OpenToxLogInOutListener listener = this.getOpenToxListener();
     	try {
-			Activator.logout();
+    	    listener.logout();
 		} catch (Exception e) {
 			throw new BioclipseException(
 				"Error while logging out of OpenTox: " + e.getMessage(),
@@ -112,8 +131,16 @@ public class OpentoxManager implements IBioclipseManager {
     }
 
     public boolean login(String user, String pass) throws BioclipseException {
+        /* TODO The account type below (i.e. OpenTox) should not be hard coded. 
+         * It should come from the the extension point somehow */
+        String authService =  userManager.getProperty( "OpenTox", "auth. service" );
+        return login( user, pass, authService );
+    }
+    
+    public boolean login(String user, String pass, String authService) throws BioclipseException {
+        OpenToxLogInOutListener listener = this.getOpenToxListener();
     	try {
-			return Activator.login(user, pass);
+			return listener.login(user, pass, authService);
 		} catch (Exception e) {
 			throw new BioclipseException(
 				"Error while logging in on OpenTox: " + e.getMessage(),
@@ -121,7 +148,22 @@ public class OpentoxManager implements IBioclipseManager {
 			);
 		}
     }
-
+    
+    public String getAuthorizationServer() {
+        OpenToxLogInOutListener listener = this.getOpenToxListener();
+        try {
+            return listener.getAuthService();
+        } catch ( LoginException e ) {
+            logger.error( e );
+            return null;
+        }
+    }
+    
+    public void resetAuthorizationServer() {
+        OpenToxLogInOutListener listener = this.getOpenToxListener();
+        listener.resetAuthService();
+    }
+    
     public Map<String,String> getFeatureInfo(String ontologyServer, String feature, IProgressMonitor monitor) {
     	if (monitor == null) monitor = new NullProgressMonitor();
     	
@@ -199,9 +241,11 @@ public class OpentoxManager implements IBioclipseManager {
         IRDFStore store = rdf.createInMemoryStore();
         List<String> dataSets = Collections.emptyList();
         Map<String, String> extraHeaders = new HashMap<String, String>();
-        String token = Activator.getToken();
+        OpenToxLogInOutListener listener = this.getOpenToxListener();
+        
+        String token = listener.getToken();
         if (token != null) {
-        	extraHeaders.put("subjectid", Activator.getToken());
+        	extraHeaders.put("subjectid", listener.getToken());
         }
         try {
             // download the list of data sets as RDF
@@ -239,9 +283,11 @@ public class OpentoxManager implements IBioclipseManager {
     	IRDFStore store = rdf.createInMemoryStore();
     	List<String> dataSets = Collections.emptyList();
     	Map<String, String> extraHeaders = new HashMap<String, String>();
-    	String token = Activator.getToken();
+    	OpenToxLogInOutListener listener = this.getOpenToxListener();
+    	
+    	String token = listener.getToken();
     	if (token != null) {
-    		extraHeaders.put("subjectid", Activator.getToken());
+    		extraHeaders.put("subjectid", listener.getToken());
     	}
     	try {
     		// download the list of data sets as RDF
@@ -456,9 +502,10 @@ public class OpentoxManager implements IBioclipseManager {
         IRDFStore store = rdf.createInMemoryStore();
         try {
             Map<String, String> extraHeaders = new HashMap<String, String>();
-            String token = Activator.getToken();
+            OpenToxLogInOutListener listener = this.getOpenToxListener();
+            String token = listener.getToken();
             if (token != null) {
-            	extraHeaders.put("subjectid", Activator.getToken());
+            	extraHeaders.put("subjectid", listener.getToken());
             }
             // download the list of compounds as RDF
             rdf.importURL(
@@ -709,6 +756,10 @@ public class OpentoxManager implements IBioclipseManager {
     	List<String> calcResults = new ArrayList<String>();
     	logger.debug("Creating data set");
     	String dataset = Dataset.createNewDataset(service, molecule, monitor);
+    	if (dataset == null) {
+    		logger.error("Failed to generate a data set");
+    		return calcResults;
+    	}
     	logger.debug("Calculating descriptor");
     	if (monitor.isCanceled()) return Collections.emptyList();
     	String results = MolecularDescriptorAlgorithm.calculate(
@@ -737,6 +788,10 @@ public class OpentoxManager implements IBioclipseManager {
     	List<String> calcResults = new ArrayList<String>();
     	for (IMolecule molecule : molecules) {
     		String dataset = Dataset.createNewDataset(service, molecule, monitor);
+    		if (dataset == null) {
+        		logger.error("Failed to generate a data set");
+        		return calcResults;
+        	}
         	if (monitor.isCanceled()) return calcResults;
     		String results = ModelAlgorithm.calculate(service, model, dataset, monitor);    		
         	if (monitor.isCanceled()) return calcResults;
@@ -749,7 +804,7 @@ public class OpentoxManager implements IBioclipseManager {
     	return calcResults;
     }
     
-    public Map<String,String> predictWithModelWithLabel(String service, String model,
+    public StringMatrix predictWithModelWithLabel(String service, String model,
     	List<IMolecule> molecules, IProgressMonitor monitor)
     throws Exception {
     	if (service == null) throw new BioclipseException("Service is null");
@@ -758,17 +813,34 @@ public class OpentoxManager implements IBioclipseManager {
     	if (monitor == null) monitor = new NullProgressMonitor();
     	monitor.beginTask("Calculate model for dataset", molecules.size());
 
-    	Map<String,String> calcResults = new HashMap<String, String>();
+    	StringMatrix calcResults = new StringMatrix();
+    	calcResults.setSize(molecules.size(), 0);
+    	int molCount = 0;
     	for (IMolecule molecule : molecules) {
+    		molCount++;
     		String dataset = Dataset.createNewDataset(service, molecule, monitor);
+    		if (dataset == null) {
+        		logger.error("Failed to generate a data set");
+        		return calcResults;
+        	}
         	if (monitor.isCanceled()) return calcResults;
     		String results = ModelAlgorithm.calculate(service, model, dataset, monitor);
         	if (monitor.isCanceled()) return calcResults;
     		StringMatrix features = Dataset.listPredictedFeatures(results);
+    		System.out.println("features: " + features);
     		List<String> fcol = removeDataType(features.getColumn("numval"));
-    		List<String> lcol = features.getColumn("desc");
+    		List<String> lcol = features.getColumn("label");
     		for (int i=0; i<fcol.size(); i++){
-    			calcResults.put(lcol.get(i), fcol.get(i));
+    			String colName = lcol.get(i);
+        		// ensure we have a matching column
+    			int colCount = -1;
+            	if (calcResults.hasColumn(colName)) {
+            		colCount = calcResults.getColumnNumber(colName);
+            	} else {
+            		colCount = calcResults.getColumnCount() + 1;
+            		calcResults.setColumnName(colCount, colName);
+            	}
+    			calcResults.set(molCount, colCount, fcol.get(i));
     		}
     		
     		Dataset.deleteDataset(dataset);
@@ -789,6 +861,10 @@ public class OpentoxManager implements IBioclipseManager {
 
     	List<String> calcResults = new ArrayList<String>();
     	String dataset = Dataset.createNewDataset(service, molecule, monitor);
+    	if (dataset == null) {
+    		logger.error("Failed to generate a data set");
+    		return calcResults;
+    	}
     	if (monitor.isCanceled()) return calcResults;
     	String results = ModelAlgorithm.calculate(service, model, dataset, monitor);
     	if (monitor.isCanceled()) return calcResults;
@@ -811,6 +887,10 @@ public class OpentoxManager implements IBioclipseManager {
 
     	Map<String,String> calcResults = new HashMap<String, String>();    	
     	String dataset = Dataset.createNewDataset(service, molecule, monitor);
+    	if (dataset == null) {
+    		logger.error("Failed to generate a data set");
+    		return calcResults;
+    	}
     	if (monitor.isCanceled()) return calcResults;
     	String results = ModelAlgorithm.calculate(service, model, dataset, monitor);
     	if (monitor.isCanceled()) return calcResults;

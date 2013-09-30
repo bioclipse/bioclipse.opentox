@@ -23,6 +23,12 @@
   	      	name="OpenTox"
 	      	class="net.bioclipse.opentox.prefs.ServicesPreferencePage">
 	   	</page>
+    	<page
+           category="net.bioclipse.opentox.prefs.ServicesPreferencePage"
+           class="net.bioclipse.opentox.prefs.NetworkPreferencePage"
+           id="net.bioclipse.opentox.prefs.NetworkPreferencePage"
+           name="Network">
+	   	</page>
    </extension>
    
    <extension
@@ -55,6 +61,12 @@
                required="true"
                secret="true">
          </property>
+         <property
+               defaultValue="http://opensso.in-silico.ch/opensso/identity"
+               name="auth. service"
+               required="true"
+               secret="false">
+         </property>
       </AccountType>
    </extension>
    <extension
@@ -62,6 +74,12 @@
       <initializer
             class="net.bioclipse.opentox.business.OpentoxPreferenceInitializer">
       </initializer>
+   </extension>
+   <extension
+         point="net.bioclipse.usermanager.testLogin">
+         <TestLogin
+            testClass = "net.bioclipse.opentox.business.TestLogin">
+         </TestLogin>
    </extension>
 
 </plugin>
