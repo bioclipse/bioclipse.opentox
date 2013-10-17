@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.CannotProceedException;
 import javax.security.auth.login.LoginException;
 
 import net.bioclipse.business.BioclipsePlatformManager;
@@ -137,8 +136,7 @@ public class OpentoxManager implements IBioclipseManager {
 		}
     }
 
-    public boolean login(String user, String pass) throws BioclipseException, 
-            CannotProceedException {
+    public boolean login(String user, String pass) throws BioclipseException {
   
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint extensionPoint = registry.getExtensionPoint(
@@ -170,10 +168,9 @@ public class OpentoxManager implements IBioclipseManager {
             String accountName = userManager.
                     getAccountIdsByAccountTypeName( accountId ).get( 0 );
             authService = userManager.getProperty(accountName, propertyKey );
-            System.out.println(accountName);
         }
         if (authService.isEmpty())
-            throw new CannotProceedException( "Could not decide which " +
+            throw new BioclipseException( "Could not decide which " +
             		"authorization server to be used. Please try \u0027" +
             		"login(String user, String pass, String authService)" +
             		"\u0027" );
