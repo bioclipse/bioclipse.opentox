@@ -31,6 +31,7 @@ import net.bioclipse.core.domain.IStringMatrix;
 import net.bioclipse.core.domain.StringMatrix;
 import net.bioclipse.jobs.IReturner;
 import net.bioclipse.managers.business.IBioclipseManager;
+import net.bioclipse.opentox.OpenToxConstants;
 import net.bioclipse.opentox.OpenToxLogInOutListener;
 import net.bioclipse.opentox.api.Algorithm;
 import net.bioclipse.opentox.api.Dataset;
@@ -47,8 +48,13 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 
 public class OpentoxManager implements IBioclipseManager {
 
@@ -131,9 +137,44 @@ public class OpentoxManager implements IBioclipseManager {
     }
 
     public boolean login(String user, String pass) throws BioclipseException {
-        /* TODO The account type below (i.e. OpenTox) should not be hard coded. 
-         * It should come from the the extension point somehow */
-        String authService =  userManager.getProperty( "OpenTox", "auth. service" );
+  
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint extensionPoint = registry.getExtensionPoint(
+                "net.bioclipse.usermanager.accountType" );
+        IExtension[] extensions = extensionPoint.getExtensions();
+
+        String authService = "", accountId = "", propertyKey = "";
+        for (IExtension extension : extensions) {
+            IConfigurationElement[] configelements = extension.
+                    getConfigurationElements();
+            for (IConfigurationElement element : configelements) {
+                String id = element.getAttribute( "id" );
+                accountId = element.getAttribute( "name" );
+                if (id.contains( OpenToxConstants.PLUGIN_ID )) {
+                    IConfigurationElement[] test = element.getChildren();
+                    for (IConfigurationElement element2 : test) {
+                        String attribute = element2.
+                                getAttribute( "defaultValue" );
+                        if (attribute != null && attribute.toLowerCase().
+                                startsWith( "http" )) {
+                            propertyKey = element2.getAttribute( "name" );
+                            authService = attribute;
+                        }
+                    }
+                }
+            }
+        }
+        if (userManager.isLoggedIn()) {
+            String accountName = userManager.
+                    getAccountIdsByAccountTypeName( accountId ).get( 0 );
+            authService = userManager.getProperty(accountName, propertyKey );
+        }
+        if (authService.isEmpty())
+            throw new BioclipseException( "Could not decide which " +
+            		"authorization server to be used. Please try \u0027" +
+            		"login(String user, String pass, String authService)" +
+            		"\u0027" );
+
         return login( user, pass, authService );
     }
     
