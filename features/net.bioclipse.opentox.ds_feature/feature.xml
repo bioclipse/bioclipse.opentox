@@ -2,7 +2,7 @@
 <feature
       id="net.bioclipse.opentox.ds_feature"
       label="OpenTox"
-      version="2.6.1.qualifier"
+      version="2.6.2.qualifier"
       provider-name="bioclipse.net"
       plugin="net.bioclipse.opentox.ds">
 

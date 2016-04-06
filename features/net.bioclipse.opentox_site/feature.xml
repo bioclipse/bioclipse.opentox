@@ -2,7 +2,7 @@
 <feature
       id="net.bioclipse.opentox_site"
       label="Bioclipse-OpenTox Update Site"
-      version="2.6.1.qualifier"
+      version="2.6.2.qualifier"
       provider-name="The Bioclipse Team">
 
    <description url="http://www.example.com/description">
