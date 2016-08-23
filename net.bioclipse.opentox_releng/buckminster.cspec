@@ -5,6 +5,7 @@
         <dependency name="org.slf4j.api" componentType="osgi.bundle"/>
         <dependency name="log4j.over.slf4j" componentType="osgi.bundle"/>
         <dependency name="org.eclipse.rcp" componentType="eclipse.feature"/>
+        <dependency name="org.openscience.cdk_bundle" componentType="osgi.bundle"/>
         <!--
         <dependency name="slf4j.api" componentType="osgi.bundle"/>
         <dependency name="jcl.over.slf4j" componentType="osgi.bundle"/>
